@@ -17,6 +17,7 @@ private:
 	int tileWidth, tileHeight, spaceBetweenTiles = 1, tilesPerRowInTileSet, tilesPerColumnInTileSet;
 	int width, height;
 public:
+	Map();
 	Map(LPCWSTR _tileSetPath, string _matrixIdsPath, string _mapInfoPath, char _seperatorOfMatrixIds, D3DCOLOR _transcolor);
 	Map(string _matrixIdsPath, int mapHeight, int mapWidth, int tileHeight, int tileWidth, int textureId);
 	//~Map();
@@ -29,7 +30,9 @@ public:
 	void Update(int _dt);
 	vector<int> GetTilesOnCam();
 	void Draw();
-	void loadFromFile(string& _matrixIdsPath, int mapHeight, int mapWidth, int tileHeight, int tileWidth, int textureId);
+	void loadFromFile(string& _matrixIdsPath, int mapHeight, int mapWidth, int tileHeight, int tileWidth, int textureId, int tilesPerRow, int tilesPerColumn);
+
+	void unLoad();
 
 	void mapInfoReader(string& _mapInfoPath);
 

@@ -24,10 +24,15 @@ Map* Map::getInstance()
 	//string tmp = ;
 
 	if (!instance) {
-		instance = new Map("maps\\map_indexes_man1.txt", 656, 2816, 16, 16, 400);
+		//instance = new Map("maps\\map_indexes_man1.txt", 656, 2816, 16, 16, 400);
+		instance = new Map();
 	}
 
 	return instance;
+}
+
+Map::Map()
+{
 }
 
 Map::Map(LPCWSTR _tileSetPath, string _matrixIdsPath, string _mapInfoPath, char _seperatorOfMatrixIds, D3DCOLOR _transcolor)
@@ -123,7 +128,7 @@ void Map::Draw()
 	}
 }
 
-void Map::loadFromFile(string& _matrixIdsPath, int mapHeight, int mapWidth, int tileHeight, int tileWidth, int textureId)
+void Map::loadFromFile(string& _matrixIdsPath, int mapHeight, int mapWidth, int tileHeight, int tileWidth, int textureId, int tilesPerRow, int tilesPerColumn)
 {
 	tileSetTexture = CTextures::GetInstance()->Get(textureId);
 	height = mapHeight;
@@ -131,8 +136,16 @@ void Map::loadFromFile(string& _matrixIdsPath, int mapHeight, int mapWidth, int 
 	this->tileHeight = tileHeight;
 	this->tileWidth = tileWidth;
 
-	tilesPerRowInTileSet = 16;
-	tilesPerColumnInTileSet = 8;
+	tilesPerRowInTileSet = tilesPerRow;
+	tilesPerColumnInTileSet = tilesPerColumn;
 
 	mapInfoReader(_matrixIdsPath);
+}
+
+void Map::unLoad()
+{
+	for(auto& row : map){
+		row.clear();
+	}
+	map.clear();
 }
