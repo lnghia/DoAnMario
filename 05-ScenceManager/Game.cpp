@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "PlayScence.h"
+#include "Grid.h"
 
 CGame * CGame::__instance = NULL;
 
@@ -56,6 +57,8 @@ void CGame::Init(HWND hWnd)
 
 	// Initialize sprite helper from Direct3DX helper library
 	D3DXCreateSprite(d3ddv, &spriteHandler);
+
+	Grid::GetInstance();
 
 	OutputDebugString(L"[INFO] InitGame done;\n");
 }
