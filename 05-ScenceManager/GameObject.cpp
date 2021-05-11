@@ -114,6 +114,15 @@ void CGameObject::FilterCollision(
 }
 
 
+void CGameObject::SetCanBeStandOn(bool val)
+{
+	canBeStandOn = val;
+}
+
+bool CGameObject::GetCanBeStandOn() {
+	return canBeStandOn;
+}
+
 void CGameObject::RenderBoundingBox()
 {
 	D3DXVECTOR3 p(x, y, 0);

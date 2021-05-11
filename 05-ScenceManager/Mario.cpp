@@ -78,6 +78,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
+			isStanding = (e->ny < 0) ? e->obj->GetCanBeStandOn() : false;
+
 			if (dynamic_cast<CGoomba *>(e->obj)) // if e->obj is Goomba 
 			{
 				CGoomba *goomba = dynamic_cast<CGoomba *>(e->obj);
@@ -172,9 +174,13 @@ void CMario::SetState(int state)
 		nx = -1;
 		break;
 	case MARIO_STATE_JUMP:
-		// TODO: need to check if Mario is *current* on a platform before allowing to jump again
+		if (!isStanding) {
+			return;
+		}
+
 		vy = -MARIO_JUMP_SPEED_Y;
-		break; 
+		isStanding = false;
+		break;
 	case MARIO_STATE_IDLE: 
 		vx = 0;
 		break;
@@ -199,6 +205,15 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 		right = x + MARIO_SMALL_BBOX_WIDTH;
 		bottom = y + MARIO_SMALL_BBOX_HEIGHT;
 	}
+}
+
+void CMario::SetIsStanding(bool val)
+{
+	isStanding = val;
+}
+
+bool CMario::GetIsStanding() {
+	return isStanding;
 }
 
 /*

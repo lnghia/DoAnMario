@@ -72,6 +72,10 @@
 # QUESTION BRICK 
 22	602
 
+[MAP]
+# matrixFilePath	mapHeight	mapWidth	tileHeight	tileWidth	textureId	tilesPerRow	tilesPerColumn
+maps\map_indexes_man1.txt	656	2816	16	16	400	16	8			
+
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
