@@ -23,6 +23,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 */
 
 #define MAP 999
+#define GRID 9999
 
 #define SCENE_SECTION_UNKNOWN -1
 #define SCENE_SECTION_TEXTURES 2
@@ -41,7 +42,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define MAX_SCENE_LINE 1024
 
 
-void CPlayScene::_ParseSection_TEXTURES(string line)
+void CPlayScene::_ParseSection_TEXTURES(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -56,7 +57,7 @@ void CPlayScene::_ParseSection_TEXTURES(string line)
 	CTextures::GetInstance()->Add(texID, path.c_str(), D3DCOLOR_XRGB(R, G, B));
 }
 
-void CPlayScene::_ParseSection_SPRITES(string line)
+void CPlayScene::_ParseSection_SPRITES(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -79,7 +80,7 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
 }
 
-void CPlayScene::_ParseSection_ANIMATIONS(string line)
+void CPlayScene::_ParseSection_ANIMATIONS(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -100,7 +101,7 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	CAnimations::GetInstance()->Add(ani_id, ani);
 }
 
-void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
+void CPlayScene::_ParseSection_ANIMATION_SETS(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -126,7 +127,7 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 /*
 	Parse a line in section [OBJECTS]
 */
-void CPlayScene::_ParseSection_OBJECTS(string line)
+void CPlayScene::_ParseSection_OBJECTS(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -180,17 +181,20 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
+	Grid::GetInstance()->putObjectIntoGrid(obj);
 }
 
-void CPlayScene::_ParseSection_GRID(string line)
+void CPlayScene::_ParseSection_GRID(const string& line)
 {
 	vector<string> tokens = split(line);
+
+	if (tokens.size() < 2) return;
 
 	// 1: cellWidth, 2: cellHeight
 	Grid::GetInstance()->load(stoi(tokens[0]), stoi(tokens[1]));
 }
 
-void CPlayScene::_ParseSection_MAP(string line)
+void CPlayScene::_ParseSection_MAP(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -239,6 +243,9 @@ void CPlayScene::Load()
 		if (line == "[MAP]") {
 			section = MAP; continue;
 		}
+		if (line == "[GRID]") {
+			section = GRID; continue;
+		}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -252,6 +259,7 @@ void CPlayScene::Load()
 		case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
 		case MAP: _ParseSection_MAP(line); break;
+		case GRID: _ParseSection_GRID(line); break;
 		}
 	}
 
@@ -268,13 +276,15 @@ void CPlayScene::Update(DWORD dt)
 	// TO-DO: This is a "dirty" way, need a more organized way 
 
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 1; i < objects.size(); i++)
+	/*for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
-	}
+	}*/
 
 	for (size_t i = 0; i < objects.size(); i++)
 	{
+		coObjects.clear();
+		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(objects[i]);
 		objects[i]->Update(dt, &coObjects);
 	}
 

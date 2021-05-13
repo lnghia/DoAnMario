@@ -72,6 +72,7 @@ public:
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
 	void SetCanBeStandOn(bool val);
 	bool GetCanBeStandOn();
+	DWORD GetDeltaTime();
 
 	int GetState() { return this->state; }
 

@@ -123,6 +123,11 @@ bool CGameObject::GetCanBeStandOn() {
 	return canBeStandOn;
 }
 
+DWORD CGameObject::GetDeltaTime()
+{
+	return dt;
+}
+
 void CGameObject::RenderBoundingBox()
 {
 	D3DXVECTOR3 p(x, y, 0);

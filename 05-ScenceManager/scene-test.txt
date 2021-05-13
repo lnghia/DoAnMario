@@ -74,7 +74,11 @@
 
 [MAP]
 # matrixFilePath	mapHeight	mapWidth	tileHeight	tileWidth	textureId	tilesPerRow	tilesPerColumn
-maps\map_indexes_man1.txt	656	2816	16	16	400	16	8			
+maps\map_indexes_man1.txt	432	2816	16	16	400	16	8			
+
+[GRID]
+# cellWidth	cellHeight
+80	80
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
