@@ -128,6 +128,15 @@ DWORD CGameObject::GetDeltaTime()
 	return dt;
 }
 
+bool CGameObject::GetInteractivable()
+{
+	return interactivable;
+}
+
+void CGameObject::SetInteractivable(bool val) {
+	interactivable = val;
+}
+
 void CGameObject::RenderBoundingBox()
 {
 	D3DXVECTOR3 p(x, y, 0);

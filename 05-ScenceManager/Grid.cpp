@@ -90,29 +90,29 @@ vector<int> Grid::getOverLapCells(LPGAMEOBJECT obj)
 
 	obj->GetBoundingBox(left, top, right, bottom);
 
-	int col1 = (int)left % colNum;
-	int col2 = (int)right % colNum;
-	int row1 = (int)top / colNum;
-	int row2 = (int)bottom / colNum;
+	int col1 = (int)left / cellWidth;
+	int col2 = (int)right / cellWidth;
+	int row1 = (int)top / cellHeight;
+	int row2 = (int)bottom / cellHeight;
 
 	return { col1, col2, row1, row2 };
 }
 
 vector<int> Grid::getOverLapCells(RECT boundingBox)
 {
-	int col1 = (int)boundingBox.left % colNum;
-	int col2 = (int)boundingBox.right % colNum;
-	int row1 = (int)boundingBox.top / colNum;
-	int row2 = (int)boundingBox.bottom / colNum;
+	int col1 = (int)boundingBox.left / cellWidth;
+	int col2 = (int)boundingBox.right / cellWidth;
+	int row1 = (int)boundingBox.top / cellHeight;
+	int row2 = (int)boundingBox.bottom / cellHeight;
 
 	return { col1, col2, row1, row2 };
 }
 
 vector<int> Grid::getOverLapCells(const float& left, const float& top, const float& right, const float& bottom) {
-	int col1 = (int)left % colNum;
-	int col2 = (int)right % colNum;
-	int row1 = (int)top / colNum;
-	int row2 = (int)bottom / colNum;
+	int col1 = (int)left / cellWidth;
+	int col2 = (int)right / cellWidth;
+	int row1 = (int)top / cellHeight;
+	int row2 = (int)bottom / cellHeight;
 
 	return { col1, col2, row1, row2 };
 }
@@ -241,8 +241,10 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 
 	for (int r = overLapCells[2]; r <= overLapCells[3]; ++r) {
 		for (int c = overLapCells[0]; c <= overLapCells[1]; ++c) {
-			for (auto& obj : grid[r][c]) {
-				result.push_back(obj);
+			for (auto& _obj : grid[r][c]) {
+				if (obj != _obj && _obj->GetInteractivable()) {
+					result.push_back(_obj);
+				}
 			}
 		}
 	}

@@ -3,6 +3,7 @@
 #include "Textures.h"
 #include "Scence.h"
 #include "GameObject.h"
+#include "JustForShow.h"
 #include "Brick.h"
 #include "Mario.h"
 #include "Goomba.h"

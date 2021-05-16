@@ -5,6 +5,8 @@
 #include <string>
 #include "GameObject.h"
 
+#include <cmath>
+
 Map* Map::instance = NULL;
 
 void Map::mapInfoReader(string& _mapInfoPath) {
@@ -79,12 +81,13 @@ vector<int> Map::GetTilesOnCam()
 
 	int w = instance->GetScreenWidth();
 
-	int left = (int)instance->GetCamX() / tileWidth;
-	int right = (instance->GetCamX() + instance->GetScreenWidth()) / tileWidth;
-	int top = instance->GetCamY() / tileHeight;
-	int bottom = (instance->GetCamY() + instance->GetScreenHeight()) / tileHeight;
+	int left = floor(instance->GetCamX() / (float)tileWidth);
+	int right = ceil((instance->GetCamX() + instance->GetScreenWidth() + 1) / (float)tileWidth);
+	int top = floor(instance->GetCamY() / (float)tileHeight);
+	int bottom = ceil((instance->GetCamY() + instance->GetScreenHeight() + 1) / (float)tileHeight);
 
-	return vector<int>{ left, right, top, bottom };
+	//return vector<int>{ left, right, top, bottom };
+	return vector<int>{0, 175, 0, 26};
 }
 
 void Map::RenderBoundingBox(int x, int y)
@@ -108,6 +111,20 @@ void Map::RenderBoundingBox(int x, int y)
 void Map::Draw()
 {
 	vector<int> tilesOnCam = GetTilesOnCam();
+
+	/*for (int row = 0; row <= map.size(); ++row) {
+		for (int col = 0; col <= map[row].size(); ++col) {
+			int _r = map[row][col] / tilesPerRowInTileSet;
+			int _c = map[row][col] % tilesPerRowInTileSet;
+
+			int left = _c * tileWidth + _c * spaceBetweenTiles;
+			int right = left + tileWidth;
+			int top = _r * tileHeight + _r * spaceBetweenTiles;
+			int bottom = top + tileHeight;
+
+			CGame::GetInstance()->Draw(col * tileHeight, row * tileWidth, tileSetTexture, left, top, right, bottom);
+		}
+	}*/
 
 	for (int row = tilesOnCam[2]; row <= tilesOnCam[3]; ++row) {
 		for (int col = tilesOnCam[0]; col <= tilesOnCam[1]; ++col) {

@@ -65,6 +65,8 @@ public:
 
 	LPANIMATION_SET animation_set;
 
+	bool interactivable = 1;
+
 public: 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
@@ -73,6 +75,9 @@ public:
 	void SetCanBeStandOn(bool val);
 	bool GetCanBeStandOn();
 	DWORD GetDeltaTime();
+
+	bool GetInteractivable();
+	void SetInteractivable(bool val);
 
 	int GetState() { return this->state; }
 

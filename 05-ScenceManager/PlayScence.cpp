@@ -37,6 +37,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_GOOMBA	2
 #define OBJECT_TYPE_KOOPAS	3
 
+#define OBJECT_TYPE_JUST_FOR_SHOW 8
+
 #define OBJECT_TYPE_PORTAL	50
 
 #define MAX_SCENE_LINE 1024
@@ -113,6 +115,10 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(const string& line)
 
 	CAnimations* animations = CAnimations::GetInstance();
 
+	if (atoi(tokens[0].c_str()) == 35) {
+		int tmp = 1;
+	}
+
 	for (int i = 1; i < tokens.size(); i++)
 	{
 		int ani_id = atoi(tokens[i].c_str());
@@ -159,7 +165,9 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
-	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
+	case OBJECT_TYPE_BRICK: 
+		obj = new CBrick(); 
+		break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_PORTAL:
 	{
@@ -169,6 +177,8 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		obj = new CPortal(x, y, r, b, scene_id);
 	}
 	break;
+	case OBJECT_TYPE_JUST_FOR_SHOW:
+		obj = new JustForShow(); break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -177,7 +187,19 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	// General object setup
 	obj->SetPosition(x, y);
 
+	if (x == 112 && y == 272) {
+		int tmp = 1;
+	}
+
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+
+	float t1, t2;
+
+	obj->GetPosition(t1, t2);
+
+	if (t1 == 0 && t2 == 416) {
+		t1 = 0;
+	}
 
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
@@ -285,7 +307,7 @@ void CPlayScene::Update(DWORD dt)
 	{
 		coObjects.clear();
 		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(objects[i]);
-		objects[i]->Update(dt, &coObjects);
+ 		objects[i]->Update(dt, &coObjects);
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
@@ -293,16 +315,31 @@ void CPlayScene::Update(DWORD dt)
 
 	// Update camera to follow mario
 	float cx, cy;
+	float _cx, _cy;
+
 	player->GetPosition(cx, cy);
 
 	CGame* game = CGame::GetInstance();
+
+	_cx = game->GetCamX();
+	_cy = game->GetCamY();
+
 	cx -= game->GetScreenWidth() / 2;
 	cy -= game->GetScreenHeight() / 2;
 
 	cx = (cx < 0) ? 0 : cx;
 	cy = (cy < 0) ? 0 : cy;
 
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	if (cy + game->GetScreenHeight() > Map::getInstance()->getHeight()) {
+		cy = Map::getInstance()->getHeight() - game->GetScreenHeight() - 1;
+	}
+	if (cx + game->GetScreenWidth() > Map::getInstance()->getWidth()) {
+		cx = Map::getInstance()->getWidth() - game->GetScreenWidth() - 1;
+	}
+
+	DebugOut(L"[CAM POS]: %f %f\n", cx, cy);
+
+	CGame::GetInstance()->SetCamPos(floor(cx), /*100.0f*/ floor(cy));
 }
 
 void CPlayScene::Render()
@@ -310,7 +347,11 @@ void CPlayScene::Render()
 	Map::getInstance()->Draw();
 
 	for (int i = 0; i < objects.size(); i++)
-		objects[i]->Render();
+		if (objects[i] != player) {
+			objects[i]->Render();
+		}
+
+	player->Render();
 }
 
 /*
