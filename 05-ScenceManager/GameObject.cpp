@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "Sprites.h"
+#include "Grid.h"
 
 CGameObject::CGameObject()
 {
@@ -17,9 +18,13 @@ CGameObject::CGameObject()
 
 void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
+	Grid::GetInstance()->clearObjFromGrid(this);
+
 	this->dt = dt;
 	dx = vx*dt;
 	dy = vy*dt;
+
+	Grid::GetInstance()->putObjectIntoGrid(this);
 }
 
 /*
@@ -128,6 +133,16 @@ DWORD CGameObject::GetDeltaTime()
 	return dt;
 }
 
+void CGameObject::SetRenderPriority(unsigned int p)
+{
+	renderPriority = p;
+}
+
+unsigned int CGameObject::GetRenderPriority()
+{
+	return renderPriority;
+}
+
 bool CGameObject::GetInteractivable()
 {
 	return interactivable;
@@ -135,6 +150,20 @@ bool CGameObject::GetInteractivable()
 
 void CGameObject::SetInteractivable(bool val) {
 	interactivable = val;
+}
+
+bool CGameObject::GetInvisible()
+{
+	return invisible;
+}
+
+void CGameObject::SetInvisible(bool val) {
+	invisible = val;
+}
+
+bool CGameObject::GetIsActive()
+{
+	return isActive;
 }
 
 void CGameObject::RenderBoundingBox()
@@ -152,7 +181,7 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(x, y, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
+	CGame::GetInstance()->Draw(x, y, bbox, rect.left, rect.top, rect.right, rect.bottom, 70);
 }
 
 

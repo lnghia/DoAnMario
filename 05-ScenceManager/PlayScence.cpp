@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "PlayScence.h"
 #include "Utils.h"
@@ -36,8 +37,13 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_BRICK	1
 #define OBJECT_TYPE_GOOMBA	2
 #define OBJECT_TYPE_KOOPAS	3
+#define OBJECT_TYPE_PIRANHAPLANT 10
 
 #define OBJECT_TYPE_JUST_FOR_SHOW 8
+
+#define OBJECT_TYPE_INVISIBLE	11
+#define OBJECT_TYPE_PIPE_HITBOX 12
+#define OBJECT_TYPE_PIPE_FOR_SHOW 13
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -151,6 +157,10 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 	CGameObject* obj = NULL;
 
+	if (object_type == 10) {
+		int tmp = 1;
+	}
+
 	switch (object_type)
 	{
 	case OBJECT_TYPE_MARIO:
@@ -179,6 +189,42 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	break;
 	case OBJECT_TYPE_JUST_FOR_SHOW:
 		obj = new JustForShow(); break;
+	case OBJECT_TYPE_INVISIBLE: {
+		float width = atof(tokens[4].c_str());
+		float height = atof(tokens[5].c_str());
+
+		obj = new InteractivableTransObject(width, height);
+
+		break;
+	}
+	case OBJECT_TYPE_PIPE_HITBOX: {
+		float width = atof(tokens[4].c_str());
+		float height = atof(tokens[5].c_str());
+
+		obj = new PipeHitBox(width, height);
+
+		break;
+	}
+	case OBJECT_TYPE_PIPE_FOR_SHOW: {
+		obj = new JustForShow();
+
+		obj->SetRenderPriority(30);
+
+		break;
+	}
+	case OBJECT_TYPE_PIRANHAPLANT: {
+		float pipeX = atof(tokens[4].c_str());
+		float pipeY = atof(tokens[5].c_str());
+		float pipeWidth = atof(tokens[6].c_str());
+		float pipeHeight = atof(tokens[7].c_str());
+
+		if (!player) {
+			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
+		}
+
+		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player);
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -187,19 +233,7 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	// General object setup
 	obj->SetPosition(x, y);
 
-	if (x == 112 && y == 272) {
-		int tmp = 1;
-	}
-
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-
-	float t1, t2;
-
-	obj->GetPosition(t1, t2);
-
-	if (t1 == 0 && t2 == 416) {
-		t1 = 0;
-	}
 
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
@@ -297,18 +331,36 @@ void CPlayScene::Update(DWORD dt)
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 
+	CGame* game = CGame::GetInstance();
+
 	vector<LPGAMEOBJECT> coObjects;
 	/*for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
 	}*/
 
-	for (size_t i = 0; i < objects.size(); i++)
+	vector<LPGAMEOBJECT> objectsInCamera = Grid::GetInstance()->GetObjectsInCamera();
+
+	for (auto& obj : objectsInCamera) {
+		coObjects.clear();
+		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(obj);
+		if (dynamic_cast<FireBall*>(obj)) {
+			int tmp = 1;
+		}
+		obj->Update(dt, &coObjects);
+		if (!obj->GetIsActive()) {
+			Grid::GetInstance()->clearObjFromGrid(obj);
+			/*delete obj;
+			obj = NULL;*/
+		}
+	}
+
+	/*for (size_t i = 0; i < objectsInCamera.size(); i++)
 	{
 		coObjects.clear();
 		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(objects[i]);
  		objects[i]->Update(dt, &coObjects);
-	}
+	}*/
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
@@ -318,8 +370,6 @@ void CPlayScene::Update(DWORD dt)
 	float _cx, _cy;
 
 	player->GetPosition(cx, cy);
-
-	CGame* game = CGame::GetInstance();
 
 	_cx = game->GetCamX();
 	_cy = game->GetCamY();
@@ -346,10 +396,26 @@ void CPlayScene::Render()
 {
 	Map::getInstance()->Draw();
 
-	for (int i = 0; i < objects.size(); i++)
-		if (objects[i] != player) {
+	/*for (int i = 0; i < objects.size(); i++)
+		if (objects[i] != player && !objects[i]->GetInvisible()) {
 			objects[i]->Render();
+		}*/
+
+	vector<LPGAMEOBJECT> objectsInCamera = Grid::GetInstance()->GetObjectsInCamera();
+
+	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
+
+	for (auto& obj : objectsInCamera) {
+		if (obj != player && !obj->GetInvisible()) {
+			obj->Render();
 		}
+	}
+
+	/*for (auto& obj : objects) {
+		if (obj != player && !obj->GetInvisible()) {
+			obj->Render();
+		}
+	}*/
 
 	player->Render();
 }

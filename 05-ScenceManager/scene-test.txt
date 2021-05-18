@@ -5,12 +5,22 @@
 400	textures\man_1.png	224	163	216
 30	textures\tiles.png	255	128	192
 40	textures\misc2.png	4	193	170
-
+110	textures\enemies-3reflect.png	163	73	164
+100	textures\enemies-3.png	163	73	164
 
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]
 
+# Fireball
+60010	240	554	248	562	0
+60011	258	553	266	562	0
+60012	258	574	266	582	0
+60013	240	573	248	582	0
+60014	198	554	206	562	0
+60015	180	553	188	562	0
+60016	180	574	188	582	0
+60017	198	573	206	582	0
 
 # transparent flower
 30000	34	34	50	50	400
@@ -71,6 +81,28 @@
 # walk
 10032	155	0	170	15	0
 10033	125	0	139	15	0
+
+# PIRANHA PLANT
+70003	150	126	166	158	110
+70004	167	126	183	158	110
+70005	184	126	200	158	110
+70006	201	126	217	158	110
+
+70007	273	126	289	158	100
+70008	256	126	272	158	100
+70009	239	126	255	158	100
+70010	222	126	238	158	100
+
+# PIPE
+# top left pipe
+70011	324	52	340	68	30
+# top right pipe
+70012	341	52	357	68	30
+# bottom left pipe
+70013	324	69	340	85	30
+# bottom right pipe
+70014	341	69	357	85	30
+	
 
 #QUESTION BRICK
 40001	300	117	316	133	20
@@ -177,6 +209,34 @@
 #right top
 50001	50001	100
 
+#PIRANHA PLANT
+#LEFT BOT
+73	70003	100
+74	70003	100	70004	100
+#LEFT TOP
+75	70005	100
+76	70005	100	70006	100
+#RIGHT BOT
+77	70007	100
+78	70007	100	70008	100
+#RIGHT TOP
+79	70009	100
+80	70009	100	70010	100
+
+# ---------Fireball-------
+60010	60010	50	60011	50	60012	50	60013	50
+60011	60014	50	60015	50	60016	50	60017	50
+
+# ---------PIPE-----------
+# top left pipe
+70011	70011	100
+# top right pipe
+70012	70012	100
+# bottom left pipe
+70013	70013	100
+# bottom right pipe
+70014	70014	100
+
 # ==== QUESTION BRICK =========
 602	40001	1000	40001	100	40002	100	40003	100	40004	100
 
@@ -235,6 +295,22 @@
 50	50000
 #right top
 51	50001
+
+# Piranha Plant
+52	73	74	75	76	77	78	79	80
+
+# ---------PIPE-----------
+# top left pipe
+711	70011
+# top right pipe
+712	70012
+# bottom left pipe
+713	70013	
+# bottom right pipe
+714	70014
+
+# ---------Fireball-------
+610	60010	60011
 
 [MAP]
 # matrixFilePath	mapHeight	mapWidth	tileHeight	tileWidth	textureId	tilesPerRow	tilesPerColumn
@@ -660,6 +736,22 @@ maps\map_indexes_man1.txt	433	2816	16	16	400	16	8
 8	2416	288	51
 8	2432	304	51
 8	2448	384	51
+
+# piranha plant (which can shoot)
+10	360	368	52	352	368	30	32
+
+# pipe
+13	352	368	711
+13	368	368	712
+13	352	384	713
+13	352	400	713
+13	368	384	714
+13	368	400	714
+
+# ------Interactivable Invisible Objects--------------
+# PIPE
+12	352	368	9	32	16
+12	353	384	9	30	32
 
 # BRICK 
 1	0	135	22

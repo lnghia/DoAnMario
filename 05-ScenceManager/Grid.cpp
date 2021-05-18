@@ -35,7 +35,11 @@ void Grid::moveObj(LPGAMEOBJECT obj, RECT oldBoundingBox)
 	vector<int> beforeMovingCells = getOverLapCells(oldBoundingBox);
 	vector<int> afterMovingCells = getOverLapCells(obj);
 
-
+	for (int r = beforeMovingCells[2]; r <= beforeMovingCells[3]; ++r) {
+		for (int c = beforeMovingCells[0]; r <= beforeMovingCells[1]; ++c) {
+			
+		}
+	}
 }
 
 void Grid::clearObjFromGrid(LPGAMEOBJECT obj) {
@@ -46,20 +50,14 @@ void Grid::clearObjFromGrid(LPGAMEOBJECT obj) {
 	int row = (int)y % rowNum;
 	int col = (int)x % colNum;
 
-	if ((col + 1 < colNum && grid[row][col + 1].find(obj) != grid[row][col + 1].end()) ||
-		(row + 1 < rowNum && grid[row + 1][col].find(obj) != grid[row + 1][col].end())) {
+	vector<int> overlapseCells = getOverLapCells(obj);
 
-		for (int r = row; r < grid.size(); ++r) {
-			for (int c = col; c < grid.size(); ++c) {
-				if (grid[row][col].find(obj) != grid[row][col].end()) {
-					grid[row][col].erase(obj);
-				}
-				else {
-					break;
-				}
+	for (unsigned int r = overlapseCells[TOP]; r <= overlapseCells[BOTTOM]; ++r) {
+		for (unsigned int c = overlapseCells[LEFT]; c <= overlapseCells[RIGHT]; ++c) {
+			if (grid[r][c].find(obj) != grid[r][c].end()) {
+				grid[r][c].erase(obj);
 			}
 		}
-
 	}
 }
 
@@ -234,16 +232,60 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 {
 	float bpLeft, bpTop, bpRight, bpBottom;
 	vector<LPGAMEOBJECT> result;
+	unordered_set<LPGAMEOBJECT> uniqueChecker;
 
 	GetBroadPhaseBox(obj, bpLeft, bpTop, bpRight, bpBottom);
 
 	vector<int> overLapCells = getOverLapCells(bpLeft, bpTop, bpRight, bpBottom);
 
-	for (int r = overLapCells[2]; r <= overLapCells[3]; ++r) {
-		for (int c = overLapCells[0]; c <= overLapCells[1]; ++c) {
+	float vx, vy;
+
+	obj->GetSpeed(vx, vy);
+
+	if (!vx && !vy) {
+		return {};
+	}
+
+	overLapCells[TOP] -= (overLapCells[TOP] > 0);
+	overLapCells[BOTTOM] += (overLapCells[BOTTOM] + 1 < rowNum);
+	overLapCells[LEFT] -= (overLapCells[LEFT] > 0);
+	overLapCells[RIGHT] += (overLapCells[RIGHT] + 1 < colNum);
+
+	for (int r = overLapCells[TOP]; r <= overLapCells[BOTTOM]; ++r) {
+		for (int c = overLapCells[LEFT]; c <= overLapCells[RIGHT]; ++c) {
 			for (auto& _obj : grid[r][c]) {
-				if (obj != _obj && _obj->GetInteractivable()) {
+				if (obj != _obj && _obj->GetInteractivable() && uniqueChecker.find(_obj)==uniqueChecker.end()) {
 					result.push_back(_obj);
+					uniqueChecker.insert(_obj);
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+vector<LPGAMEOBJECT> Grid::GetObjectsInCamera()
+{
+	vector<LPGAMEOBJECT> result;
+	unordered_set<LPGAMEOBJECT> uniqueChecker;
+
+	CGame* game = CGame::GetInstance();
+
+	float camX = game->GetCamX();
+	float camY = game->GetCamY();
+
+	int scrW = game->GetScreenWidth();
+	int scrH = game->GetScreenHeight();
+
+	vector<int> overlapCells = getOverLapCells(camX, camY, camX + scrW, camY + scrH);
+
+	for (int r = overlapCells[TOP]; r <= overlapCells[BOTTOM]; ++r) {
+		for (int c = overlapCells[LEFT]; c <= overlapCells[RIGHT]; ++c) {
+			for (auto& _obj : grid[r][c]) {
+				if (uniqueChecker.find(_obj) == uniqueChecker.end()) {
+					result.push_back(_obj);
+					uniqueChecker.insert(_obj);
 				}
 			}
 		}

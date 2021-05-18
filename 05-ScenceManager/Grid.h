@@ -75,6 +75,9 @@ public:
 
 	vector<LPGAMEOBJECT> GetPotentialCollidableObjects(LPGAMEOBJECT obj);
 
+
+	vector<LPGAMEOBJECT> GetObjectsInCamera();
+
 	static Grid* GetInstance();
 };
 

@@ -8,6 +8,9 @@
 #include "Mario.h"
 #include "Goomba.h"
 #include "Koopas.h"
+#include "PiranhaPlant.h"
+#include "InteractivableTransObject.h"
+#include "PipeHitBox.h"
 
 
 class CPlayScene: public CScene
