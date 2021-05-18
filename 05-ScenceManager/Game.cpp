@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "PlayScence.h"
+#include "Grid.h"
 
 CGame * CGame::__instance = NULL;
 
@@ -56,6 +57,8 @@ void CGame::Init(HWND hWnd)
 
 	// Initialize sprite helper from Direct3DX helper library
 	D3DXCreateSprite(d3ddv, &spriteHandler);
+
+	Grid::GetInstance();
 
 	OutputDebugString(L"[INFO] InitGame done;\n");
 }
@@ -208,6 +211,25 @@ CGame::~CGame()
 	Standard sweptAABB implementation
 	Source: GameDev.net
 */
+
+void CGame::GetBroadPhaseBox(LPGAMEOBJECT obj, float& left, float& top, float& right, float& bottom) {
+	float vx, vy;
+	float l, t, r, b;
+	DWORD dt;
+
+	obj->GetSpeed(vx, vy);
+	obj->GetBoundingBox(l, t, r, b);
+	dt = obj->GetDeltaTime();
+
+	float dx = vx * dt;
+	float dy = vy * dt;
+
+	left = dx > 0 ? l : l + dx;
+	top = dy > 0 ? t : t + dy;
+	right = dx > 0 ? r + dx : r;
+	bottom = dy > 0 ? b + dy : b;
+}
+
 void CGame::SweptAABB(
 	float ml, float mt,	float mr, float mb,			
 	float dx, float dy,			

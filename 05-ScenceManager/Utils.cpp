@@ -74,3 +74,8 @@ vector<int> stringToVectorOfInt(string& str, string delimeters)
 
 	return ans;
 }
+
+bool cmp(LPGAMEOBJECT a, LPGAMEOBJECT b)
+{
+	return a->GetRenderPriority() < b->GetRenderPriority();
+}

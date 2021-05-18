@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <d3dx9.h>
 #include <vector>
+#include <unordered_set>
 
 #include "Sprites.h"
 #include "Animations.h"
@@ -58,15 +59,37 @@ public:
 
 	int state;
 
+	bool canBeStandOn = 0;
+
 	DWORD dt; 
 
 	LPANIMATION_SET animation_set;
+
+	bool interactivable = 1;
+	bool invisible = 0;
+	bool isActive = 1;
+
+	unsigned int renderPriority = 0;
 
 public: 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetPosition(float &x, float &y) { x = this->x; y = this->y; }
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
+	void SetCanBeStandOn(bool val);
+	bool GetCanBeStandOn();
+	DWORD GetDeltaTime();
+
+	void SetRenderPriority(unsigned int p);
+	unsigned int GetRenderPriority();
+
+	bool GetInteractivable();
+	void SetInteractivable(bool val);
+
+	bool GetInvisible();
+	void SetInvisible(bool val);
+
+	bool GetIsActive();
 
 	int GetState() { return this->state; }
 
@@ -92,7 +115,6 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects = NULL);
 	virtual void Render() = 0;
 	virtual void SetState(int state) { this->state = state; }
-
 
 	~CGameObject();
 };

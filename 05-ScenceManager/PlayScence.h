@@ -3,10 +3,14 @@
 #include "Textures.h"
 #include "Scence.h"
 #include "GameObject.h"
+#include "JustForShow.h"
 #include "Brick.h"
 #include "Mario.h"
 #include "Goomba.h"
 #include "Koopas.h"
+#include "PiranhaPlant.h"
+#include "InteractivableTransObject.h"
+#include "PipeHitBox.h"
 
 
 class CPlayScene: public CScene
@@ -16,13 +20,14 @@ protected:
 
 	vector<LPGAMEOBJECT> objects;
 
-	void _ParseSection_TEXTURES(string line);
-	void _ParseSection_SPRITES(string line);
-	void _ParseSection_ANIMATIONS(string line);
-	void _ParseSection_ANIMATION_SETS(string line);
-	void _ParseSection_OBJECTS(string line);
+	void _ParseSection_TEXTURES(const string& line);
+	void _ParseSection_SPRITES(const string& line);
+	void _ParseSection_ANIMATIONS(const string& line);
+	void _ParseSection_ANIMATION_SETS(const string& line);
+	void _ParseSection_OBJECTS(const string& line);
+	void _ParseSection_GRID(const string& line);
+	void _ParseSection_MAP(const string& line);
 
-	
 public: 
 	CPlayScene(int id, LPCWSTR filePath);
 
