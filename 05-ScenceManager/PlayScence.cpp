@@ -10,6 +10,8 @@
 #include "Map.h"
 #include "Grid.h"
 
+#include "ObjectCheatSheet.h"
+
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
@@ -22,32 +24,6 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	Load scene resources from scene file (textures, sprites, animations and objects)
 	See scene1.txt, scene2.txt for detail format specification
 */
-
-#define MAP 999
-#define GRID 9999
-
-#define SCENE_SECTION_UNKNOWN -1
-#define SCENE_SECTION_TEXTURES 2
-#define SCENE_SECTION_SPRITES 3
-#define SCENE_SECTION_ANIMATIONS 4
-#define SCENE_SECTION_ANIMATION_SETS	5
-#define SCENE_SECTION_OBJECTS	6
-
-#define OBJECT_TYPE_MARIO	0
-#define OBJECT_TYPE_BRICK	1
-#define OBJECT_TYPE_GOOMBA	2
-#define OBJECT_TYPE_KOOPAS	3
-#define OBJECT_TYPE_PIRANHAPLANT 10
-
-#define OBJECT_TYPE_JUST_FOR_SHOW 8
-
-#define OBJECT_TYPE_INVISIBLE	11
-#define OBJECT_TYPE_PIPE_HITBOX 12
-#define OBJECT_TYPE_PIPE_FOR_SHOW 13
-
-#define OBJECT_TYPE_PORTAL	50
-
-#define MAX_SCENE_LINE 1024
 
 
 void CPlayScene::_ParseSection_TEXTURES(const string& line)
@@ -175,6 +151,14 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
+	case OBJECT_TYPE_QBRICK: {
+		int hiddenItemType = atoi(tokens[4].c_str());
+		int	hiddenItemAni = atoi(tokens[5].c_str());
+
+		obj = new QBrick(hiddenItemType, hiddenItemAni);
+
+		break;
+	}
 	case OBJECT_TYPE_BRICK: 
 		obj = new CBrick(); 
 		break;
@@ -209,6 +193,14 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		obj = new JustForShow();
 
 		obj->SetRenderPriority(30);
+
+		break;
+	}
+	case OBJECT_TYPE_COLOR_BRICK_HITBOX: {
+		float width = atof(tokens[4].c_str());
+		float height = atof(tokens[5].c_str());
+
+		obj = new ColorBrickHitBox(width, height);
 
 		break;
 	}
@@ -341,19 +333,38 @@ void CPlayScene::Update(DWORD dt)
 
 	vector<LPGAMEOBJECT> objectsInCamera = Grid::GetInstance()->GetObjectsInCamera();
 
+	if (player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 700) {
+		/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+		player->Update(dt, &coObjects);*/
+
+		return;
+	}
+
+	if (player->GetState() == MARIO_STATE_DIE) {
+		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+		player->Update(dt, &coObjects);
+		return;
+	}
+
 	for (auto& obj : objectsInCamera) {
 		coObjects.clear();
-		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(obj);
-		if (dynamic_cast<FireBall*>(obj)) {
-			int tmp = 1;
-		}
+		if(obj->GetInteractivable())
+			coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(obj);
 		obj->Update(dt, &coObjects);
+		/*if (dynamic_cast<Coin*>(obj)) {
+			int tmp = 1;
+		}*/
 		if (!obj->GetIsActive()) {
 			Grid::GetInstance()->clearObjFromGrid(obj);
 			/*delete obj;
 			obj = NULL;*/
 		}
+		/*if (!obj->GetIsActive() && dynamic_cast<FireBall*>(obj)) {
+			int tmp = 1;
+		}*/
 	}
+
+	//Grid::GetInstance()->cleanObjTrashBin();
 
 	/*for (size_t i = 0; i < objectsInCamera.size(); i++)
 	{
@@ -387,9 +398,10 @@ void CPlayScene::Update(DWORD dt)
 		cx = Map::getInstance()->getWidth() - game->GetScreenWidth() - 1;
 	}
 
-	DebugOut(L"[CAM POS]: %f %f\n", cx, cy);
+	//DebugOut(L"[CAM POS]: %f %f\n", cx, cy);
 
-	CGame::GetInstance()->SetCamPos(floor(cx), /*100.0f*/ floor(cy));
+	CGame::GetInstance()->SetCamPos(round(cx), /*100.0f*/ round(cy));
+	//CGame::GetInstance()->SetCamPos(cx, /*100.0f*/ cy);
 }
 
 void CPlayScene::Render()
@@ -406,6 +418,9 @@ void CPlayScene::Render()
 	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
 
 	for (auto& obj : objectsInCamera) {
+		/*if (dynamic_cast<Point*>(obj)) {
+			int tmp = 1;
+		}*/
 		if (obj != player && !obj->GetInvisible()) {
 			obj->Render();
 		}
@@ -438,6 +453,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	//DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
+	/*if (GetTickCount() - CGame::GetInstance()->player->GetUntouchableStart() < 700) {
+		return;
+	}*/
+
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
@@ -452,6 +471,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
+	/*if (GetTickCount() - CGame::GetInstance()->player->GetUntouchableStart() < 700) {
+		return;
+	}*/
+
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 

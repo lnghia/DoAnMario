@@ -5,12 +5,27 @@
 400	textures\man_1.png	224	163	216
 30	textures\tiles.png	255	128	192
 40	textures\misc2.png	4	193	170
+50	textures\misc-2.png	166	185	255
+60	textures\misc-6.png	255	150	255
 110	textures\enemies-3reflect.png	163	73	164
 100	textures\enemies-3.png	163	73	164
 
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]
+
+#POINT
+# 100
+90011	61	89	72	97	60
+
+#COIN
+90000	171	137	185	153	30
+90001	370	100	384	116	50
+90002	353	100	367	116	50
+#COIN SPARKLE
+#20014	291	100	305	116	60
+#20015	304	100	318	116	60
+#20016	316	100	330	116	60
 
 # Fireball
 60010	240	554	248	562	0
@@ -110,6 +125,65 @@
 40003	336	117	352	133	20
 40004	355	117	370	133	20
 
+# shadow box
+# right top corner
+40005	103	69	119	85	30
+# vertical
+40006	103	86	119	102	30
+# right bottom corner
+40007	103	103	119	119	30
+# horizontally
+40008	86	103	102	119	30
+# left bottom corner
+40009	69	103	85	119	30
+
+# color brick corner
+# top left corner white
+80000	1	1	17	17	30
+# top right corner white
+80001	35	1	51	17	30
+# bottom left corner white
+80002	1	35	17	51	30
+# bottom right corner white
+80003	35	35	51	51	30
+
+# top left corner green
+80004	52	1	68	17	30
+# top right corner green
+80005	86	1	102	17	30
+# bottom left corner green
+80006	52	35	68	51	30
+# bottom right corner green
+80007	86	35	102	51	30
+
+# top left corner pink
+80008	1	52	17	68	30
+# top right corner pink
+80009	35	52	51	68	30
+# bottom left corner pink
+80010	1	86	17	102	30
+# bottom right corner pink
+80011	35	86	51	102	30
+
+# top left corner blue
+80012	52	52	68	68	30
+# top right corner blue
+80013	86	52	102	68	30
+# bottom left corner blue
+80014	52	86	68	102	30
+# bottom right corner blue
+80015	86	86	102	102	30
+
+# center blue
+80016	69	69	85	85	30
+# center pink
+80017	18	69	34	85	30
+# center green
+80018	69	18	85	34	30
+# center white
+80019	18	18	34	34	30
+
+
 #BRICK
 20001	239	222	255	238	30
 #LEFT BRICK
@@ -138,6 +212,16 @@
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
 # ==== MARIO =========
+
+# big to small right
+10	10001	10	10021	10
+# big to small left
+11	10011	100	10031	100
+# small to big right
+12	10021	100	10001	100
+# small to big left
+13	10031	100	10011	100
+
 #idle BIG right
 400	10001	100
 #idle BIG left
@@ -237,6 +321,72 @@
 # bottom right pipe
 70014	70014	100
 
+# shadow box
+# right top corner
+40005	40005	100
+# vertical
+40006	40006	100
+# right bottom corner
+40007	40007	100
+# horizontally
+40008	40008	100
+# left bottom corner
+40009	40009	100
+
+# color brick corner
+# top left corner white
+80000	80000	100
+# top right corner white
+80001	80001	100
+# bottom left corner white
+80002	80002	100
+# bottom right corner white
+80003	80003	100
+
+# top left corner green
+80004	80004	100
+# top right corner green
+80005	80005	100
+# bottom left corner green
+80006	80006	100
+# bottom right corner green
+80007	80007	100
+
+# top left corner pink
+80008	80008	100
+# top right corner pink
+80009	80009	100
+# bottom left corner pink
+80010	80010	100
+# bottom right corner pink
+80011	80011	100
+
+# top left corner blue
+80012	80012	100
+# top right corner blue
+80013	80013	100
+# bottom left corner blue
+80014	80014	100
+# bottom right corner blue
+80015	80015	100
+
+# center blue
+80016	80016	100
+# center pink
+80017	80017	100
+# center green
+80018	80018	100
+# center white
+80019	80019	100
+
+#COIN
+90000	90000	200	90001	100	90002	100
+#614	20014	100	20015	100	20016	100
+
+#POINT
+# 100
+90011	90011	100
+
 # ==== QUESTION BRICK =========
 602	40001	1000	40001	100	40002	100	40003	100	40004	100
 
@@ -245,7 +395,7 @@
 #
 [ANIMATION_SETS]
 # MARIO
-1	400	401	402	403	500	501	502	503	599
+1	400	401	402	403	500	501	502	503	599	10	11	12	13
 # QUESTION BRICK 
 22	602
 
@@ -311,6 +461,72 @@
 
 # ---------Fireball-------
 610	60010	60011
+
+# shadow box
+# right top corner
+45	40005
+# vertical
+46	40006
+# right bottom corner
+47	40007
+# horizontally
+48	40008
+# left bottom corner
+49	40009
+
+# color brick corner
+# top left corner white
+80	80000
+# top right corner white
+81	80001
+# bottom left corner white
+82	80002
+# bottom right corner white
+83	80003
+
+# top left corner green
+84	80004
+# top right corner green
+85	80005
+# bottom left corner green
+86	80006
+# bottom right corner green
+87	80007
+
+# top left corner pink
+88	80008
+# top right corner pink
+89	80009
+# bottom left corner pink
+810	80010
+# bottom right corner pink
+811	80011
+
+# top left corner blue
+812	80012
+# top right corner blue
+813	80013
+# bottom left corner blue
+814	80014
+# bottom right corner blue
+815	80015
+
+# center blue
+816	80016
+# center pink
+817	80017
+# center green
+818	80018
+# center white
+819	80019
+
+#COIN
+90	90000
+
+#POINT
+# 100
+911	90011
+
 
 [MAP]
 # matrixFilePath	mapHeight	mapWidth	tileHeight	tileWidth	textureId	tilesPerRow	tilesPerColumn
@@ -748,10 +964,90 @@ maps\map_indexes_man1.txt	433	2816	16	16	400	16	8
 13	368	384	714
 13	368	400	714
 
+# center blue brick
+13	272	368	816
+13	288	368	816
+13	288	384	816
+13	288	400	816
+13	272	400	816
+
+# color brick corner
+13	240	368	88
+13	272	368	89
+13	240	400	810
+13	272	400	811
+
+13	272	336	812
+13	304	336	813
+13	304	400	815
+
+# shadow
+13	288	368	45
+13	288	384	46
+13	288	400	46
+13	320	336	45
+13	320	352	46
+13	320	368	46
+13	320	384	46
+13	320	400	46
+
 # ------Interactivable Invisible Objects--------------
 # PIPE
 12	352	368	9	32	16
 12	353	384	9	30	32
+
+#	1792	384	9	32	16
+#	1793	400	9	30	16
+#	1856	368	9	32	16
+#	1857	384	9	30	32
+	
+#	2257	384	9	30	33
+
+#	2320	384	9	32	16
+#	2321	400	9	30	16
+
+#	2257	128	9	30	176
+
+# color brick hitbox
+14	240	368	9	48	16
+14	272	336	9	48	16
+
+#	400	360	9	80	48
+#	464	336	9	64	33
+#	512	304	9	64	32
+#	512	384	9	96	32
+
+#	1312	144	9	2816	656
+	
+#	1264	384	9	112	32
+#	1296	352	9	112	32
+#	1328	320	9	112	32
+
+#	2144	368	9	48	48
+#	2176	272	9	48	96
+	
+
+# CLOUD BRICK
+
+#	1408	192
+#	1424	192
+#	1440	192
+#	1456	192
+
+#	1488	176
+#	1504	176
+#	1520	176
+#	1536	176
+#	1552	176
+#	1568	176
+#	1584	176
+#	1600	176
+#	1616	176
+#	1632	176
+#	1648	176
+#	1664	176
+#	1680	176
+	
 
 # BRICK 
 1	0	135	22
@@ -761,3 +1057,24 @@ maps\map_indexes_man1.txt	433	2816	16	16	400	16	8
 1	100	150	22
 1	115	150	22
 1	130	150	22
+
+400	368	80	48
+
+# QBRICK
+
+15	176	352	22	16	90
+15	192	352	22	16	90
+15	224	304	22	16	90
+15	240	304	22	16	90
+15	416	320	22	16	90
+15	656	384	22	16	90
+15	704	352	22	16	90
+15	1472	368	22	16	90
+	
+
+
+
+
+
+
+

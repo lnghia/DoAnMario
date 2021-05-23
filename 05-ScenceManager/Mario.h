@@ -13,6 +13,8 @@
 #define MARIO_STATE_WALKING_LEFT	200
 #define MARIO_STATE_JUMP			300
 #define MARIO_STATE_DIE				400
+#define MARIO_STATE_SMALL_TO_BIG	500
+#define MARIO_STATE_BIG_TO_SMALL	600
 
 #define MARIO_ANI_BIG_IDLE_RIGHT		0
 #define MARIO_ANI_BIG_IDLE_LEFT			1
@@ -23,6 +25,11 @@
 #define MARIO_ANI_BIG_WALKING_LEFT			5
 #define MARIO_ANI_SMALL_WALKING_RIGHT		6
 #define MARIO_ANI_SMALL_WALKING_LEFT		7
+
+#define MARIO_ANI_BIG_TO_SMALL_RIGHT	9
+#define MARIO_ANI_BIG_TO_SMALL_LEFT		10
+#define MARIO_ANI_SMALL_TO_BIG_RIGHT	11
+#define MARIO_ANI_SMALL_TO_BIG_LEFT		12
 
 #define MARIO_ANI_DIE				8
 
@@ -41,13 +48,15 @@
 class CMario : public CGameObject
 {
 	int level;
-	int untouchable;
+	bool untouchable;
 	DWORD untouchable_start;
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
 
 	bool isStanding;
+
+	int aniBigToSmallIndex = -1;
 public: 
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
@@ -55,10 +64,17 @@ public:
 
 	void SetState(int state);
 	void SetLevel(int l) { level = l; }
+	int GetLevel();
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
+
+	DWORD GetUntouchableStart();
+
+	bool GetUntouchable();
 
 	void SetIsStanding(bool val);
 	bool GetIsStanding();
+
+	void turnIntoSmall();
 
 	void Reset();
 

@@ -9,7 +9,6 @@ protected:
 	CKeyEventHandler * key_handler;
 	int id;
 	LPCWSTR sceneFilePath;
-
 public: 
 	CScene(int id, LPCWSTR filePath);
 
@@ -26,7 +25,6 @@ class CScenceKeyHandler : public CKeyEventHandler
 {
 protected: 
 	CScene * scence; 
-
 public:
 	virtual void KeyState(BYTE *states) = 0;
 	virtual void OnKeyDown(int KeyCode) = 0;

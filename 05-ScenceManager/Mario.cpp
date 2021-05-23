@@ -11,6 +11,8 @@
 #include "PiranhaPlant.h"
 #include "Brick.h"
 #include "PipeHitBox.h"
+#include "ColorBrickHitBox.h"
+#include "QBrick.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -28,6 +30,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
+
+	float _dx = dx, _dy = dy;
+
+	Grid::GetInstance()->clearObjFromGrid(this);
 
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
@@ -53,6 +59,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		x += dx;
 		y += dy;
+
+		/*Grid::GetInstance()->putObjectIntoGrid(this);
+		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+
+		return;*/
 	}
 	else
 	{
@@ -68,9 +79,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		//	x += nx*abs(rdx); 
 
 		// block every object first!
+		/*x += min_tx * dx + nx * 0.4f;
+		y += min_ty * dy + ny * 0.4f;*/
+
 		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.4f;
 
+		float temp = vy;
+		//if (nx != 0) vx = 0;
+		//if (ny != 0) vy = 0;
 
 		//
 		// Collision logic with other objects
@@ -102,7 +119,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							if (level > MARIO_LEVEL_SMALL)
 							{
-								level = MARIO_LEVEL_SMALL;
+								//level = MARIO_LEVEL_SMALL;
+								turnIntoSmall();
 								StartUntouchable();
 							}
 							else
@@ -116,27 +134,70 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			}
-			else if (dynamic_cast<FireBall*>(e->obj) || dynamic_cast<PiranhaPlant*>(e->obj)) {
-				if (e->nx != 0)
+			else if (dynamic_cast<PiranhaPlant*>(e->obj) || dynamic_cast<FireBall*>(e->obj)) {
+				if (dynamic_cast<FireBall*>(e->obj)) {
+					int tmp = 1;
+				}
+				if (untouchable == 0)
 				{
-					if (untouchable == 0)
+					if (level > MARIO_LEVEL_SMALL)
 					{
-						if (level > MARIO_LEVEL_SMALL)
-						{
-							level = MARIO_LEVEL_SMALL;
-							StartUntouchable();
-						}
-						else
-							SetState(MARIO_STATE_DIE);
+						//level = MARIO_LEVEL_SMALL;
+						turnIntoSmall();
+						StartUntouchable();
 					}
+					else
+						SetState(MARIO_STATE_DIE);
 				}
 			}
 			else if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj)) {
+				
+
+				_dx = _dy = 0;
+
 				if (nx != 0) vx = 0;
 				if (ny != 0) vy = 0;
+
+				/*Grid::GetInstance()->putObjectIntoGrid(this);
+				for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+
+				return;*/
+			}
+			else if (dynamic_cast<QBrick*>(e->obj)) {
+				if (nx != 0) vx = 0;
+				if (ny != 0) vy = 0;
+
+				if (e->ny > 0) {
+					QBrick* qBrick = dynamic_cast<QBrick*>(e->obj);
+
+					 qBrick->PopUpHiddenItem();
+				}
+			}
+			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
+				if (e->ny < 0) {
+					//x -= min_tx * dx + nx * 0.4f;
+					//y -= min_ty * dy + ny * 0.4f;
+
+
+					//y += vy * e->t;
+					if (ny) vy = 0;
+				}
+				else {
+					x += _dx;
+					y += _dy;
+				}
 			}
 		}
 	}
+
+	/*x += _dx;
+	y += _dy;*/
+
+	Grid::GetInstance()->putObjectIntoGrid(this);
+
+	/*if (state != MARIO_STATE_DIE) {
+		Grid::GetInstance()->putObjectIntoGrid(this);
+	}*/
 
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
@@ -147,7 +208,7 @@ void CMario::Render()
 	int ani = -1;
 	if (state == MARIO_STATE_DIE)
 		ani = MARIO_ANI_DIE;
-	else
+	else {
 		if (level == MARIO_LEVEL_BIG)
 		{
 			if (vx == 0)
@@ -170,9 +231,36 @@ void CMario::Render()
 				ani = MARIO_ANI_SMALL_WALKING_RIGHT;
 			else ani = MARIO_ANI_SMALL_WALKING_LEFT;
 		}
+	}
+
 
 	int alpha = 255;
-	if (untouchable) alpha = 128;
+
+	if (untouchable) {
+		alpha = 128;
+		//animation_set->at(ani)->Render(x, y, alpha);
+		//while (GetTickCount() - untouchable_start < 200) {
+		//	//alpha = (alpha == 255) ? 128 : 255;
+		//	/*animation_set->at(ani)->Render(x, y, alpha);*/
+		//}
+		/*if (GetTickCount() - untouchable_start < 1500 && ani != MARIO_ANI_BIG_TO_SMALL_RIGHT)
+			if (state == MARIO_STATE_BIG_TO_SMALL) {
+				ani = (nx > 0) ? MARIO_ANI_BIG_TO_SMALL_RIGHT : MARIO_ANI_BIG_TO_SMALL_LEFT;
+			}*/
+		//ani = (nx > 0) ? MARIO_ANI_SMALL_IDLE_RIGHT : MARIO_ANI_SMALL_IDLE_LEFT;
+		/*if (GetTickCount() - untouchable_start < 1500) {
+			if (state == MARIO_STATE_BIG_TO_SMALL) {
+				ani = (nx > 0) ? MARIO_ANI_BIG_TO_SMALL_RIGHT : MARIO_ANI_BIG_TO_SMALL_LEFT;
+				int _y = (aniBigToSmallIndex == -1 || 0) ? y - (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT) : y;
+				animation_set->at(ani)->_Render(x, _y, aniBigToSmallIndex, alpha);
+
+				return;
+			}
+		}*/
+	}
+	/*else {
+		aniBigToSmallIndex = -1;
+	}*/
 
 	animation_set->at(ani)->Render(x, y, alpha);
 
@@ -210,6 +298,11 @@ void CMario::SetState(int state)
 	}
 }
 
+int CMario::GetLevel()
+{
+	return level;
+}
+
 void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	left = x;
@@ -227,6 +320,16 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 }
 
+DWORD CMario::GetUntouchableStart()
+{
+	return untouchable_start;
+}
+
+bool CMario::GetUntouchable()
+{
+	return untouchable;
+}
+
 void CMario::SetIsStanding(bool val)
 {
 	isStanding = val;
@@ -234,6 +337,13 @@ void CMario::SetIsStanding(bool val)
 
 bool CMario::GetIsStanding() {
 	return isStanding;
+}
+
+void CMario::turnIntoSmall()
+{
+	level = MARIO_LEVEL_SMALL;
+	y += (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
+	//SetState(MARIO_STATE_BIG_TO_SMALL);
 }
 
 /*

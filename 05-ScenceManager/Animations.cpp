@@ -42,6 +42,30 @@ void CAnimation::Render(float x, float y, int alpha)
 	frames[currentFrame]->GetSprite()->Draw(x, y, alpha);
 }
 
+void CAnimation::_Render(float x, float y, int& ind, int alpha)
+{
+	DWORD now = GetTickCount();
+
+	if (ind == -1)
+	{
+		lastFrameTime = now;
+		ind = 0;
+	}
+	else
+	{
+		DWORD t = frames[ind]->GetTime();
+		if (now - lastFrameTime > t)
+		{
+			ind++;
+			lastFrameTime = now;
+			ind %= frames.size();
+			//if (ind == frames.size()) ind = 0;
+		}
+	}
+
+	frames[ind]->GetSprite()->Draw(x, y, alpha);
+}
+
 CAnimations * CAnimations::__instance = NULL;
 
 CAnimations * CAnimations::GetInstance()
