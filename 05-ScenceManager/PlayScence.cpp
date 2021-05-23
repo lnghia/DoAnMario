@@ -341,8 +341,9 @@ void CPlayScene::Update(DWORD dt)
 	}
 
 	if (player->GetState() == MARIO_STATE_DIE) {
-		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+		//coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
 		player->Update(dt, &coObjects);
+		
 		return;
 	}
 

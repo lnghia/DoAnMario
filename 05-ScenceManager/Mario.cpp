@@ -14,6 +14,8 @@
 #include "ColorBrickHitBox.h"
 #include "QBrick.h"
 
+#include "Map.h"
+
 CMario::CMario(float x, float y) : CGameObject()
 {
 	level = MARIO_LEVEL_BIG;
@@ -28,6 +30,10 @@ CMario::CMario(float x, float y) : CGameObject()
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (y > Map::getInstance()->getHeight()) {
+		Reset();
+	}
+
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
