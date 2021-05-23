@@ -11,6 +11,7 @@
 #include <dinput.h>
 
 #include "Scence.h"
+#include "GameObject.h"
 
 using namespace std;
 
@@ -59,6 +60,8 @@ public:
 	void Load(LPCWSTR gameFile);
 	LPSCENE GetCurrentScene() { return scenes[current_scene]; }
 	void SwitchScene(int scene_id);
+
+	void GetBroadPhaseBox(LPGAMEOBJECT obj, float& left, float& top, float& right, float& bottom);
 
 	int GetScreenWidth() { return screen_width; }
 	int GetScreenHeight() { return screen_height; }

@@ -65,6 +65,12 @@ public:
 
 	LPANIMATION_SET animation_set;
 
+	bool interactivable = 1;
+	bool invisible = 0;
+	bool isActive = 1;
+
+	unsigned int renderPriority = 0;
+
 public: 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
@@ -72,6 +78,18 @@ public:
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
 	void SetCanBeStandOn(bool val);
 	bool GetCanBeStandOn();
+	DWORD GetDeltaTime();
+
+	void SetRenderPriority(unsigned int p);
+	unsigned int GetRenderPriority();
+
+	bool GetInteractivable();
+	void SetInteractivable(bool val);
+
+	bool GetInvisible();
+	void SetInvisible(bool val);
+
+	bool GetIsActive();
 
 	int GetState() { return this->state; }
 

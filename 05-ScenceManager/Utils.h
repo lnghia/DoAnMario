@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <vector>
 
+#include "GameObject.h"
+
 
 using namespace std;
 
@@ -22,3 +24,5 @@ wstring ToWSTR(string st);
 LPCWSTR ToLPCWSTR(string st);
 
 vector<int> stringToVectorOfInt(string& str, string delimeters = "\t");
+
+bool cmp(LPGAMEOBJECT a, LPGAMEOBJECT b); 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "PlayScence.h"
 #include "Utils.h"
@@ -23,6 +24,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 */
 
 #define MAP 999
+#define GRID 9999
 
 #define SCENE_SECTION_UNKNOWN -1
 #define SCENE_SECTION_TEXTURES 2
@@ -35,13 +37,20 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_BRICK	1
 #define OBJECT_TYPE_GOOMBA	2
 #define OBJECT_TYPE_KOOPAS	3
+#define OBJECT_TYPE_PIRANHAPLANT 10
+
+#define OBJECT_TYPE_JUST_FOR_SHOW 8
+
+#define OBJECT_TYPE_INVISIBLE	11
+#define OBJECT_TYPE_PIPE_HITBOX 12
+#define OBJECT_TYPE_PIPE_FOR_SHOW 13
 
 #define OBJECT_TYPE_PORTAL	50
 
 #define MAX_SCENE_LINE 1024
 
 
-void CPlayScene::_ParseSection_TEXTURES(string line)
+void CPlayScene::_ParseSection_TEXTURES(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -56,7 +65,7 @@ void CPlayScene::_ParseSection_TEXTURES(string line)
 	CTextures::GetInstance()->Add(texID, path.c_str(), D3DCOLOR_XRGB(R, G, B));
 }
 
-void CPlayScene::_ParseSection_SPRITES(string line)
+void CPlayScene::_ParseSection_SPRITES(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -79,7 +88,7 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
 }
 
-void CPlayScene::_ParseSection_ANIMATIONS(string line)
+void CPlayScene::_ParseSection_ANIMATIONS(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -100,7 +109,7 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	CAnimations::GetInstance()->Add(ani_id, ani);
 }
 
-void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
+void CPlayScene::_ParseSection_ANIMATION_SETS(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -111,6 +120,10 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 	LPANIMATION_SET s = new CAnimationSet();
 
 	CAnimations* animations = CAnimations::GetInstance();
+
+	if (atoi(tokens[0].c_str()) == 35) {
+		int tmp = 1;
+	}
 
 	for (int i = 1; i < tokens.size(); i++)
 	{
@@ -126,7 +139,7 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 /*
 	Parse a line in section [OBJECTS]
 */
-void CPlayScene::_ParseSection_OBJECTS(string line)
+void CPlayScene::_ParseSection_OBJECTS(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -144,6 +157,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	CGameObject* obj = NULL;
 
+	if (object_type == 10) {
+		int tmp = 1;
+	}
+
 	switch (object_type)
 	{
 	case OBJECT_TYPE_MARIO:
@@ -158,7 +175,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
-	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
+	case OBJECT_TYPE_BRICK: 
+		obj = new CBrick(); 
+		break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_PORTAL:
 	{
@@ -168,6 +187,44 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CPortal(x, y, r, b, scene_id);
 	}
 	break;
+	case OBJECT_TYPE_JUST_FOR_SHOW:
+		obj = new JustForShow(); break;
+	case OBJECT_TYPE_INVISIBLE: {
+		float width = atof(tokens[4].c_str());
+		float height = atof(tokens[5].c_str());
+
+		obj = new InteractivableTransObject(width, height);
+
+		break;
+	}
+	case OBJECT_TYPE_PIPE_HITBOX: {
+		float width = atof(tokens[4].c_str());
+		float height = atof(tokens[5].c_str());
+
+		obj = new PipeHitBox(width, height);
+
+		break;
+	}
+	case OBJECT_TYPE_PIPE_FOR_SHOW: {
+		obj = new JustForShow();
+
+		obj->SetRenderPriority(30);
+
+		break;
+	}
+	case OBJECT_TYPE_PIRANHAPLANT: {
+		float pipeX = atof(tokens[4].c_str());
+		float pipeY = atof(tokens[5].c_str());
+		float pipeWidth = atof(tokens[6].c_str());
+		float pipeHeight = atof(tokens[7].c_str());
+
+		if (!player) {
+			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
+		}
+
+		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player);
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -180,17 +237,20 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
+	Grid::GetInstance()->putObjectIntoGrid(obj);
 }
 
-void CPlayScene::_ParseSection_GRID(string line)
+void CPlayScene::_ParseSection_GRID(const string& line)
 {
 	vector<string> tokens = split(line);
+
+	if (tokens.size() < 2) return;
 
 	// 1: cellWidth, 2: cellHeight
 	Grid::GetInstance()->load(stoi(tokens[0]), stoi(tokens[1]));
 }
 
-void CPlayScene::_ParseSection_MAP(string line)
+void CPlayScene::_ParseSection_MAP(const string& line)
 {
 	vector<string> tokens = split(line);
 
@@ -239,6 +299,9 @@ void CPlayScene::Load()
 		if (line == "[MAP]") {
 			section = MAP; continue;
 		}
+		if (line == "[GRID]") {
+			section = GRID; continue;
+		}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -252,6 +315,7 @@ void CPlayScene::Load()
 		case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
 		case MAP: _ParseSection_MAP(line); break;
+		case GRID: _ParseSection_GRID(line); break;
 		}
 	}
 
@@ -267,40 +331,93 @@ void CPlayScene::Update(DWORD dt)
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 
+	CGame* game = CGame::GetInstance();
+
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 1; i < objects.size(); i++)
+	/*for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
+	}*/
+
+	vector<LPGAMEOBJECT> objectsInCamera = Grid::GetInstance()->GetObjectsInCamera();
+
+	for (auto& obj : objectsInCamera) {
+		coObjects.clear();
+		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(obj);
+		if (dynamic_cast<FireBall*>(obj)) {
+			int tmp = 1;
+		}
+		obj->Update(dt, &coObjects);
+		if (!obj->GetIsActive()) {
+			Grid::GetInstance()->clearObjFromGrid(obj);
+			/*delete obj;
+			obj = NULL;*/
+		}
 	}
 
-	for (size_t i = 0; i < objects.size(); i++)
+	/*for (size_t i = 0; i < objectsInCamera.size(); i++)
 	{
-		objects[i]->Update(dt, &coObjects);
-	}
+		coObjects.clear();
+		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(objects[i]);
+ 		objects[i]->Update(dt, &coObjects);
+	}*/
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
 	// Update camera to follow mario
 	float cx, cy;
+	float _cx, _cy;
+
 	player->GetPosition(cx, cy);
 
-	CGame* game = CGame::GetInstance();
+	_cx = game->GetCamX();
+	_cy = game->GetCamY();
+
 	cx -= game->GetScreenWidth() / 2;
 	cy -= game->GetScreenHeight() / 2;
 
 	cx = (cx < 0) ? 0 : cx;
 	cy = (cy < 0) ? 0 : cy;
 
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	if (cy + game->GetScreenHeight() > Map::getInstance()->getHeight()) {
+		cy = Map::getInstance()->getHeight() - game->GetScreenHeight() - 1;
+	}
+	if (cx + game->GetScreenWidth() > Map::getInstance()->getWidth()) {
+		cx = Map::getInstance()->getWidth() - game->GetScreenWidth() - 1;
+	}
+
+	DebugOut(L"[CAM POS]: %f %f\n", cx, cy);
+
+	CGame::GetInstance()->SetCamPos(floor(cx), /*100.0f*/ floor(cy));
 }
 
 void CPlayScene::Render()
 {
 	Map::getInstance()->Draw();
 
-	for (int i = 0; i < objects.size(); i++)
-		objects[i]->Render();
+	/*for (int i = 0; i < objects.size(); i++)
+		if (objects[i] != player && !objects[i]->GetInvisible()) {
+			objects[i]->Render();
+		}*/
+
+	vector<LPGAMEOBJECT> objectsInCamera = Grid::GetInstance()->GetObjectsInCamera();
+
+	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
+
+	for (auto& obj : objectsInCamera) {
+		if (obj != player && !obj->GetInvisible()) {
+			obj->Render();
+		}
+	}
+
+	/*for (auto& obj : objects) {
+		if (obj != player && !obj->GetInvisible()) {
+			obj->Render();
+		}
+	}*/
+
+	player->Render();
 }
 
 /*
