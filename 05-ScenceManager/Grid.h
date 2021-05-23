@@ -27,6 +27,8 @@ class Grid
 	// first dimension is the row index, second dimension is column index
 	vector<vector<unordered_set<LPGAMEOBJECT>>> grid;
 
+	vector<LPGAMEOBJECT> noMoreNeeded;
+
 	int rowNum;
 	int colNum;
 
@@ -58,6 +60,10 @@ public:
 	void clearObjFromGrid(LPGAMEOBJECT obj);
 
 	void clearObjFromCell(LPGAMEOBJECT obj, int& row, int& col);
+
+	void ObjIntoTrash(LPGAMEOBJECT obj);
+	
+	void cleanObjTrashBin();
 
 	void unload();
 
