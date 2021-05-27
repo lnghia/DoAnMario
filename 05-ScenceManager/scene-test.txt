@@ -525,7 +525,7 @@
 
 #POINT
 # 100
-911	90011
+911 	90011
 
 
 [MAP]
@@ -540,7 +540,7 @@ maps\map_indexes_man1.txt	433	2816	16	16	400	16	8
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
 # MARIO
-0	17	115	1
+0	32	368	1
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
@@ -1010,7 +1010,10 @@ maps\map_indexes_man1.txt	433	2816	16	16	400	16	8
 
 # color brick hitbox
 14	240	368	9	48	16
-14	272	336	9	48	16
+14	272	336	9	48	1
+
+14	400	368	9	80	3
+14	464	336	9	64	1
 
 #	400	360	9	80	48
 #	464	336	9	64	33

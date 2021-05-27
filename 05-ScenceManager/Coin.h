@@ -16,6 +16,7 @@
 
 class Coin :public CGameObject
 {
+protected:
 	DWORD deflect_start = 0;
 
 	float containerX;
@@ -24,7 +25,7 @@ class Coin :public CGameObject
 	bool passedDestrucPoint = 0;
 public:
 	Coin(){}
-	Coin(int x, int y);
+	Coin(float x, float y);
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);

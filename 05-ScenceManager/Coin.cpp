@@ -1,7 +1,7 @@
 #include "Coin.h"
 #include "ColorBrickHitBox.h"
 
-Coin::Coin(int x, int y)
+Coin::Coin(float x, float y)
 {
 	this->x = containerX = x;
 	this->y = y - 16;

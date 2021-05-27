@@ -6,7 +6,7 @@
 #define MARIO_JUMP_SPEED_Y		0.5f
 #define MARIO_JUMP_DEFLECT_SPEED 0.2f
 #define MARIO_GRAVITY			0.002f
-#define MARIO_DIE_DEFLECT_SPEED	 0.5f
+#define MARIO_DIE_DEFLECT_SPEED	 0.6f
 
 #define MARIO_STATE_IDLE			0
 #define MARIO_STATE_WALKING_RIGHT	100
@@ -15,6 +15,7 @@
 #define MARIO_STATE_DIE				400
 #define MARIO_STATE_SMALL_TO_BIG	500
 #define MARIO_STATE_BIG_TO_SMALL	600
+#define MARIO_STATE_FLY				700
 
 #define MARIO_ANI_BIG_IDLE_RIGHT		0
 #define MARIO_ANI_BIG_IDLE_LEFT			1
@@ -47,6 +48,8 @@
 
 class CMario : public CGameObject
 {
+	vector<unsigned short int> alphaValsForUntouchable = { 255, 128 };
+
 	int level;
 	bool untouchable;
 	DWORD untouchable_start;

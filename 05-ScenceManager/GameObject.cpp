@@ -69,11 +69,22 @@ LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 	coEvents: list of potential collisions
 */
 void CGameObject::CalcPotentialCollisions(
-	vector<LPGAMEOBJECT> *coObjects, 
-	vector<LPCOLLISIONEVENT> &coEvents)
+	vector<LPGAMEOBJECT>* coObjects,
+	vector<LPCOLLISIONEVENT>& coEvents)
 {
+	float l1, r1, t1, b1;
+	float l2, r2, t2, b2;
+
+	GetBoundingBox(l1, t1, r1, b1);
+
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
+		/*coObjects->at(i)->GetBoundingBox(l2, t2, r2, b2);
+
+		if (doOverlap(l1, t1, r1, b1, l2, t2, r2, b2)) {
+			continue;
+		}*/
+
 		LPCOLLISIONEVENT e = SweptAABBEx(coObjects->at(i));
 
 		if (e->t > 0 && e->t <= 1.0f)

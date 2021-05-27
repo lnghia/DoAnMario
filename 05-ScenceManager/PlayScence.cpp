@@ -159,8 +159,8 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		break;
 	}
-	case OBJECT_TYPE_BRICK: 
-		obj = new CBrick(); 
+	case OBJECT_TYPE_BRICK:
+		obj = new CBrick();
 		break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_PORTAL:
@@ -249,13 +249,17 @@ void CPlayScene::_ParseSection_MAP(const string& line)
 	if (tokens.size() < 8) return;
 
 	Map::getInstance()->loadFromFile(tokens[0],
-									 stoi(tokens[1]),
-									 stoi(tokens[2]),
-									 stoi(tokens[3]),
-									 stoi(tokens[4]),
-									 stoi(tokens[5]),
-									 stoi(tokens[6]),
-									 stoi(tokens[7]));
+		stoi(tokens[1]),
+		stoi(tokens[2]),
+		stoi(tokens[3]),
+		stoi(tokens[4]),
+		stoi(tokens[5]),
+		stoi(tokens[6]),
+		stoi(tokens[7]));
+
+	CGame* game = CGame::GetInstance();
+
+	game->SetCamPos(0.0f, Map::getInstance()->getHeight() - game->GetScreenHeight() - 1);
 }
 
 void CPlayScene::Load()
@@ -333,23 +337,49 @@ void CPlayScene::Update(DWORD dt)
 
 	vector<LPGAMEOBJECT> objectsInCamera = Grid::GetInstance()->GetObjectsInCamera();
 
-	if (player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 700) {
-		/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
-		player->Update(dt, &coObjects);*/
+	if (player->GetState() == MARIO_STATE_DIE) {
+		//coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+		player->Update(dt, &coObjects);
 
 		return;
 	}
 
-	if (player->GetState() == MARIO_STATE_DIE) {
-		//coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
-		player->Update(dt, &coObjects);
-		
+	//while (state == MARIO_STATE_BIG_TO_SMALL && untouchable && GetTickCount() - untouchable_start < 700) {
+	//	/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+	//	player->Update(dt, &coObjects);*/
+
+	//	if (level == MARIO_LEVEL_BIG) {
+	//		level = MARIO_LEVEL_SMALL;
+	//	}
+	//	else {
+	//		level = MARIO_LEVEL_BIG;
+	//	}
+	//	Render();
+
+
+
+	//}
+
+	if (player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 700) {
+		/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+		player->Update(dt, &coObjects);*/
+
+
+		/*if (player->GetLevel() == MARIO_LEVEL_BIG) {
+			player->SetLevel(MARIO_LEVEL_SMALL);
+		}
+		else {
+			player->SetLevel(MARIO_LEVEL_BIG);
+		}*/
+
+		//player->Render();
+
 		return;
 	}
 
 	for (auto& obj : objectsInCamera) {
 		coObjects.clear();
-		if(obj->GetInteractivable())
+		if (obj->GetInteractivable())
 			coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(obj);
 		obj->Update(dt, &coObjects);
 		/*if (dynamic_cast<Coin*>(obj)) {
@@ -371,7 +401,7 @@ void CPlayScene::Update(DWORD dt)
 	{
 		coObjects.clear();
 		coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(objects[i]);
- 		objects[i]->Update(dt, &coObjects);
+		objects[i]->Update(dt, &coObjects);
 	}*/
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
@@ -387,14 +417,21 @@ void CPlayScene::Update(DWORD dt)
 	_cy = game->GetCamY();
 
 	cx -= game->GetScreenWidth() / 2;
-	cy -= game->GetScreenHeight() / 2;
+
+	if (player->GetState() == MARIO_STATE_FLY) {
+		cy -= game->GetScreenHeight() / 2;
+		if (cy + game->GetScreenHeight() > Map::getInstance()->getHeight()) {
+			cy = Map::getInstance()->getHeight() - game->GetScreenHeight() - 1;
+		}
+	}
+	else {
+		cy = _cy;
+	}
 
 	cx = (cx < 0) ? 0 : cx;
 	cy = (cy < 0) ? 0 : cy;
 
-	if (cy + game->GetScreenHeight() > Map::getInstance()->getHeight()) {
-		cy = Map::getInstance()->getHeight() - game->GetScreenHeight() - 1;
-	}
+
 	if (cx + game->GetScreenWidth() > Map::getInstance()->getWidth()) {
 		cx = Map::getInstance()->getWidth() - game->GetScreenWidth() - 1;
 	}

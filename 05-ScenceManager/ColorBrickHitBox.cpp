@@ -12,3 +12,16 @@ ColorBrickHitBox::ColorBrickHitBox(int width, int height, float x, float y)
 	this->x = x;
 	this->y = y;
 }
+
+void ColorBrickHitBox::Render()
+{
+	RenderBoundingBox();
+}
+
+void ColorBrickHitBox::GetBoundingBox(float& l, float& t, float& r, float& b)
+{
+	l = x;
+	t = y;
+	r = x + width;
+	b = y + height;
+}
