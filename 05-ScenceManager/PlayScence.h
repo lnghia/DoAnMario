@@ -13,6 +13,8 @@
 #include "PipeHitBox.h"
 #include "ColorBrickHitBox.h"
 #include "QBrick.h"
+#include "Mushroom.h"
+#include "Ground.h"
 
 
 class CPlayScene : public CScene
@@ -39,6 +41,9 @@ public:
 	virtual void Unload();
 
 	CMario* GetPlayer() { return player; }
+
+	void handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidable_objs);
+	void handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_objs);
 
 	//friend class CPlayScenceKeyHandler;
 };

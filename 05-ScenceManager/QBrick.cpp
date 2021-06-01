@@ -6,6 +6,11 @@ void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
 }
 
+void QBrick::RenderCurrFrame()
+{
+	animation_set->at(currAni)->RenderCurrFrame(x, y);
+}
+
 void QBrick::PopUpHiddenItem()
 {
 	if (state != QBRICK_STATE_MYSTERIOUS) {
@@ -16,10 +21,24 @@ void QBrick::PopUpHiddenItem()
 	Grid* grid = Grid::GetInstance();
 	LPGAMEOBJECT obj = NULL;
 
-	if (hiddenItem == OBJECT_TYPE_COIN) {
+	switch (hiddenItem)
+	{
+	case OBJECT_TYPE_COIN: {
 		obj = new Coin(x, y);
 		obj->SetInteractivable(0);
 		obj->SetCanBeStandOn(0);
+
+		break;
+	}
+	case OBJECT_TYPE_MUSHROOM: {
+		obj = new Mushroom(x, y);
+
+		break;
+	}
+	}
+
+	if (hiddenItem == OBJECT_TYPE_COIN) {
+
 	}
 
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();

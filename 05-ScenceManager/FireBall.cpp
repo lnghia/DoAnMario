@@ -81,6 +81,9 @@ void FireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (mario->GetLevel() > MARIO_LEVEL_SMALL)
 					{
 						//mario->SetLevel(MARIO_LEVEL_SMALL);
+						mario->SetBackupLevel(MARIO_LEVEL_SMALL);
+						mario->SetBackupState(mario->GetState());
+						mario->SetStartTransforming(GetTickCount());
 						mario->turnIntoSmall();
 						mario->StartUntouchable();
 					}
@@ -109,9 +112,14 @@ void FireBall::Render()
 {
 	// ani = 1: fireball moves left
 	// ani = 2: fireball moves right
-	int ani = (vx <= 0);
+	currAni = (vx <= 0);
 
-	animation_set->at(ani)->Render(round(x), round(y));
+	animation_set->at(currAni)->Render(round(x), round(y));
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
+}
+
+void FireBall::RenderCurrFrame()
+{
+	animation_set->at(currAni)->RenderCurrFrame(x, y);
 }

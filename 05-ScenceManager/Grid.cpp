@@ -2,6 +2,7 @@
 #include "Map.h"
 #include "FireBall.h"
 #include <math.h>
+#include "Mario.h"
 
 Grid* Grid::instance = NULL;
 
@@ -63,9 +64,6 @@ void Grid::clearObjFromGrid(LPGAMEOBJECT obj) {
 			if (c < 0 || c >= colNum) continue;
 			if (grid[r][c].find(obj) != grid[r][c].end()) {
 				grid[r][c].erase(obj);
-				if (grid[r][c].find(obj) != grid[r][c].end()) {
-					bool safsf = 1;
-				}
 			}
 		}
 	}
@@ -118,10 +116,10 @@ vector<int> Grid::getOverLapCells(LPGAMEOBJECT obj)
 
 	obj->GetBoundingBox(left, top, right, bottom);
 
-	int col1 = floor(left / cellWidth);
-	int col2 = floor(right / cellWidth);
-	int row1 = floor(top / cellHeight);
-	int row2 = floor(bottom / cellHeight);
+	int col1 = left / cellWidth;
+	int col2 = right / cellWidth;
+	int row1 = top / cellHeight;
+	int row2 = bottom / cellHeight;
 
 	if (row1 >= rowNum || row2 >= rowNum) {
 		int t = 1;
@@ -312,11 +310,13 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 			break;
 		}
 		for (int c = overLapCells[LEFT]; c <= overLapCells[RIGHT]; ++c) {
-			if (c < 0 || c >= grid.size()) {
+			if (c < 0 || c >= grid[r].size()) {
 				break;
 			}
 			for (auto& _obj : grid[r][c]) {
-				if (obj != _obj && _obj->GetInteractivable() && uniqueChecker.find(_obj)==uniqueChecker.end()) {
+				float x, y;
+
+				if (obj != _obj && _obj->GetInteractivable() && _obj->GetIsActive() && uniqueChecker.find(_obj)==uniqueChecker.end()) {
 					result.push_back(_obj);
 					uniqueChecker.insert(_obj);
 				}

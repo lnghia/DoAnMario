@@ -36,6 +36,7 @@
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
+#define MARIO_LEVEL_RACOON	3
 
 #define MARIO_BIG_BBOX_WIDTH  15
 #define MARIO_BIG_BBOX_HEIGHT 27
@@ -57,9 +58,19 @@ class CMario : public CGameObject
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
 
+	float oldX;
+	float oldY;
+
 	bool isStanding;
 
 	int aniBigToSmallIndex = -1;
+
+	DWORD startTransforming = (DWORD)0;
+
+	bool transforming;
+
+	int backupLevel = 1;
+	int backupState;
 public: 
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
@@ -74,12 +85,36 @@ public:
 
 	bool GetUntouchable();
 
+	int GetBackupLevel();
+	void SetBackupLevel(int val);
+
+	int GetBackupState();
+	void SetBackupState(int state);
+
 	void SetIsStanding(bool val);
 	bool GetIsStanding();
 
+	void SetTransforming(bool val);
+	bool GetTransforming();
+
+	void SetStartTransforming(DWORD startTransforming);
+	DWORD GetStartTransforming();
+
+	float GetOldX();
+	float GetOldY();
+
 	void turnIntoSmall();
+
+	void turnIntoBig();
 
 	void Reset();
 
+	void RenderSizeTransforming();
+
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
+
+	void ToBig();
+	void ToSmall();
+
+	void finishSizeTransforming();
 };

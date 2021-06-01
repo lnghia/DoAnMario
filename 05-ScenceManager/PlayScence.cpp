@@ -171,8 +171,12 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		obj = new CPortal(x, y, r, b, scene_id);
 	}
 	break;
-	case OBJECT_TYPE_JUST_FOR_SHOW:
-		obj = new JustForShow(); break;
+	case OBJECT_TYPE_JUST_FOR_SHOW: {
+		obj = new JustForShow();
+		obj->SetRenderPriority(30);
+		break;
+	}
+
 	case OBJECT_TYPE_INVISIBLE: {
 		float width = atof(tokens[4].c_str());
 		float height = atof(tokens[5].c_str());
@@ -204,6 +208,14 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		break;
 	}
+	case OBJECT_TYPE_GROUND: {
+		float width = atof(tokens[4].c_str());
+		float height = atof(tokens[5].c_str());
+
+		obj = new Ground(width, height);
+
+		break;
+	}
 	case OBJECT_TYPE_PIRANHAPLANT: {
 		float pipeX = atof(tokens[4].c_str());
 		float pipeY = atof(tokens[5].c_str());
@@ -221,6 +233,10 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
 	}
+
+	/*if (x == 496.0f && y == 416.0f) {
+		int mpt = 0;
+	}*/
 
 	// General object setup
 	obj->SetPosition(x, y);
@@ -360,7 +376,8 @@ void CPlayScene::Update(DWORD dt)
 
 	//}
 
-	if (player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 700) {
+	if ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 800) ||
+		(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < 800)) {
 		/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
 		player->Update(dt, &coObjects);*/
 
@@ -378,6 +395,18 @@ void CPlayScene::Update(DWORD dt)
 	}
 
 	for (auto& obj : objectsInCamera) {
+		/*if (dynamic_cast<CMario*>(obj)) {
+			continue;
+		}*/
+
+		float x, y;
+
+		if (dynamic_cast<CMario*>(obj)) {
+			int tmp = 1;
+		}
+
+		obj->GetPosition(x, y);
+
 		coObjects.clear();
 		if (obj->GetInteractivable())
 			coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(obj);
@@ -393,7 +422,19 @@ void CPlayScene::Update(DWORD dt)
 		/*if (!obj->GetIsActive() && dynamic_cast<FireBall*>(obj)) {
 			int tmp = 1;
 		}*/
+
+		/*if (player->GetTransforming()) {
+			break;
+		}*/
 	}
+
+	/*coObjects.clear();
+
+	Grid::GetInstance()->GetPotentialCollidableObjects(player);
+
+	player->Update(dt, &coObjects);*/
+
+	handleCollisionsWithItemsAABB(Grid::GetInstance()->GetPotentialCollidableObjects(player));
 
 	//Grid::GetInstance()->cleanObjTrashBin();
 
@@ -455,11 +496,24 @@ void CPlayScene::Render()
 
 	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
 
+	bool renderPause = ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 800) ||
+						(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < 800) ||
+						 player->GetState() == MARIO_STATE_DIE);
+
+	/*if (!renderPause) {
+		player->SetState(MARIO_STATE_IDLE);
+		player->SetLevel(player->GetBackupLevel());
+	}*/
+
 	for (auto& obj : objectsInCamera) {
 		/*if (dynamic_cast<Point*>(obj)) {
 			int tmp = 1;
 		}*/
 		if (obj != player && !obj->GetInvisible()) {
+			if (renderPause) {
+				obj->RenderCurrFrame();
+				continue;
+			}
 			obj->Render();
 		}
 	}
@@ -470,7 +524,14 @@ void CPlayScene::Render()
 		}
 	}*/
 
-	player->Render();
+	if (renderPause && player->GetState() != MARIO_STATE_DIE) {
+		player->RenderSizeTransforming();
+	}
+	else {
+		player->Render();
+	}
+
+	player->finishSizeTransforming();
 }
 
 /*
@@ -485,6 +546,34 @@ void CPlayScene::Unload()
 	player = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
+}
+
+void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidable_objs)
+{
+	/*for (auto& obj : collidable_objs) {
+		if (player->checkAABB(obj)) {
+
+		}
+	}*/
+}
+
+void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_objs)
+{
+	for (auto& obj : collidable_objs) {
+		if (player->checkAABB(obj) && obj->GetIsActive()) {
+			if (dynamic_cast<Mushroom*>(obj)) {
+				Mushroom* mushroom = dynamic_cast<Mushroom*>(obj);
+
+				if (player->GetLevel() != MARIO_LEVEL_BIG) {
+					mushroom->GotObsorbed(player);
+					player->SetBackupLevel(MARIO_LEVEL_BIG);
+					player->SetBackupState(player->GetState());
+					player->SetStartTransforming(GetTickCount());
+					player->turnIntoBig();
+				}
+			}
+		}
+	}
 }
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
