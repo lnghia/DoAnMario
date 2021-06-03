@@ -587,13 +587,31 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
+	case DIK_S:
+		mario->SetState(MARIO_STATE_JUMP);
+		break;
 	case DIK_SPACE:
 		mario->SetState(MARIO_STATE_JUMP);
 		break;
-	case DIK_A:
+	case DIK_R:
 		mario->Reset();
 		break;
+	case DIK_1:
+		if (mario->GetLevel() == MARIO_LEVEL_SMALL) {
+			mario->ToRacoon();
+		}
+		mario->SetLevel(MARIO_LEVEL_RACOON);
+		break;
+	case DIK_2:
+		if (mario->GetLevel() != MARIO_LEVEL_BIG) {
+			mario->SetBackupLevel(MARIO_LEVEL_BIG);
+			mario->SetBackupState(mario->GetState());
+			mario->SetStartTransforming(GetTickCount());
+			mario->turnIntoBig();
+		}
+		break;
 	}
+	
 }
 
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
@@ -605,12 +623,29 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 
+	if (game->IsKeyDown(DIK_A)) {
+		mario->SetIsRunning(1);
+		if (abs(mario->GetVx()) >= MARIO_RUNNING_SPEED)
+		{
+			mario->SetState(MARIO_STATE_SLIDE);
+			mario->SetIsSliding(1);
+		}
+		else {
+			mario->SetIsSliding(0);
+		}
+	}
+	else {
+		mario->SetIsRunning(0);
+		mario->SetIsSliding(0);
+	}
+
 	// disable control key when Mario die 
 	if (mario->GetState() == MARIO_STATE_DIE) return;
 	if (game->IsKeyDown(DIK_RIGHT))
 		mario->SetState(MARIO_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT))
+	else if (game->IsKeyDown(DIK_LEFT)) {
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
-	else
+	}
+	else if(mario->GetIsStanding())
 		mario->SetState(MARIO_STATE_IDLE);
 }
