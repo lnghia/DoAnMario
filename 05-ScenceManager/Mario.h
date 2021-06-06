@@ -6,7 +6,8 @@
 
 #define MARIO_RUNNING_SPEED		0.19f
 
-#define MARIO_RACOON_FALL_VY		0.035f
+#define MARIO_RACOON_GLIDE_VY		0.035f
+#define MARIO_RACOON_FALL_VY		0.05f
 #define MARIO_RACOON_FLY_VY			 -0.06f
 
 #define MARIO_WALKING_ACCELERATION	0.01f
@@ -26,6 +27,9 @@
 #define MARIO_STATE_BIG_TO_SMALL	600
 #define MARIO_STATE_FLY				700
 #define MARIO_STATE_SLIDE			800
+#define MARIO_STATE_FALL			900
+#define MARIO_STATE_GLIDE			1000
+#define MARIO_STATE_FALL_TAIL		1100
 
 #define MARIO_ANI_BIG_IDLE_RIGHT		0
 #define MARIO_ANI_BIG_IDLE_LEFT			1
@@ -72,6 +76,26 @@
 #define MARIO_ANI_BIG_DUCK_RIGHT		31
 #define	MARIO_ANI_BIG_DUCK_LEFT			32
 
+#define MARIO_ANI_RACOON_FLY_RIGHT		33
+#define	MARIO_ANI_RACOON_FLY_LEFT		34
+
+#define MARIO_ANI_RACOON_SLIDE_RIGHT	35
+#define MARIO_ANI_RACOON_SLIDE_LEFT		36
+
+#define MARIO_ANI_SMALL_SLIDE_RIGHT		37
+#define MARIO_ANI_SMALL_SLIDE_LEFT		38
+
+#define MARIO_ANI_BIG_SLIDE_RIGHT		39
+#define MARIO_ANI_BIG_SLIDE_LEFT		40
+
+#define MARIO_ANI_RACOON_GLIDE_RIGHT	41
+#define MARIO_ANI_RACOON_GLIDE_LEFT		42
+
+#define MARIO_ANI_RACOON_FALL_RIGHT		43
+#define MARIO_ANI_RACOON_FALL_LEFT		44
+
+#define MARIO_ANI_RACOON_FALL_TAIL_RIGHT	45
+#define MARIO_ANI_RACOON_FALL_TAIL_LEFT		46
 
 // Indexes are defined for filtering some common animations by level
 #define MARIO_ANI_IDLE_RIGHT	0
@@ -84,6 +108,8 @@
 #define	MARIO_ANI_DUCK_LEFT		7
 #define	MARIO_ANI_RUN_RIGHT		8
 #define	MARIO_ANI_RUN_LEFT		9
+#define MARIO_ANI_SLIDE_RIGHT	10
+#define	MARIO_ANI_SLIDE_LEFT	11
 
 
 #define MARIO_ANI_DIE				8
@@ -123,6 +149,7 @@ class CMario : public CGameObject
 	int aniBigToSmallIndex = -1;
 
 	DWORD startTransforming = (DWORD)0;
+	DWORD startFlying;
 
 	bool transforming;
 
@@ -134,7 +161,10 @@ class CMario : public CGameObject
 	bool isRunning = 0;
 	bool isSliding = 0;
 	bool isFlying = 0;
+	bool isFalling = 0;
+	bool isGliding = 0;
 	bool isJumping = 0;
+	bool isFallingTail = 0;
 
 	vector<vector<int>> animationsByLevel = {
 		{
@@ -147,7 +177,9 @@ class CMario : public CGameObject
 			MARIO_ANI_SMALL_IDLE_RIGHT,
 			MARIO_ANI_SMALL_IDLE_LEFT,
 			MARIO_ANI_SMALL_RUN_RIGHT,
-			MARIO_ANI_SMALL_RUN_LEFT
+			MARIO_ANI_SMALL_RUN_LEFT,
+			MARIO_ANI_SMALL_SLIDE_RIGHT,
+			MARIO_ANI_SMALL_SLIDE_LEFT
 		},
 		{
 			MARIO_ANI_BIG_IDLE_RIGHT,
@@ -159,7 +191,9 @@ class CMario : public CGameObject
 			MARIO_ANI_BIG_DUCK_RIGHT,
 			MARIO_ANI_BIG_DUCK_LEFT,
 			MARIO_ANI_BIG_RUN_RIGHT,
-			MARIO_ANI_BIG_RUN_LEFT
+			MARIO_ANI_BIG_RUN_LEFT,
+			MARIO_ANI_BIG_SLIDE_RIGHT,
+			MARIO_ANI_BIG_SLIDE_LEFT
 		},
 		{
 			MARIO_ANI_RACOON_IDLE_RIGHT,
@@ -171,11 +205,15 @@ class CMario : public CGameObject
 			MARIO_ANI_RACOON_DUCK_RIGHT,
 			MARIO_ANI_RACOON_DUCK_LEFT,
 			MARIO_ANI_RACOON_RUN_RIGHT,
-			MARIO_ANI_RACOON_RUN_LEFT
+			MARIO_ANI_RACOON_RUN_LEFT,
+			MARIO_ANI_RACOON_SLIDE_RIGHT,
+			MARIO_ANI_RACOON_SLIDE_LEFT
 		}
 	};
 
 public:
+	bool flyUp = 0;
+
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Render();
@@ -184,6 +222,16 @@ public:
 	void SetLevel(int l) { level = l; }
 	int GetLevel();
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
+
+	void StartFlying() { startFlying = GetTickCount(); isFlying = 1; isFalling = 0; isStanding = 0; isGliding = 0; vy = MARIO_RACOON_FLY_VY; };
+	void StartGliding() {
+		isGliding = 1; isFalling = 0; isStanding = 0; 
+		vy = MARIO_RACOON_GLIDE_VY;
+	};
+	void StartFalling() {
+		isFlying = 0; isGliding = 0; isFalling = 1;
+		vy = MARIO_RACOON_FALL_VY;
+	};
 
 	DWORD GetUntouchableStart();
 
@@ -206,6 +254,18 @@ public:
 
 	void SetIsJumping(bool val);
 	bool GetIsJumping();
+
+	void SetIsFlying(bool val);
+	bool GetIsFlying();
+
+	void SetIsFalling(bool val);
+	bool GetIsFalling();
+
+	void SetIsGliding(bool val);
+	bool GetIsGliding();
+
+	void SetIsFallingTail(bool val);
+	bool GetIsFallingTail();
 
 	void SetTransforming(bool val);
 	bool GetTransforming();

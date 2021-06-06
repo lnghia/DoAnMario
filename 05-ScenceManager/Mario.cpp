@@ -39,6 +39,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (transforming && GetTickCount() - startTransforming < 800) {
 		return;
 	}
+	if (isFlying && GetTickCount() - startFlying > 200) {
+		if (GetTickCount() - startFlying > 2000) {
+			SetState(MARIO_STATE_FALL);
+		}
+		else {
+			SetState(MARIO_STATE_GLIDE);
+		}
+	}
 
 	//for (UINT i = 0; i < coObjects->size(); ++i) {
 	//	float x, y;
@@ -65,7 +73,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vx += accelerationX * dt;
 	}*/
 
-
+	/*if (isFlying) {
+		vy = (flyUp) ? MARIO_RACOON_FLY_VY : MARIO_RACOON_FALL_VY;
+		flyUp = !flyUp;
+	}*/
 
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
@@ -75,7 +86,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	Grid::GetInstance()->clearObjFromGrid(this);
 
 	// Simple fall down
-	vy += MARIO_GRAVITY * dt;
+	if(!isFlying && !isFalling && !isGliding) vy += MARIO_GRAVITY * dt;
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -160,7 +171,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
 			isStanding = (e->ny < 0) ? e->obj->GetCanBeStandOn() : false;
-			isJumping = !isStanding;
+			if (isStanding) {
+				isJumping = 0;
+				isFlying = 0;
+				isFalling = 0;
+				isGliding = 0;
+				isFallingTail = 0;
+			}
+			//isJumping = isFlying = isFalling = !isStanding;
 
 			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
@@ -237,9 +255,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				x -= min_tx * dx + nx * 0.4f;
 				y -= min_ty * dy + ny * 0.4f;
 
-				if (untouchable == 0)
+				if (!untouchable)
 				{
-					if (level > MARIO_LEVEL_SMALL)
+					if (level == MARIO_LEVEL_BIG)
 					{
 						//level = MARIO_LEVEL_SMALL;
 						backupLevel = MARIO_LEVEL_SMALL;
@@ -247,6 +265,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						startTransforming = GetTickCount();
 						turnIntoSmall();
 						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_RACOON) {
+
 					}
 					else
 						SetState(MARIO_STATE_DIE);
@@ -353,11 +374,30 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CMario::Render()
 {
+	//DebugOut(L"[is sliding] %d - %d - %d - %d\n", isSliding, isFlying, isFalling, isJumping);
+
 	int ani = -1;
 	if (state == MARIO_STATE_DIE)
 		ani = MARIO_ANI_DIE;
 	else {
-		ani = filterSomeCommonAniByLevel();
+		if (isFalling) {
+			ani = (nx > 0) ? MARIO_ANI_RACOON_FALL_RIGHT : MARIO_ANI_RACOON_FALL_LEFT;
+		}
+		else if (isFlying) {
+			if (isGliding) {
+				ani = (nx > 0) ? MARIO_ANI_RACOON_GLIDE_RIGHT : MARIO_ANI_RACOON_GLIDE_LEFT;
+			}
+			else {
+				ani = (nx > 0) ? MARIO_ANI_RACOON_FLY_RIGHT : MARIO_ANI_RACOON_FLY_LEFT;
+			}
+			//SetState(MARIO_STATE_FALL);
+		}
+		else if (isFallingTail) {
+			ani = (nx > 0) ? MARIO_ANI_RACOON_FALL_TAIL_RIGHT : MARIO_ANI_RACOON_FALL_TAIL_LEFT;
+		}
+		else {
+			ani = filterSomeCommonAniByLevel();
+		}
 	}
 
 
@@ -367,9 +407,11 @@ void CMario::Render()
 		alpha = 128;
 	}
 
+	//DebugOut(L"[] %d\n", ani);
+
 	animation_set->at(ani)->Render(x, y, alpha);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CMario::SetState(int state)
@@ -382,38 +424,72 @@ void CMario::SetState(int state)
 			accelerationX = MARIO_WALKING_ACCELERATION;
 			nx = 1;
 		}*/
-		if (isRunning) {
-			if (vx < MARIO_RUNNING_SPEED) {
-				vx += MARIO_WALKING_ACCELERATION;
-			}
-			else if (vx < MARIO_WALKING_SPEED) {
-				vx = MARIO_WALKING_SPEED;
-			}
-		}
-		else {
+		if (isRunning == 0)
 			vx = MARIO_WALKING_SPEED;
+		else
+		{
+			if (vx < MARIO_WALKING_SPEED)
+				vx = MARIO_WALKING_SPEED;
+			if (vx < MARIO_RUNNING_SPEED && isStanding)
+				vx += MARIO_WALKING_ACCELERATION;
 		}
-		/*vx = MARIO_WALKING_SPEED;
-		accelerationX = MARIO_WALKING_ACCELERATION;*/
 		nx = 1;
 		break;
+		//if (nx < 0) {
+		//	if (isFlying) {
+		//		vx *= -1;
+		//		vy = MARIO_RACOON_FLY_VY;
+		//	}
+		//}
+		//else if (isRunning && isStanding) {
+		//	if (vx < MARIO_RUNNING_SPEED) {
+		//		vx += MARIO_WALKING_ACCELERATION;
+		//	}
+		//	else if (vx < MARIO_WALKING_SPEED) {
+		//		vx = MARIO_WALKING_SPEED;
+		//	}
+		//}
+		//else {
+		//	vx = MARIO_WALKING_SPEED;
+		//}
+		///*vx = MARIO_WALKING_SPEED;
+		//accelerationX = MARIO_WALKING_ACCELERATION;*/
+		//nx = 1;
+		//break;
 	}
 	case MARIO_STATE_WALKING_LEFT: {
-		if (isRunning) {
-			if (vx > -MARIO_RUNNING_SPEED) {
-				vx -= MARIO_WALKING_ACCELERATION;
-			}
-			else if (vx < -MARIO_WALKING_SPEED) {
-				vx = -MARIO_WALKING_SPEED;
-			}
-		}
-		else {
+		if (isRunning == 0)
 			vx = -MARIO_WALKING_SPEED;
+		else
+		{
+			if (vx > -MARIO_WALKING_SPEED)
+				vx = -MARIO_WALKING_SPEED;
+			if (vx > -MARIO_RUNNING_SPEED && isStanding)
+				vx -= MARIO_WALKING_ACCELERATION;
 		}
-		/*vx = -MARIO_WALKING_SPEED;
-		accelerationX = -MARIO_WALKING_ACCELERATION;*/
 		nx = -1;
 		break;
+		//if (nx > 0) {
+		//	if (isFlying) {
+		//		vx *= -1;
+		//		vy = MARIO_RACOON_FLY_VY;
+		//	}
+		//}
+		//else if (isRunning && isStanding) {
+		//	if (vx > -MARIO_RUNNING_SPEED) {
+		//		vx -= MARIO_WALKING_ACCELERATION;
+		//	}
+		//	else if (vx > -MARIO_WALKING_SPEED) {
+		//		vx = -MARIO_WALKING_SPEED;
+		//	}
+		//}
+		//else {
+		//	vx = -MARIO_WALKING_SPEED;
+		//}
+		///*vx = -MARIO_WALKING_SPEED;
+		//accelerationX = -MARIO_WALKING_ACCELERATION;*/
+		//nx = -1;
+		//break;
 	}
 	case MARIO_STATE_JUMP: {
 		if (!isStanding) {
@@ -434,7 +510,25 @@ void CMario::SetState(int state)
 		vx = 0;
 		break;
 	}
+	case MARIO_STATE_FLY:
+		/*isFlying = 1;
+		isFalling = 0;
+		isStanding = 0;*/
+		StartFlying();
+		break;
+	case MARIO_STATE_FALL:
+		//isFlying = 0;
+		StartFalling();
+		break;
+	case MARIO_STATE_GLIDE:
+		StartGliding();
+		break;
+	case MARIO_STATE_FALL_TAIL:
+		vy = MARIO_RACOON_GLIDE_VY;
+		isFallingTail = 1;
+		break;
 	}
+	
 
 	CGameObject::SetState(state);
 }
@@ -460,8 +554,8 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 		bottom = y + MARIO_SMALL_BBOX_HEIGHT;
 	}
 	else if (level == MARIO_LEVEL_RACOON) {
-		if (nx > 0) {
-			left += 7.0f;
+		if (nx == 1) {
+			left += 7;
 		}
 		
 		right = left + MARIO_RACOON_BBOX_WIDTH;
@@ -507,7 +601,9 @@ int CMario::filterSomeCommonAniByLevel()
 {
 	int ani;
 
-	if (state == MARIO_STATE_JUMP) {
+	//DebugOut(L"[IS JUMPING] %d\n", isJumping);
+
+	if (isJumping) {
 		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_JUMP_RIGHT] : animationsByLevel[level][MARIO_ANI_JUMP_LEFT];
 	}
 	else if (!vx && state == MARIO_STATE_IDLE) {
@@ -522,7 +618,7 @@ int CMario::filterSomeCommonAniByLevel()
 		}
 		else if (isRunning) {
 			if (isSliding) {
-				ani = animationsByLevel[level][MARIO_ANI_RUN_RIGHT];
+				ani = animationsByLevel[level][MARIO_ANI_SLIDE_RIGHT];
 			}
 			else {
 				ani = animationsByLevel[level][MARIO_ANI_RUN_RIGHT];
@@ -538,7 +634,7 @@ int CMario::filterSomeCommonAniByLevel()
 		}
 		else if (isRunning) {
 			if (isSliding) {
-				ani = animationsByLevel[level][MARIO_ANI_RUN_LEFT];
+				ani = animationsByLevel[level][MARIO_ANI_SLIDE_LEFT];
 			}
 			else {
 				ani = animationsByLevel[level][MARIO_ANI_RUN_LEFT];
@@ -614,6 +710,42 @@ void CMario::SetIsJumping(bool val)
 
 bool CMario::GetIsJumping() {
 	return isJumping;
+}
+
+void CMario::SetIsFlying(bool val)
+{
+	isFlying = val;
+}
+
+bool CMario::GetIsFlying() {
+	return isFlying;
+}
+
+void CMario::SetIsFalling(bool val)
+{
+	isFalling = val;
+}
+
+bool CMario::GetIsFalling() {
+	return isFalling;
+}
+
+void CMario::SetIsGliding(bool val)
+{
+	isGliding = val;
+}
+
+bool CMario::GetIsGliding() {
+	return isGliding;
+}
+
+void CMario::SetIsFallingTail(bool val)
+{
+	isFallingTail = val;
+}
+
+bool CMario::GetIsFallingTail() {
+	return isFallingTail;
 }
 
 void CMario::SetTransforming(bool val)
