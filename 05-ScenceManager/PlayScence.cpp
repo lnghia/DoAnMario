@@ -376,8 +376,8 @@ void CPlayScene::Update(DWORD dt)
 
 	//}
 
-	if ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 800) ||
-		(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < 800)) {
+	if ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < player->transform_duration_time) ||
+		(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < player->transform_duration_time)) {
 		/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
 		player->Update(dt, &coObjects);*/
 
@@ -496,8 +496,8 @@ void CPlayScene::Render()
 
 	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
 
-	bool renderPause = ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < 800) ||
-						(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < 800) ||
+	bool renderPause = ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < player->transform_duration_time) ||
+						(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < player->transform_duration_time) ||
 						 player->GetState() == MARIO_STATE_DIE);
 
 	/*if (!renderPause) {
@@ -511,6 +511,9 @@ void CPlayScene::Render()
 		}*/
 		if (obj != player && !obj->GetInvisible()) {
 			if (renderPause) {
+				if (dynamic_cast<Point*>(obj)) {
+					int tmp = 1;
+				}
 				obj->RenderCurrFrame();
 				continue;
 			}
@@ -525,13 +528,14 @@ void CPlayScene::Render()
 	}*/
 
 	if (renderPause && player->GetState() != MARIO_STATE_DIE) {
-		player->RenderSizeTransforming();
+		player->StartTransforming();
+		//player->RenderSizeTransforming();
 	}
 	else {
 		player->Render();
 	}
 
-	player->finishSizeTransforming();
+	player->FinishTransforming();
 }
 
 /*

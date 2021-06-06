@@ -45,6 +45,9 @@ void CAnimation::Render(float x, float y, int alpha)
 
 void CAnimation::RenderCurrFrame(float x, float y, int alpha)
 {
+	if (currentFrame == -1) {
+		currentFrame = 0;
+	}
 	frames[currentFrame]->GetSprite()->Draw(x, y, alpha);
 }
 

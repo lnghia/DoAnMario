@@ -20,11 +20,21 @@
 
 #define MUSHROOM_GRAVITY		0.002f
 
+#define MUSHROOM_POINT			200
+
 class Mushroom : public HiddenItem
 {
 public:
 	Mushroom() {}
-	Mushroom(float x, float y);
+	Mushroom(float x, float y) :HiddenItem(x, y) {
+		containerX = x;
+		containerY = y;
+
+		vx = 0;
+		vy = MUSHROOM_RISING_UP;
+
+		state = MUSHROOM_STATE_APPEAR;
+	};
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);

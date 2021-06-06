@@ -97,6 +97,8 @@
 #define MARIO_ANI_RACOON_FALL_TAIL_RIGHT	45
 #define MARIO_ANI_RACOON_FALL_TAIL_LEFT		46
 
+#define MARIO_ANI_BIG_TO_RACOON			47
+
 // Indexes are defined for filtering some common animations by level
 #define MARIO_ANI_IDLE_RIGHT	0
 #define MARIO_ANI_IDLE_LEFT		1
@@ -127,7 +129,12 @@
 #define MARIO_SMALL_BBOX_WIDTH  13
 #define MARIO_SMALL_BBOX_HEIGHT 15
 
-#define MARIO_UNTOUCHABLE_TIME 5000
+#define MARIO_UNTOUCHABLE_TIME 3000
+#define MARIO_TRANSFORM_SIZE_TIME 800
+#define MARIO_TRANSFORM_RACOON_TIME 450
+
+#define MARIO_SIZE_TRANSFORMING	1
+#define MARIO_RACOOON_TRANSFORMING	2
 
 
 class CMario : public CGameObject
@@ -151,7 +158,7 @@ class CMario : public CGameObject
 	DWORD startTransforming = (DWORD)0;
 	DWORD startFlying;
 
-	bool transforming;
+	int transforming;
 
 	int backupLevel = 1;
 	int backupState;
@@ -214,6 +221,8 @@ class CMario : public CGameObject
 public:
 	bool flyUp = 0;
 
+	int transform_duration_time = 0;
+
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Render();
@@ -267,8 +276,8 @@ public:
 	void SetIsFallingTail(bool val);
 	bool GetIsFallingTail();
 
-	void SetTransforming(bool val);
-	bool GetTransforming();
+	void SetTransforming(int val);
+	int GetTransforming();
 
 	void SetStartTransforming(DWORD startTransforming);
 	DWORD GetStartTransforming();
@@ -283,18 +292,41 @@ public:
 
 	void turnIntoBig();
 
-	void Reset();
-
-	void RenderSizeTransforming();
-
-	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	void BigToRacoon();
+	void RacoonToBig();
 
 	void ToBig();
 	void ToSmall();
 
 	void ToRacoon();
 
+	void Reset();
+
+	void RenderSizeTransforming();
+	void RenderBigToRacoonTransforming();
+
+	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+
 	void finishSizeTransforming();
+	void finishRacoonTransforming();
 
 	int filterSomeCommonAniByLevel();
+
+	void StartTransforming() {
+		if (transforming == MARIO_SIZE_TRANSFORMING) {
+			RenderSizeTransforming();
+		}	
+		else if (transforming == MARIO_RACOOON_TRANSFORMING) {
+			RenderBigToRacoonTransforming();
+		}
+	}
+
+	void FinishTransforming() {
+		if (transforming == MARIO_SIZE_TRANSFORMING) {
+			finishSizeTransforming();
+		}
+		else if (transforming == MARIO_RACOOON_TRANSFORMING) {
+			finishRacoonTransforming();
+		}
+	}
 };

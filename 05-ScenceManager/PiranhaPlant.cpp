@@ -72,6 +72,7 @@ void PiranhaPlant::Render()
 			ani = (this->y == climax) ? PIRANHAPLANT_ANI_BOTRIGHT_STILL : PIRANHAPLANT_ANI_BOTRIGHT;
 		}
 	}
+	currAni = ani;
 
 	animation_set->at(ani)->Render(x, y);
 	//RenderBoundingBox();

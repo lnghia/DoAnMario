@@ -35,6 +35,10 @@ void QBrick::PopUpHiddenItem()
 
 		break;
 	}
+	case OBJECT_TYPE_LEAF:
+		obj = new Leaf(x, y);
+
+		break;
 	}
 
 	if (hiddenItem == OBJECT_TYPE_COIN) {

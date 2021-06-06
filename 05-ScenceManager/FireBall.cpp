@@ -78,13 +78,18 @@ void FireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 					mario->SetSpeed(0, 0);
 
-					if (mario->GetLevel() > MARIO_LEVEL_SMALL)
+					if (mario->GetLevel() == MARIO_LEVEL_BIG)
 					{
 						//mario->SetLevel(MARIO_LEVEL_SMALL);
 						mario->SetBackupLevel(MARIO_LEVEL_SMALL);
 						mario->SetBackupState(mario->GetState());
 						mario->SetStartTransforming(GetTickCount());
 						mario->turnIntoSmall();
+						mario->StartUntouchable();
+					}
+					else if (mario->GetLevel() == MARIO_LEVEL_RACOON) {
+						mario->SetStartTransforming(GetTickCount());
+						mario->RacoonToBig();
 						mario->StartUntouchable();
 					}
 					else

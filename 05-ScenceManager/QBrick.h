@@ -2,6 +2,7 @@
 #include "Brick.h"
 #include "Coin.h"
 #include "Mushroom.h"
+#include "Leaf.h"
 #include "GameObject.h"
 
 #define QBRICK_ANI_MYSTERIOUS 0

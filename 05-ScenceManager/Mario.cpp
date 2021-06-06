@@ -36,7 +36,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		Reset();
 	}
 
-	if (transforming && GetTickCount() - startTransforming < 800) {
+	if (transforming && GetTickCount() - startTransforming < transform_duration_time) {
 		return;
 	}
 	if (isFlying && GetTickCount() - startFlying > 200) {
@@ -267,7 +267,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						StartUntouchable();
 					}
 					else if (level == MARIO_LEVEL_RACOON) {
-
+						startTransforming = GetTickCount();
+						RacoonToBig();
+						StartUntouchable();
 					}
 					else
 						SetState(MARIO_STATE_DIE);
@@ -344,7 +346,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					y += _dy;
 				}
 			}
-			else if (dynamic_cast<Mushroom*>(e->obj)) {
+			else if (dynamic_cast<Mushroom*>(e->obj) || dynamic_cast<Leaf*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
 				y -= min_ty * dy + ny * 0.4f;
 
@@ -579,7 +581,7 @@ void CMario::ToRacoon()
 
 void CMario::finishSizeTransforming()
 {
-	if (transforming && GetTickCount() - startTransforming >= 800) {
+	if (transforming && GetTickCount() - startTransforming >= MARIO_TRANSFORM_SIZE_TIME) {
 		//player->SetState(player->Get)
 		SetState(backupState);
 
@@ -594,6 +596,13 @@ void CMario::finishSizeTransforming()
 
 		transforming = 0;
 		//player->SetStartTransforming((DWORD)0);
+	}
+}
+
+void CMario::finishRacoonTransforming()
+{
+	if (transforming && GetTickCount() - startTransforming >= MARIO_TRANSFORM_RACOON_TIME) {
+		transforming = 0;
 	}
 }
 
@@ -748,12 +757,12 @@ bool CMario::GetIsFallingTail() {
 	return isFallingTail;
 }
 
-void CMario::SetTransforming(bool val)
+void CMario::SetTransforming(int val)
 {
 	transforming = val;
 }
 
-bool CMario::GetTransforming() {
+int CMario::GetTransforming() {
 	return transforming;
 }
 
@@ -787,6 +796,7 @@ float CMario::GetVy() {
 void CMario::turnIntoSmall()
 {
 	transforming = 1;
+	transform_duration_time = MARIO_TRANSFORM_SIZE_TIME;
 	level = MARIO_LEVEL_SMALL;
 	y = (y + (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT));
 	SetState(MARIO_STATE_BIG_TO_SMALL);
@@ -800,9 +810,24 @@ void CMario::turnIntoBig() {
 		return;
 	}*/
 	transforming = 1;
+	transform_duration_time = MARIO_TRANSFORM_SIZE_TIME;
 	level = MARIO_LEVEL_BIG;
 	y = (y - (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT));
 	SetState(MARIO_STATE_BIG_TO_SMALL);
+}
+
+void CMario::BigToRacoon() {
+	transforming = MARIO_RACOOON_TRANSFORMING;
+	transform_duration_time = MARIO_TRANSFORM_RACOON_TIME;
+	level = MARIO_LEVEL_RACOON;
+	y -= abs(MARIO_RACOON_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT);
+}
+
+void CMario::RacoonToBig() {
+	transforming = MARIO_RACOOON_TRANSFORMING;
+	transform_duration_time = MARIO_TRANSFORM_RACOON_TIME;
+	level = MARIO_LEVEL_BIG;
+	y += abs(MARIO_RACOON_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT);
 }
 
 /*
@@ -834,5 +859,9 @@ void CMario::RenderSizeTransforming()
 	}
 
 	animation_set->at(ani)->Render(x, y);
+}
+
+void CMario::RenderBigToRacoonTransforming() {
+	animation_set->at(MARIO_ANI_BIG_TO_RACOON)->Render(x, y);
 }
 

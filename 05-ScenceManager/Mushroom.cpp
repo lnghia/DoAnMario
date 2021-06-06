@@ -2,24 +2,6 @@
 #include "PlayScence.h"
 #include "Map.h"
 
-Mushroom::Mushroom(float x, float y)
-{
-	this->x = x;
-	this->y = y;
-
-	interactivable = 1;
-	invisible = 0;
-	renderPriority = 100;
-	canBeStandOn = 0;
-
-	containerX = x;
-	containerY = y;
-
-	vx = 0;
-	vy = MUSHROOM_RISING_UP;
-
-	state = MUSHROOM_STATE_APPEAR;
-}
 
 void Mushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -36,6 +18,8 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 		isActive = 0;
 		Grid::GetInstance()->clearObjFromGrid(this);
 	}
+
+	//deactivateThisIfUnderGround();
 
 	CGame* game = CGame::GetInstance();
 
@@ -66,19 +50,8 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 			}
 
 			grid->putObjectIntoGrid(this);
-
-			/*if(CGame::GetInstance()->GetCurrentScene()->)
-
-			vx = MUSHROOM_MOVING_RIGHT;*/
 		}
-	}/*
-	if (y + MUSHROOM_BBOX_HEIGHT >= containerY) {
-		CGameObject::Update(dt);
-		x += dx;
-		y += dy;
-
-		return;
-	}*/
+	}
 
 	grid->clearObjFromGrid(this);
 
@@ -94,27 +67,7 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 	float _dx = dx;
 	float _dy = dy;
 
-	//DebugOut(L"============\n");
-
-	/*for (UINT i = 0; i < colliable_objects->size(); ++i) {
-		string type = "B";
-		float x, y;
-
-		colliable_objects->at(i)->GetPosition(x, y);
-
-		if (dynamic_cast<CMario*>(colliable_objects->at(i))) {
-			type = "Mario";
-		}
-
-		std::wstring stemp = std::wstring(type.begin(), type.end());
-		LPCWSTR sw = stemp.c_str();
-
-		DebugOut(L"[COLLIDABLE] %s - %f %f\n", sw, x, y);
-	}*/
-
 	CalcPotentialCollisions(colliable_objects, coEvents);
-
-	//DebugOut(L"-------- %d\n", coEvents.size());
 
 	if (coEvents.size() == 0)
 	{
@@ -145,8 +98,6 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 
 			e->obj->GetPosition(bx, by);
 
-			//DebugOut(L"[NAM COLLS] %f %f - %f %f - %d\n", e->nx, e->ny, bx, by, coEventsResult.size());
-
 			if (dynamic_cast<CMario*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
 				y -= min_ty * dy + ny * 0.4f;
@@ -154,6 +105,8 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 				CMario* mario = dynamic_cast<CMario*>(e->obj);
 
 				GotObsorbed(mario);
+				LPGAMEOBJECT point = new Point(MUSHROOM_POINT, x, y);
+				grid->putObjectIntoGrid(point);
 
 				if (mario->GetLevel() != MARIO_LEVEL_BIG) {
 					mario->SetBackupLevel(MARIO_LEVEL_BIG);
@@ -163,17 +116,6 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 				}
 			}
 			else if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj)) {
-				//_dx = _dy = 0;
-
-				/*if (nx != 0) {
-
-					vx *= -1;
-				}*/
-				//vx=(nx)
-
-				/*if (nx) {
-					vx *= -1;
-				}*/
 
 				if (e->nx) {
 					float l, t, r, b;
@@ -198,12 +140,6 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 				x += _dx;
 
 				if (e->ny < 0) {
-					//x -= min_tx * dx + nx * 0.4f;
-					//y -= min_ty * dy + ny * 0.4f;
-					
-
-
-					//y += vy * e->t;
 					vy = 0;
 				}
 				else {

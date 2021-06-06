@@ -5,6 +5,13 @@
 
 HiddenItem::HiddenItem(float x, float y)
 {
+	this->x = x;
+	this->y = y;
+
+	interactivable = 1;
+	invisible = 0;
+	renderPriority = 100;
+	canBeStandOn = 0;
 }
 
 void HiddenItem::GetBoundingBox(float& l, float& t, float& r, float& b)
