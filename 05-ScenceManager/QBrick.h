@@ -15,6 +15,12 @@ class QBrick : public CGameObject
 {
 	int hiddenItem;
 	int hiddenItemAni;
+
+	float oldX;
+	float oldY;
+
+	DWORD start_hopUp;
+	bool hopUp = 0;
 public:
 	QBrick(){}
 	QBrick(int hiddenItem, int hiddenItemAni){
@@ -34,5 +40,7 @@ public:
 	virtual void RenderCurrFrame();
 
 	void PopUpHiddenItem();
+
+	void HopUpABit();
 };
 

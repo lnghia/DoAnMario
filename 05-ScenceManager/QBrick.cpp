@@ -4,6 +4,9 @@
 
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
+	if (hopUp && GetTickCount() - start_hopUp >= 150) {
+		y = oldY;
+	}
 }
 
 void QBrick::RenderCurrFrame()
@@ -53,13 +56,31 @@ void QBrick::PopUpHiddenItem()
 		grid->putObjectIntoGrid(obj);
 	}
 
-	state = QBRICK_STATE_NO_MORE_MYSTERIOUS;
+	//state = QBRICK_STATE_NO_MORE_MYSTERIOUS;
+
+	HopUpABit();
 	// add the object into the grid (in case that object is a mushroom or something other than coin)
+}
+
+void QBrick::HopUpABit()
+{
+	if (state == QBRICK_STATE_MYSTERIOUS) {
+		oldY = y;
+		//vx = -0.5f;
+		y -= 1.0f;
+		state = QBRICK_STATE_NO_MORE_MYSTERIOUS;
+		start_hopUp = GetTickCount();
+		hopUp = 1;
+	}
 }
 
 void QBrick::Render()
 {
-	animation_set->at(0)->Render(x, y);
+	int ani = (state == QBRICK_STATE_MYSTERIOUS) ? QBRICK_ANI_MYSTERIOUS : QBRICK_ANI_NO_MORE_MYSTERIOUS;
+
+	currAni = ani;
+
+	animation_set->at(ani)->Render(x, y);
 	//RenderBoundingBox();
 }
 

@@ -33,8 +33,10 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 
 	if (rising)
 		y -= LEAF_RISING_SPEED_VY;
-	else
+	else {
 		state = LEAF_STATE_FALLING;
+		renderPriority = 102;
+	}
 
 	if (state == LEAF_STATE_FALLING)
 	{

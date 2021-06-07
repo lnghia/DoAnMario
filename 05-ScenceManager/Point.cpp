@@ -6,6 +6,8 @@ Point::Point(unsigned short int point, float x, float y)
 	canBeStandOn = 0;
 	invisible = 0;
 
+	renderPriority = 999;
+
 	this->point = point;
 
 	vx = 0;
