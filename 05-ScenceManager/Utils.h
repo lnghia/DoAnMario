@@ -25,4 +25,7 @@ LPCWSTR ToLPCWSTR(string st);
 
 vector<int> stringToVectorOfInt(string& str, string delimeters = "\t");
 
-bool cmp(LPGAMEOBJECT a, LPGAMEOBJECT b); 
+bool cmp(LPGAMEOBJECT a, LPGAMEOBJECT b);
+
+bool doOverlap(const float& l1, const float& t1, const float& r1, const float& b1,
+	const float& l2, const float& t2, const float& r2, const float& b2);

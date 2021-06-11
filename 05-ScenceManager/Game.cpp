@@ -268,7 +268,7 @@ void CGame::SweptAABB(
 	else if (dx < 0)
 	{
 		dx_entry = sr - ml;
-		dx_exit = sl- mr;
+		dx_exit = sl - mr;
 	}
 
 

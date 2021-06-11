@@ -2,7 +2,9 @@
 
 CBrick::CBrick()
 {
-	canBeStandOn = 1;
+	canBeStandOn = 0;
+	isActive = 1;
+	interactivable = 0;
 }
 
 void CBrick::Render()

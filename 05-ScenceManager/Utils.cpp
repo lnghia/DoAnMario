@@ -79,3 +79,26 @@ bool cmp(LPGAMEOBJECT a, LPGAMEOBJECT b)
 {
 	return a->GetRenderPriority() < b->GetRenderPriority();
 }
+
+bool doOverlap(const float& l1, const float& t1, const float& r1, const float& b1, const float& l2, const float& t2, const float& r2, const float& b2)
+{
+	// To check if either rectangle is actually a line
+	// For example :  l1 ={-1,0}  r1={1,1}  l2={0,-1}
+	// r2={0,1}
+
+	if (l1 == r1 || t1 == b2 || l2 == r2
+		|| t2 == b2) {
+		// the line cannot have positive overlap
+		return false;
+	}
+
+	// If one rectangle is on left side of other
+	if (l1 >= r2 || l2 >= r1)
+		return false;
+
+	// If one rectangle is above other
+	if (t1 <= b2 || t2 <= b1)
+		return false;
+
+	return true;
+}

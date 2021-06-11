@@ -32,6 +32,10 @@ public:
 	void Add(int spriteId, DWORD time = 0);
 
 	void Render(float x, float y, int alpha = 255);
+
+	void RenderCurrFrame(float x, float y, int alpha = 255);
+
+	void _Render(float x, float y, int alpha = 255);
 };
 
 typedef CAnimation *LPANIMATION;

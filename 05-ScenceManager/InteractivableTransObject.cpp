@@ -14,6 +14,7 @@ InteractivableTransObject::InteractivableTransObject(int width, int height)
 
 void InteractivableTransObject::Render()
 {
+	RenderBoundingBox();
 }
 
 void InteractivableTransObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

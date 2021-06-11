@@ -3,6 +3,7 @@
 JustForShow::JustForShow()
 {
 	interactivable = 0;
+	renderPriority = 99;
 }
 
 void JustForShow::Render()

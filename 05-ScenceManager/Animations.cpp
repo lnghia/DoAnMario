@@ -39,7 +39,43 @@ void CAnimation::Render(float x, float y, int alpha)
 		}
 	}
 
+	frames[currentFrame]->GetSprite()->Draw(round(x), round(y), alpha);
+	//frames[currentFrame]->GetSprite()->Draw(x, y, alpha);
+}
+
+void CAnimation::RenderCurrFrame(float x, float y, int alpha)
+{
+	if (currentFrame == -1) {
+		currentFrame = 0;
+	}
 	frames[currentFrame]->GetSprite()->Draw(x, y, alpha);
+}
+
+void CAnimation::_Render(float x, float y, int alpha)
+{
+	/*int height1, height2;
+
+	DWORD now = GetTickCount();
+	if (currentFrame == -1)
+	{
+		currentFrame = 0;
+		lastFrameTime = now;
+	}
+	else
+	{
+		DWORD t = frames[currentFrame]->GetTime();
+		if (now - lastFrameTime > t)
+		{
+			height1 = frames[currentFrame]->GetSprite()->GetHeight();
+			currentFrame = (currentFrame + 1) % frames.size();
+			lastFrameTime = now;
+			height2 = frames[currentFrame]->GetSprite()->GetHeight();
+		}
+	}
+
+	int difference = height1 - height2;
+
+	frames[currentFrame]->GetSprite()->Draw(round(x), round(y + difference), alpha);*/
 }
 
 CAnimations * CAnimations::__instance = NULL;

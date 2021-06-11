@@ -81,13 +81,13 @@ vector<int> Map::GetTilesOnCam()
 
 	int w = instance->GetScreenWidth();
 
-	int left = floor(instance->GetCamX() / (float)tileWidth);
-	int right = ceil((instance->GetCamX() + instance->GetScreenWidth() + 1) / (float)tileWidth);
-	int top = floor(instance->GetCamY() / (float)tileHeight);
-	int bottom = ceil((instance->GetCamY() + instance->GetScreenHeight() + 1) / (float)tileHeight);
+	int left = (instance->GetCamX() / (float)tileWidth);
+	int right = ((instance->GetCamX() + instance->GetScreenWidth()) / (float)tileWidth);
+	int top = (instance->GetCamY() / (float)tileHeight);
+	int bottom = ((instance->GetCamY() + instance->GetScreenHeight()) / (float)tileHeight);
 
-	//return vector<int>{ left, right, top, bottom };
-	return vector<int>{0, 175, 0, 26};
+	return vector<int>{ left, right, top, bottom };
+	//return vector<int>{0, 175, 0, 26};
 }
 
 void Map::RenderBoundingBox(int x, int y)
@@ -126,8 +126,17 @@ void Map::Draw()
 		}
 	}*/
 
+	//if(tilesOnCam[2]<0 || tilesOnCam[2]>=map.size())
+
 	for (int row = tilesOnCam[2]; row <= tilesOnCam[3]; ++row) {
+		if (row >= map.size()) {
+			break;
+		}
 		for (int col = tilesOnCam[0]; col <= tilesOnCam[1]; ++col) {
+			if (col >= map[row].size()) {
+				break;
+			}
+
 			int tmp = map[row][col];
 
 			int _r = map[row][col] / tilesPerRowInTileSet;
