@@ -37,6 +37,18 @@
     <Filter Include="Source Files\Items">
       <UniqueIdentifier>{057baeb2-2bf2-4ffa-961f-88803ba65304}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Player">
+      <UniqueIdentifier>{eb2615fd-a614-4e97-b5e5-58574c257f6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Player">
+      <UniqueIdentifier>{367f453f-ecd7-4190-a7e7-5da16f454cf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameBoard">
+      <UniqueIdentifier>{741bd886-1f3b-4fb1-a460-2607b1e21d42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameBoard">
+      <UniqueIdentifier>{67b906f2-91f9-49b3-aefa-cc849b7ab312}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -46,9 +58,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mario.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sprites.cpp">
@@ -126,15 +135,60 @@
     <ClCompile Include="HiddenItem.cpp">
       <Filter>Source Files\Items</Filter>
     </ClCompile>
+    <ClCompile Include="Leaf.cpp">
+      <Filter>Source Files\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Wood.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatingCoin.cpp">
+      <Filter>Source Files\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Mario.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Digit.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="SpeedBar.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="LivesCounter.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCounter.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="MoneyCounter.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeTicker.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Alphabet.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="Displayer.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameItemStack.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemBox.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mario.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sprites.h">
@@ -217,6 +271,51 @@
     </ClInclude>
     <ClInclude Include="HiddenItem.h">
       <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Leaf.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Wood.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatingCoin.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Mario.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Digit.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="SpeedBar.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="LivesCounter.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCounter.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="MoneyCounter.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeTicker.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldName.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Alphabet.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="Displayer.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="Board.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameItemStack.h">
+      <Filter>Header Files\GameBoard</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

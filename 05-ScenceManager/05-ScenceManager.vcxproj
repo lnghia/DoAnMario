@@ -23,6 +23,7 @@
     <ProjectGuid>{C83A385D-5992-4E1B-B783-AB1D446414D5}</ProjectGuid>
     <RootNamespace>My05ScenceManager</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Mario</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -124,25 +125,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Alphabet.cpp" />
     <ClCompile Include="Animations.cpp" />
+    <ClCompile Include="Board.cpp" />
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="ColorBrickHitBox.cpp" />
+    <ClCompile Include="Digit.cpp" />
+    <ClCompile Include="Displayer.cpp" />
+    <ClCompile Include="EndGameItemStack.cpp" />
     <ClCompile Include="FireBall.cpp" />
+    <ClCompile Include="FloatingCoin.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="InteractivableTransObject.cpp" />
     <ClCompile Include="HiddenItem.cpp" />
+    <ClCompile Include="ItemBox.cpp" />
     <ClCompile Include="JustForShow.cpp" />
     <ClCompile Include="Koopas.cpp" />
+    <ClCompile Include="Leaf.cpp" />
+    <ClCompile Include="LivesCounter.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MoneyCounter.cpp" />
     <ClCompile Include="Mushroom.cpp" />
     <ClCompile Include="Musroom.cpp" />
     <ClCompile Include="PipeHitBox.cpp" />
     <ClCompile Include="PiranhaPlant.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="PointCounter.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="QBrick.cpp" />
+    <ClCompile Include="SpeedBar.cpp" />
+    <ClCompile Include="TimeTicker.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -153,28 +167,42 @@
     <ClCompile Include="Scence.cpp" />
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="Textures.cpp" />
+    <ClCompile Include="Wood.cpp" />
+    <ClCompile Include="WorldName.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Alphabet.h" />
     <ClInclude Include="Animations.h" />
+    <ClInclude Include="Board.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="ColorBrickHitBox.h" />
+    <ClInclude Include="Digit.h" />
+    <ClInclude Include="Displayer.h" />
+    <ClInclude Include="EndGameItemStack.h" />
     <ClInclude Include="FireBall.h" />
+    <ClInclude Include="FloatingCoin.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="InteractivableTransObject.h" />
     <ClInclude Include="HiddenItem.h" />
     <ClInclude Include="JustForShow.h" />
     <ClInclude Include="Koopas.h" />
+    <ClInclude Include="Leaf.h" />
+    <ClInclude Include="LivesCounter.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="MoneyCounter.h" />
     <ClInclude Include="Mushroom.h" />
     <ClInclude Include="Musroom.h" />
     <ClInclude Include="ObjectCheatSheet.h" />
     <ClInclude Include="PipeHitBox.h" />
     <ClInclude Include="PiranhaPlant.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="PointCounter.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="QBrick.h" />
+    <ClInclude Include="SpeedBar.h" />
+    <ClInclude Include="TimeTicker.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
@@ -185,6 +213,8 @@
     <ClInclude Include="Scence.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="Textures.h" />
+    <ClInclude Include="Wood.h" />
+    <ClInclude Include="WorldName.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
