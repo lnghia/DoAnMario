@@ -14,8 +14,11 @@
 #include "ColorBrickHitBox.h"
 #include "QBrick.h"
 #include "Ground.h"
+#include "Wood.h"
+#include "FloatingCoin.h"
 
 #include "Map.h"
+#include "Board.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -36,11 +39,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		Reset();
 	}
 
-	if (transforming && GetTickCount() - startTransforming < transform_duration_time) {
+	if (transforming && GetTickCount64() - startTransforming < transform_duration_time) {
 		return;
 	}
-	if (isFlying && GetTickCount() - startFlying > 200) {
-		if (GetTickCount() - startFlying > 2000) {
+	if (isFlying && GetTickCount64() - startFlying > 200 && state != MARIO_STATE_DIE) {
+		if (GetTickCount64() - startFlying > 2000) {
 			SetState(MARIO_STATE_FALL);
 		}
 		else {
@@ -48,36 +51,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	//for (UINT i = 0; i < coObjects->size(); ++i) {
-	//	float x, y;
-	//	coObjects->at(i)->GetPosition(x, y);
-	//	//DebugOut(L"[X-Y] %f - %f\n", x, y);
-	//	if (x == 353.0f && y == 384.0f) {
-	//		DebugOut(L"abc\n");
-	//	}
-	//}
-
-	/*for (UINT i = 0; i < coObjects->size(); ++i) {
-		float x, y;
-		coObjects->at(i)->GetPosition(x, y);
-		DebugOut(L"[OBJ] %f - %f\n", x, y);
-		if ((x == 480.0f || x == 496.0f) && y == 416.0f) {
-			DebugOut(L"abc\n");
-		}
-	}*/
-
 	oldX = x;
 	oldY = y;
-
-	/*if (abs(vx) < MARIO_WALKING_MAX_SPEED && (state == MARIO_STATE_WALKING_RIGHT || state == MARIO_STATE_WALKING_RIGHT)) {
-		vx += accelerationX * dt;
-	}*/
-
-	/*if (isFlying) {
-		vy = (flyUp) ? MARIO_RACOON_FLY_VY : MARIO_RACOON_FALL_VY;
-		flyUp = !flyUp;
-	}*/
-
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -86,7 +61,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	Grid::GetInstance()->clearObjFromGrid(this);
 
 	// Simple fall down
-	if(!isFlying && !isFalling && !isGliding) vy += MARIO_GRAVITY * dt;
+	if (!isFlying && !isFalling && !isGliding) vy += MARIO_GRAVITY * dt;
+
+	DebugOut(L"[DEBUG] %f - %f\n", _dy, vy);
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -99,31 +76,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	coEvents.clear();
 
-	/*for (UINT i = 0; i < coObjects->size(); ++i) {
-		if (dynamic_cast<ColorBrickHitBox*>(coObjects->at(i))) {
-			coObjects->at(i)->GetBoundingBox(l2, t2, r2, b2);
-			if (doOverlap(l1, t1, r1, b1, l2, t2, r2, b2)) {
-				exceptions.push_back(i);
-			}
-		}
-	}
-
-	for (auto& ind : exceptions) {
-		remove(coObjects->begin(), coObjects->end(), coObjects->at(ind));
-	}*/
-
-	// turn off collision when die 
-
-	/*if (GetTickCount() - untouchable_start <= MARIO_UNTOUCHABLE_TIME) {
-		coObjects->erase(std::remove_if(coObjects->begin(), coObjects->end(),
-			[](auto& obj) { return dynamic_cast<FireBall*>(obj); }), coObjects->end());
-	}*/
-
 	if (state != MARIO_STATE_DIE)
 		CalcPotentialCollisions(coObjects, coEvents);
 
 	// reset untouchable timer if untouchable time has passed
-	if (GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
+	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
@@ -134,11 +91,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		x += dx;
 		y += dy;
-
-		/*Grid::GetInstance()->putObjectIntoGrid(this);
-		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
-
-		return;*/
 	}
 	else
 	{
@@ -149,17 +101,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-		//if (rdx != 0 && rdx!=dx)
-		//	x += nx*abs(rdx); 
-
 		// block every object first!
 		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.4f;
 
 		float temp = vy;
-		//if (nx != 0) vx = 0;
-		//if (ny != 0) vy = 0;
 
 		//
 		// Collision logic with other objects
@@ -192,20 +138,29 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
+					LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+					Grid::GetInstance()->putObjectIntoGrid(point);
 				}
 				else if (e->nx != 0)
 				{
+					x -= min_tx * dx + nx * 0.4f;
+
 					if (untouchable == 0)
 					{
 						if (goomba->GetState() != GOOMBA_STATE_DIE)
 						{
-							if (level > MARIO_LEVEL_SMALL)
+							if (level == MARIO_LEVEL_BIG)
 							{
 								//level = MARIO_LEVEL_SMALL;
 								backupLevel = MARIO_LEVEL_SMALL;
 								backupState = state;
-								startTransforming = GetTickCount();
+								startTransforming = GetTickCount64();
 								turnIntoSmall();
+								StartUntouchable();
+							}
+							else if (level == MARIO_LEVEL_RACOON) {
+								SetStartTransforming(GetTickCount64());
+								RacoonToBig();
 								StartUntouchable();
 							}
 							else
@@ -223,33 +178,26 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				x -= min_tx * dx + nx * 0.4f;
 				y -= min_ty * dy + ny * 0.4f;
 
-				string s;
-				float px, py;
+				if (!untouchable) {
+					SetSpeed(0, 0);
 
-				//for (auto& ev : coEventsResult) {
-				//	/*std::wstring stemp = std::wstring(s.begin(), s.end());
-				//	LPCWSTR sw = stemp.c_str();*/
-
-				//	e->obj->GetPosition(px, py);
-
-				//	DebugOut(L"[COS] %f %f\n", px, py);
-				//}
-
-				/*remove(coObjects->begin(), coObjects->end(), e->obj);
-
-				Update(dt, coObjects);*/
-
-				//if (untouchable == 0)
-				//{
-				//	if (level > MARIO_LEVEL_SMALL)
-				//	{
-				//		//level = MARIO_LEVEL_SMALL;
-				//		turnIntoSmall();
-				//		StartUntouchable();
-				//	}
-				//	else
-				//		SetState(MARIO_STATE_DIE);
-				//}
+					if (level == MARIO_LEVEL_BIG)
+					{
+						//mario->SetLevel(MARIO_LEVEL_SMALL);
+						SetBackupLevel(MARIO_LEVEL_SMALL);
+						SetBackupState(GetState());
+						SetStartTransforming((DWORD)GetTickCount64());
+						turnIntoSmall();
+						StartUntouchable();
+					}
+					else if (GetLevel() == MARIO_LEVEL_RACOON) {
+						SetStartTransforming((DWORD)GetTickCount64());
+						RacoonToBig();
+						StartUntouchable();
+					}
+					else
+						SetState(MARIO_STATE_DIE);
+				}
 			}
 			else if (dynamic_cast<PiranhaPlant*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
@@ -262,12 +210,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						//level = MARIO_LEVEL_SMALL;
 						backupLevel = MARIO_LEVEL_SMALL;
 						backupState = state;
-						startTransforming = GetTickCount();
+						startTransforming = (DWORD)GetTickCount64();
 						turnIntoSmall();
 						StartUntouchable();
 					}
 					else if (level == MARIO_LEVEL_RACOON) {
-						startTransforming = GetTickCount();
+						startTransforming = (DWORD)GetTickCount64();
 						RacoonToBig();
 						StartUntouchable();
 					}
@@ -279,11 +227,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					y += _dy;
 				}
 			}
-			else if (dynamic_cast<Ground*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj)) {
-				/*x += min_tx * dx + nx * 0.4f;
-				y += min_ty * dy + ny * 0.4f;*/
-
-
+			else if (dynamic_cast<Ground*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Wood*>(e->obj)) {
 				_dx = _dy = 0;
 
 				if (e->nx != 0) {
@@ -294,15 +238,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (e->ny) {
 					vy = 0;
 				}
-				/*Grid::GetInstance()->putObjectIntoGrid(this);
-				for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
-
-				return;*/
 			}
 			else if (dynamic_cast<QBrick*>(e->obj)) {
-				/*x += min_tx * dx + nx * 0.4f;
-				y += min_ty * dy + ny * 0.4f;*/
-
 				if (e->nx != 0) {
 					vx = 0;
 					isRunning = 0;
@@ -317,23 +254,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
-				/*x += min_tx * dx + nx * 0.4f;
-				y += min_ty * dy + ny * 0.4f;*/
-
-				//if (e->ny < 0) {
-				//	//x -= min_tx * dx + nx * 0.4f;
-				//	//y -= min_ty * dy + ny * 0.4f;
-
-
-
-				//	//y += vy * e->t;
-				//	vy = 0;
-				//}
-				//else {
-				//	//vy = temp;
-				//	x += _dx;
-				//	y += _dy;
-				//}
 
 				if (e->ny < 0) {
 					vy = 0;
@@ -346,29 +266,37 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					y += _dy;
 				}
 			}
-			else if (dynamic_cast<Mushroom*>(e->obj) || dynamic_cast<Leaf*>(e->obj)) {
+			else if (dynamic_cast<Mushroom*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
 				y -= min_ty * dy + ny * 0.4f;
 
-				/*backupLevel = MARIO_LEVEL_BIG;
-				backupState = state;
-				startTransforming = GetTickCount();
-				turnIntoBig();*/
-				/*Mushroom* mushroom = dynamic_cast<Mushroom*>(e->obj);
 
-				if (e->nx || e->ny)	mushroom->GotObserved(this);*/
+			}
+			else if (dynamic_cast<FloatingCoin*>(e->obj)) {
+				x -= min_tx * dx + nx * 0.4f;
+				y -= min_ty * dy + ny * 0.4f;
+
+				dynamic_cast<FloatingCoin*>(e->obj)->GetObsorbed();
+			}
+			else if (dynamic_cast<Leaf*>(e->obj)) {
+				x -= min_tx * dx + nx * 0.4f;
+				y -= min_ty * dy + ny * 0.4f;
+
+				Leaf* leaf = dynamic_cast<Leaf*>(e->obj);
+
+				leaf->GotObsorbed(this);
+				LPGAMEOBJECT point = new Point(LEAF_POINT, x, y);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+
+				if (level != MARIO_LEVEL_RACOON && level != MARIO_LEVEL_SMALL) {
+					SetStartTransforming((DWORD)GetTickCount64());
+					BigToRacoon();
+				}
 			}
 		}
 	}
 
-	/*x += _dx;
-	y += _dy;*/
-
 	Grid::GetInstance()->putObjectIntoGrid(this);
-
-	/*if (state != MARIO_STATE_DIE) {
-		Grid::GetInstance()->putObjectIntoGrid(this);
-	}*/
 
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
@@ -392,7 +320,6 @@ void CMario::Render()
 			else {
 				ani = (nx > 0) ? MARIO_ANI_RACOON_FLY_RIGHT : MARIO_ANI_RACOON_FLY_LEFT;
 			}
-			//SetState(MARIO_STATE_FALL);
 		}
 		else if (isFallingTail) {
 			ani = (nx > 0) ? MARIO_ANI_RACOON_FALL_TAIL_RIGHT : MARIO_ANI_RACOON_FALL_TAIL_LEFT;
@@ -421,11 +348,6 @@ void CMario::SetState(int state)
 	switch (state)
 	{
 	case MARIO_STATE_WALKING_RIGHT: {
-		/*if (this->state != MARIO_STATE_WALKING_RIGHT) {
-			vx = MARIO_WALKING_SPEED;
-			accelerationX = MARIO_WALKING_ACCELERATION;
-			nx = 1;
-		}*/
 		if (isRunning == 0)
 			vx = MARIO_WALKING_SPEED;
 		else
@@ -437,27 +359,6 @@ void CMario::SetState(int state)
 		}
 		nx = 1;
 		break;
-		//if (nx < 0) {
-		//	if (isFlying) {
-		//		vx *= -1;
-		//		vy = MARIO_RACOON_FLY_VY;
-		//	}
-		//}
-		//else if (isRunning && isStanding) {
-		//	if (vx < MARIO_RUNNING_SPEED) {
-		//		vx += MARIO_WALKING_ACCELERATION;
-		//	}
-		//	else if (vx < MARIO_WALKING_SPEED) {
-		//		vx = MARIO_WALKING_SPEED;
-		//	}
-		//}
-		//else {
-		//	vx = MARIO_WALKING_SPEED;
-		//}
-		///*vx = MARIO_WALKING_SPEED;
-		//accelerationX = MARIO_WALKING_ACCELERATION;*/
-		//nx = 1;
-		//break;
 	}
 	case MARIO_STATE_WALKING_LEFT: {
 		if (isRunning == 0)
@@ -471,33 +372,21 @@ void CMario::SetState(int state)
 		}
 		nx = -1;
 		break;
-		//if (nx > 0) {
-		//	if (isFlying) {
-		//		vx *= -1;
-		//		vy = MARIO_RACOON_FLY_VY;
-		//	}
-		//}
-		//else if (isRunning && isStanding) {
-		//	if (vx > -MARIO_RUNNING_SPEED) {
-		//		vx -= MARIO_WALKING_ACCELERATION;
-		//	}
-		//	else if (vx > -MARIO_WALKING_SPEED) {
-		//		vx = -MARIO_WALKING_SPEED;
-		//	}
-		//}
-		//else {
-		//	vx = -MARIO_WALKING_SPEED;
-		//}
-		///*vx = -MARIO_WALKING_SPEED;
-		//accelerationX = -MARIO_WALKING_ACCELERATION;*/
-		//nx = -1;
-		//break;
 	}
 	case MARIO_STATE_JUMP: {
 		if (!isStanding) {
 			return;
 		}
 
+		/*if (abs(vy) < MARIO_JUMP_SLIGHTLY) {
+			vy = -MARIO_JUMP_SLIGHTLY;
+		}
+		else if (abs(vy) < MARIO_JUMP_SPEED_Y) {
+			vy -= MARIO_JUMP_ACCELERATION;
+		}
+		else {
+			vy = -MARIO_JUMP_SPEED_Y;
+		}*/
 		vy = -MARIO_JUMP_SPEED_Y;
 		isStanding = false;
 		isJumping = true;
@@ -513,13 +402,9 @@ void CMario::SetState(int state)
 		break;
 	}
 	case MARIO_STATE_FLY:
-		/*isFlying = 1;
-		isFalling = 0;
-		isStanding = 0;*/
 		StartFlying();
 		break;
 	case MARIO_STATE_FALL:
-		//isFlying = 0;
 		StartFalling();
 		break;
 	case MARIO_STATE_GLIDE:
@@ -530,7 +415,7 @@ void CMario::SetState(int state)
 		isFallingTail = 1;
 		break;
 	}
-	
+
 
 	CGameObject::SetState(state);
 }
@@ -557,9 +442,9 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 	else if (level == MARIO_LEVEL_RACOON) {
 		if (nx == 1) {
-			left += 7;
+			left += MARIO_RACOON_TAIL_LENGTH;
 		}
-		
+
 		right = left + MARIO_RACOON_BBOX_WIDTH;
 		bottom = y + MARIO_RACOON_BBOX_HEIGHT;
 	}
@@ -581,7 +466,7 @@ void CMario::ToRacoon()
 
 void CMario::finishSizeTransforming()
 {
-	if (transforming && GetTickCount() - startTransforming >= MARIO_TRANSFORM_SIZE_TIME) {
+	if (transforming && (DWORD)GetTickCount64() - startTransforming >= MARIO_TRANSFORM_SIZE_TIME) {
 		//player->SetState(player->Get)
 		SetState(backupState);
 
@@ -601,7 +486,7 @@ void CMario::finishSizeTransforming()
 
 void CMario::finishRacoonTransforming()
 {
-	if (transforming && GetTickCount() - startTransforming >= MARIO_TRANSFORM_RACOON_TIME) {
+	if (transforming && (DWORD)GetTickCount64() - startTransforming >= MARIO_TRANSFORM_RACOON_TIME) {
 		transforming = 0;
 	}
 }
@@ -821,6 +706,9 @@ void CMario::BigToRacoon() {
 	transform_duration_time = MARIO_TRANSFORM_RACOON_TIME;
 	level = MARIO_LEVEL_RACOON;
 	y -= abs(MARIO_RACOON_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT);
+	if (nx > 0) {
+		x -= MARIO_RACOON_TAIL_LENGTH;
+	}
 }
 
 void CMario::RacoonToBig() {
@@ -828,6 +716,9 @@ void CMario::RacoonToBig() {
 	transform_duration_time = MARIO_TRANSFORM_RACOON_TIME;
 	level = MARIO_LEVEL_BIG;
 	y += abs(MARIO_RACOON_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT);
+	if (nx > 0) {
+		x += MARIO_RACOON_TAIL_LENGTH;
+	}
 }
 
 /*
@@ -839,6 +730,7 @@ void CMario::Reset()
 	SetLevel(MARIO_LEVEL_SMALL);
 	SetPosition(start_x, start_y);
 	SetSpeed(0, 0);
+	Board::GetInstance()->GetTime()->Reset();
 }
 
 void CMario::RenderSizeTransforming()

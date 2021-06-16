@@ -15,6 +15,8 @@
 #include "QBrick.h"
 #include "Mushroom.h"
 #include "Ground.h"
+#include "FloatingCoin.h"
+#include "Board.h"
 
 
 class CPlayScene : public CScene
@@ -31,6 +33,7 @@ protected:
 	void _ParseSection_OBJECTS(const string& line);
 	void _ParseSection_GRID(const string& line);
 	void _ParseSection_MAP(const string& line);
+	void _ParseSection_Board(const string& line);
 
 public:
 	CPlayScene(int id, LPCWSTR filePath);

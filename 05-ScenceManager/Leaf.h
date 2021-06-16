@@ -39,6 +39,6 @@ public:
 		StartRising();
 	};
 
-	void StartRising() { rising = 1; rise_start = GetTickCount(); }
+	void StartRising() { rising = 1; rise_start = (DWORD)GetTickCount64(); }
 	void SetState(int state);
 };

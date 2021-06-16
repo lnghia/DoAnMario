@@ -10,10 +10,13 @@
 #define MARIO_RACOON_FALL_VY		0.05f
 #define MARIO_RACOON_FLY_VY			 -0.06f
 
-#define MARIO_WALKING_ACCELERATION	0.01f
+#define MARIO_JUMP_SLIGHTLY		0.25f
+#define MARIO_JUMP_ACCELERATION	0.01f
+
+#define MARIO_WALKING_ACCELERATION	0.001f
 
 //0.1f
-#define MARIO_JUMP_SPEED_Y		0.33f
+#define MARIO_JUMP_SPEED_Y		0.3f
 #define MARIO_JUMP_DEFLECT_SPEED 0.2f
 #define MARIO_GRAVITY			0.0008f
 #define MARIO_DIE_DEFLECT_SPEED	 0.3f
@@ -30,6 +33,7 @@
 #define MARIO_STATE_FALL			900
 #define MARIO_STATE_GLIDE			1000
 #define MARIO_STATE_FALL_TAIL		1100
+#define MARIO_STATE_JUMP_LONG		1200
 
 #define MARIO_ANI_BIG_IDLE_RIGHT		0
 #define MARIO_ANI_BIG_IDLE_LEFT			1
@@ -136,6 +140,8 @@
 #define MARIO_SIZE_TRANSFORMING	1
 #define MARIO_RACOOON_TRANSFORMING	2
 
+#define MARIO_RACOON_TAIL_LENGTH	7
+
 
 class CMario : public CGameObject
 {
@@ -230,9 +236,9 @@ public:
 	void SetState(int state);
 	void SetLevel(int l) { level = l; }
 	int GetLevel();
-	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
+	void StartUntouchable() { untouchable = 1; untouchable_start = (DWORD)GetTickCount64(); }
 
-	void StartFlying() { startFlying = GetTickCount(); isFlying = 1; isFalling = 0; isStanding = 0; isGliding = 0; vy = MARIO_RACOON_FLY_VY; };
+	void StartFlying() { startFlying = (DWORD)GetTickCount64(); isFlying = 1; isFalling = 0; isStanding = 0; isGliding = 0; vy = MARIO_RACOON_FLY_VY; };
 	void StartGliding() {
 		isGliding = 1; isFalling = 0; isStanding = 0; 
 		vy = MARIO_RACOON_GLIDE_VY;

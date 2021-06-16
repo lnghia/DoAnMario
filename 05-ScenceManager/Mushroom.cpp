@@ -93,7 +93,6 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-
 			float bx, by;
 
 			e->obj->GetPosition(bx, by);
@@ -115,7 +114,7 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 					mario->turnIntoBig();
 				}
 			}
-			else if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj)) {
+			else if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj)) {
 
 				if (e->nx) {
 					float l, t, r, b;

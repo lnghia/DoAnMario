@@ -1,7 +1,20 @@
 #include "Goomba.h"
+#include "Map.h"
+#include "Grid.h"
+#include "Brick.h"
+#include "ColorBrickHitBox.h"
+#include "QBrick.h"
+#include "PipeHitBox.h"
+#include "Ground.h"
+#include "FireBall.h"
+#include "PiranhaPlant.h"
+
 CGoomba::CGoomba()
 {
 	SetState(GOOMBA_STATE_WALKING);
+	interactivable = 1;
+	renderPriority = 101;
+
 }
 
 void CGoomba::GetBoundingBox(float &left, float &top, float &right, float &bottom)
@@ -18,22 +31,117 @@ void CGoomba::GetBoundingBox(float &left, float &top, float &right, float &botto
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
-	CGameObject::Update(dt, coObjects);
+	if (y > Map::getInstance()->getHeight()) {
+		interactivable = 0;
+		isActive = 0;
+		Grid::GetInstance()->clearObjFromGrid(this);
+	}
+
+	//deactivateThisIfUnderGround();
+
+	if (state == GOOMBA_STATE_DIE) {
+		if (GetTickCount() - start_die < GOOMBA_BODY_EXIST_TIME) {
+			return;
+		}
+		interactivable = 0;
+		isActive = 0;
+		Grid::GetInstance()->clearObjFromGrid(this);
+	}
+
+	CGame* game = CGame::GetInstance();
+
+	Grid* grid = Grid::GetInstance();
+
+	grid->clearObjFromGrid(this);
+
+	vy += GOOMBA_GRAVITY * dt;
+
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
+
+	coEvents.clear();
+
+	CGameObject::Update(dt);
+
+	float _dx = dx;
+	float _dy = dy;
+
+	for (UINT i = 0; i < coObjects->size(); ++i) {
+		LPGAMEOBJECT tmp = coObjects->at(i);
+
+		if (dynamic_cast<FireBall*>(coObjects->at(i)) || dynamic_cast<PiranhaPlant*>(coObjects->at(i)) || dynamic_cast<CBrick*>(coObjects->at(i))) {
+			coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), tmp), coObjects->end());
+		}
+	}
+
+	CalcPotentialCollisions(coObjects, coEvents);
+
+	if (coEvents.size() == 0) {
+		x += dx;
+		y += dy;
+
+		Grid::GetInstance()->putObjectIntoGrid(this);
+		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+
+		return;
+	}
+	else {
+		float min_tx, min_ty, nx = 0, ny;
+		float rdx = 0;
+		float rdy = 0;
+
+		// TODO: This is a very ugly designed function!!!!
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+		x += min_tx * dx + nx * 0.4f;
+		y += min_ty * dy + ny * 0.4f;
+
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
+			float bx, by;
+
+			e->obj->GetPosition(bx, by);
+			
+			if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj) || dynamic_cast<CGoomba*>(e->obj)) {
+
+				if (e->nx) {
+					float l, t, r, b;
+
+					e->obj->GetBoundingBox(l, t, r, b);
+
+					if (e->nx) {
+						vx *= -1;
+					}
+				}
+
+				if (ny) {
+					vy = 0;
+				}
+			}
+			//else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
+			//	x -= min_tx * dx + nx * 0.4f;
+			//	y -= min_ty * dy + ny * 0.4f;
+			//	x += _dx;
+
+			//	if (e->ny < 0) {
+			//		vy = 0;
+			//	}
+			//	else {
+			//		x += _dx;
+			//		y += _dy;
+			//	}
+			//}
+		}
+	}
 
 	//
 	// TO-DO: make sure Goomba can interact with the world and to each of them too!
 	// 
+	
+	if (isActive) grid->putObjectIntoGrid(this);
 
-	x += dx;
-	y += dy;
-
-	if (vx < 0 && x < 0) {
-		x = 0; vx = -vx;
-	}
-
-	if (vx > 0 && x > 290) {
-		x = 290; vx = -vx;
-	}
+	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
 void CGoomba::Render()
@@ -54,7 +162,9 @@ void CGoomba::SetState(int state)
 	switch (state)
 	{
 		case GOOMBA_STATE_DIE:
-			y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
+			y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1);
+			interactivable = 0;
+			start_die = GetTickCount();
 			vx = 0;
 			vy = 0;
 			break;

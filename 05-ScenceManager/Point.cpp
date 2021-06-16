@@ -75,10 +75,10 @@ void Point::Render()
 void Point::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
 	if (!fly_start) {
-		fly_start = GetTickCount();
+		fly_start = GetTickCount64();
 	}
 
-	if (GetTickCount() - fly_start < POINT_FLY_TIME) {
+	if (GetTickCount64() - fly_start < POINT_FLY_TIME) {
 		vy += POINT_GRAVITY * dt;
 
 		CGameObject::Update(dt);
@@ -90,7 +90,9 @@ void Point::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 	}
 	
 	isActive = 0;
-	Grid::GetInstance()->ObjIntoTrash(this);
+	invisible = 1;
+	Grid::GetInstance()->clearObjFromGrid(this);
+	//Grid::GetInstance()->ObjIntoTrash(this);
 }
 
 void Point::GetBoundingBox(float& l, float& t, float& r, float& b)

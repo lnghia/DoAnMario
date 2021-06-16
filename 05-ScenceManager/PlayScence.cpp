@@ -9,6 +9,7 @@
 #include "Portal.h"
 #include "Map.h"
 #include "Grid.h"
+#include "Wood.h"
 
 #include "ObjectCheatSheet.h"
 
@@ -150,7 +151,9 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
+	case OBJECT_TYPE_GOOMBA:
+		obj = new CGoomba();
+		break;
 	case OBJECT_TYPE_QBRICK: {
 		int hiddenItemType = atoi(tokens[4].c_str());
 		int	hiddenItemAni = atoi(tokens[5].c_str());
@@ -178,8 +181,8 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	}
 
 	case OBJECT_TYPE_INVISIBLE: {
-		float width = atof(tokens[4].c_str());
-		float height = atof(tokens[5].c_str());
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
 
 		obj = new InteractivableTransObject(width, height);
 
@@ -196,21 +199,21 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	case OBJECT_TYPE_PIPE_FOR_SHOW: {
 		obj = new JustForShow();
 
-		obj->SetRenderPriority(30);
+		obj->SetRenderPriority(99);
 
 		break;
 	}
 	case OBJECT_TYPE_COLOR_BRICK_HITBOX: {
-		float width = atof(tokens[4].c_str());
-		float height = atof(tokens[5].c_str());
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
 
-		obj = new ColorBrickHitBox(width, height);
+obj = new ColorBrickHitBox(width, height);
 
-		break;
+break;
 	}
 	case OBJECT_TYPE_GROUND: {
-		float width = atof(tokens[4].c_str());
-		float height = atof(tokens[5].c_str());
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
 
 		obj = new Ground(width, height);
 
@@ -227,6 +230,14 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		}
 
 		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player);
+		break;
+	}
+	case OBJECT_TYPE_WOOD: {
+		obj = new Wood();
+		break;
+	}
+	case OBJECT_TYPE_FLOATING_COIN: {
+		obj = new FloatingCoin(x, y);
 		break;
 	}
 	default:
@@ -275,7 +286,51 @@ void CPlayScene::_ParseSection_MAP(const string& line)
 
 	CGame* game = CGame::GetInstance();
 
-	game->SetCamPos(0.0f, Map::getInstance()->getHeight() - game->GetScreenHeight() - 1);
+	game->SetCamPos(0.0f, (float)(Map::getInstance()->getHeight() - game->GetScreenHeight() - 1));
+}
+
+void CPlayScene::_ParseSection_Board(const string& line)
+{
+	vector<string> tokens = split(line);
+
+	if (tokens.size() < 2) return;
+
+	string obj = tokens[0];
+	Board* board = Board::GetInstance();
+
+	if (obj == "CARDSTACK") {
+		board->GetCardStack()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "POINT") {
+		board->GetPoint()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "MONEY") {
+		board->GetMoney()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "TIME") {
+		board->GetTime()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "LIVES") {
+		board->GetLives()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "WORLDNUM") {
+		board->GetWorldNum()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "WORLDFIELD") {
+		board->GetWorldField()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "PLAYERCHAR") {
+		board->GetPlayerChar()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "CLOCK") {
+		board->GetClock()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "DOLLARSIGN") {
+		board->GetDollarSign()->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "BOARD") {
+		board->SetAniSet(atoi(tokens[1].c_str()));
+	}
 }
 
 void CPlayScene::Load()
@@ -314,6 +369,9 @@ void CPlayScene::Load()
 		if (line == "[GRID]") {
 			section = GRID; continue;
 		}
+		if (line == "[BOARD]") {
+			section = BOARD; continue;
+		}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -328,12 +386,15 @@ void CPlayScene::Load()
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
 		case MAP: _ParseSection_MAP(line); break;
 		case GRID: _ParseSection_GRID(line); break;
+		case BOARD: _ParseSection_Board(line); break;
 		}
 	}
 
 	f.close();
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
+
+	Board::GetInstance();
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -342,6 +403,10 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
+
+	if (!Board::GetInstance()->GetTime()->GetIsTicking()) {
+		Board::GetInstance()->GetTime()->StartTicking();
+	}
 
 	CGame* game = CGame::GetInstance();
 
@@ -360,36 +425,15 @@ void CPlayScene::Update(DWORD dt)
 		return;
 	}
 
-	//while (state == MARIO_STATE_BIG_TO_SMALL && untouchable && GetTickCount() - untouchable_start < 700) {
-	//	/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
-	//	player->Update(dt, &coObjects);*/
+	if (Board::GetInstance()->GetTime()->GetIsTicking() && Board::GetInstance()->GetTime()->GetCurrMoment() <= 0) {
+		player->SetState(MARIO_STATE_DIE);
+		player->Update(dt);
 
-	//	if (level == MARIO_LEVEL_BIG) {
-	//		level = MARIO_LEVEL_SMALL;
-	//	}
-	//	else {
-	//		level = MARIO_LEVEL_BIG;
-	//	}
-	//	Render();
+		return;
+	}
 
-
-
-	//}
-
-	if ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < player->transform_duration_time) ||
-		(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < player->transform_duration_time)) {
-		/*coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
-		player->Update(dt, &coObjects);*/
-
-
-		/*if (player->GetLevel() == MARIO_LEVEL_BIG) {
-			player->SetLevel(MARIO_LEVEL_SMALL);
-		}
-		else {
-			player->SetLevel(MARIO_LEVEL_BIG);
-		}*/
-
-		//player->Render();
+	if ((player->GetUntouchable() && GetTickCount64() - player->GetUntouchableStart() < player->transform_duration_time) ||
+		(player->GetTransforming() && GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time)) {
 
 		return;
 	}
@@ -400,10 +444,6 @@ void CPlayScene::Update(DWORD dt)
 		}*/
 
 		float x, y;
-
-		if (dynamic_cast<CMario*>(obj)) {
-			int tmp = 1;
-		}
 
 		obj->GetPosition(x, y);
 
@@ -434,7 +474,12 @@ void CPlayScene::Update(DWORD dt)
 
 	player->Update(dt, &coObjects);*/
 
-	handleCollisionsWithItemsAABB(Grid::GetInstance()->GetPotentialCollidableObjects(player));
+	vector<LPGAMEOBJECT> collidableObjsToPlayer = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+
+	handleCollisionsWithEnemiesAABB(collidableObjsToPlayer);
+	handleCollisionsWithItemsAABB(collidableObjsToPlayer);
+
+	collidableObjsToPlayer.clear();
 
 	//Grid::GetInstance()->cleanObjTrashBin();
 
@@ -459,27 +504,28 @@ void CPlayScene::Update(DWORD dt)
 
 	cx -= game->GetScreenWidth() / 2;
 
-	if (player->GetIsFlying() || player->GetIsFalling()) {
+	if (player->GetIsFlying() || player->GetIsFalling() || player->GetIsGliding() || player->GetIsFallingTail()) {
 		cy -= game->GetScreenHeight() / 2;
 		if (cy + game->GetScreenHeight() > Map::getInstance()->getHeight()) {
-			cy = Map::getInstance()->getHeight() - game->GetScreenHeight() - 1;
+			cy = (float)(Map::getInstance()->getHeight() - game->GetScreenHeight() - 1);
 		}
 	}
 	else {
 		cy = _cy;
 	}
 
-	cx = (cx < 0) ? 0 : cx;
-	cy = (cy < 0) ? 0 : cy;
+	cx = (cx < 0) ? 0.0f : cx;
+	cy = (cy < 0) ? 0.0f : cy;
 
 
 	if (cx + game->GetScreenWidth() > Map::getInstance()->getWidth()) {
-		cx = Map::getInstance()->getWidth() - game->GetScreenWidth() - 1;
+		cx = (float)(Map::getInstance()->getWidth() - game->GetScreenWidth() - 1);
 	}
 
 	//DebugOut(L"[CAM POS]: %f %f\n", cx, cy);
 
 	CGame::GetInstance()->SetCamPos(round(cx), /*100.0f*/ round(cy));
+	Board::GetInstance()->Update(dt);
 	//CGame::GetInstance()->SetCamPos(cx, /*100.0f*/ cy);
 }
 
@@ -496,9 +542,9 @@ void CPlayScene::Render()
 
 	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
 
-	bool renderPause = ((player->GetUntouchable() && GetTickCount() - player->GetUntouchableStart() < player->transform_duration_time) ||
-						(player->GetTransforming() && GetTickCount() - player->GetStartTransforming() < player->transform_duration_time) ||
-						 player->GetState() == MARIO_STATE_DIE);
+	bool renderPause = ((player->GetUntouchable() && (DWORD)GetTickCount64() - player->GetUntouchableStart() < player->transform_duration_time) ||
+		(player->GetTransforming() && (DWORD)GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time) ||
+		player->GetState() == MARIO_STATE_DIE);
 
 	/*if (!renderPause) {
 		player->SetState(MARIO_STATE_IDLE);
@@ -520,6 +566,8 @@ void CPlayScene::Render()
 			obj->Render();
 		}
 	}
+
+	Board::GetInstance()->Render();
 
 	/*for (auto& obj : objects) {
 		if (obj != player && !obj->GetInvisible()) {
@@ -543,7 +591,7 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objects.size(); i++)
+	for (unsigned int i = 0; i < objects.size(); i++)
 		delete objects[i];
 
 	objects.clear();
@@ -552,13 +600,65 @@ void CPlayScene::Unload()
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
 
+//void CPlayScene::handleCollisionWithObjs(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& collidable_objs) {
+//	for (auto& obj : collidable_objs) {
+//		if (player->checkAABB(obj) && obj->GetIsActive()) {
+//			if (dynamic_cast<PipeHitBox*>(obj)) {
+//				PipeHitBox* pipe = dynamic_cast<PipeHitBox*>(obj);
+//
+//				vx = 0;
+//			}
+//		}
+//	}
+//}
+
+
 void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidable_objs)
 {
-	/*for (auto& obj : collidable_objs) {
-		if (player->checkAABB(obj)) {
+	for (auto& obj : collidable_objs) {
+		if (player->checkAABB(obj) && obj->GetIsActive()) {
+			if (dynamic_cast<CGoomba*>(obj)) {
+				CGoomba* goomba = dynamic_cast<CGoomba*>(obj);
 
+				if (!player->GetUntouchable()) {
+					if (player->GetLevel() == MARIO_LEVEL_BIG) {
+						player->SetBackupLevel(MARIO_LEVEL_SMALL);
+						player->SetBackupState(player->GetState());
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->turnIntoSmall();
+						player->StartUntouchable();
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+						player->SetState(MARIO_STATE_DIE);
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->RacoonToBig();
+						player->StartUntouchable();
+					}
+				}
+			}
+			else if (dynamic_cast<FireBall*>(obj)) {
+				if (!player->GetUntouchable()) {
+					if (player->GetLevel() == MARIO_LEVEL_BIG) {
+						player->SetBackupLevel(MARIO_LEVEL_SMALL);
+						player->SetBackupState(player->GetState());
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->turnIntoSmall();
+						player->StartUntouchable();
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+						player->SetState(MARIO_STATE_DIE);
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->RacoonToBig();
+						player->StartUntouchable();
+					}
+				}
+			}
 		}
-	}*/
+	}
 }
 
 void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_objs)
@@ -572,8 +672,24 @@ void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_
 					mushroom->GotObsorbed(player);
 					player->SetBackupLevel(MARIO_LEVEL_BIG);
 					player->SetBackupState(player->GetState());
-					player->SetStartTransforming(GetTickCount());
+					player->SetStartTransforming((DWORD)GetTickCount64());
 					player->turnIntoBig();
+				}
+			}
+			if (dynamic_cast<Leaf*>(obj)) {
+				Leaf* leaf = dynamic_cast<Leaf*>(obj);
+
+				float pX, pY;
+
+				player->GetPosition(pX, pY);
+
+				leaf->GotObsorbed(player);
+				LPGAMEOBJECT point = new Point(LEAF_POINT, pX, pY);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+
+				if (player->GetLevel() != MARIO_LEVEL_RACOON && player->GetLevel() != MARIO_LEVEL_SMALL) {
+					player->SetStartTransforming((DWORD)GetTickCount64());
+					player->BigToRacoon();
 				}
 			}
 		}
@@ -592,14 +708,17 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_S:
-		if ((mario->GetLevel() == MARIO_LEVEL_RACOON && mario->GetIsSliding() &&  mario->GetIsRunning()) || mario->GetIsFlying()) {
+		if ((mario->GetLevel() == MARIO_LEVEL_RACOON && mario->GetIsSliding() && mario->GetIsRunning()) || mario->GetIsFlying()) {
 			mario->SetState(MARIO_STATE_FLY);
 			mario->flyUp = 1;
 		}
 		else if (!mario->GetIsStanding() && mario->GetLevel() == MARIO_LEVEL_RACOON && mario->vy > 0) {
 			mario->SetState(MARIO_STATE_FALL_TAIL);
 		}
-		else mario->SetState(MARIO_STATE_JUMP);
+		else {
+			mario->SetState(MARIO_STATE_JUMP);
+		}
+
 		break;
 	case DIK_SPACE:
 		mario->SetState(MARIO_STATE_JUMP);
@@ -617,7 +736,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		if (mario->GetLevel() != MARIO_LEVEL_BIG) {
 			mario->SetBackupLevel(MARIO_LEVEL_BIG);
 			mario->SetBackupState(mario->GetState());
-			mario->SetStartTransforming(GetTickCount());
+			mario->SetStartTransforming((DWORD)GetTickCount64());
 			mario->turnIntoBig();
 		}
 		break;
@@ -627,7 +746,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		}
 		break;
 	}
-	
+
 }
 
 //void CPlayScenceKeyHandler::OnKeyUp(int KeyCode) {
@@ -652,6 +771,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 
+	if (mario->GetState() == MARIO_STATE_DIE) return;
+
 	if (game->IsKeyDown(DIK_A)) {
 		mario->SetIsRunning(1);
 		if (abs(mario->GetVx()) >= MARIO_RUNNING_SPEED)
@@ -669,17 +790,20 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	}
 
 	// disable control key when Mario die 
-	if (mario->GetState() == MARIO_STATE_DIE) return;
+
 	if (game->IsKeyDown(DIK_RIGHT))
 		mario->SetState(MARIO_STATE_WALKING_RIGHT);
 	else if (game->IsKeyDown(DIK_LEFT)) {
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
 	}
+	/*else if (game->IsKeyDown(DIK_S)) {
+		mario->SetState(MARIO_STATE_JUMP);
+	}*/
 	else if (mario->GetIsFlying()) {
 		//mario->SetState(MARIO_STATE_FLY);
 		//mario->SetState(MARIO_STATE_FALL);
 		mario->vx = 0;
 	}
-	else if(mario->GetIsStanding())
+	else if (mario->GetIsStanding())
 		mario->SetState(MARIO_STATE_IDLE);
 }

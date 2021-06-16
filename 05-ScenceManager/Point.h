@@ -32,7 +32,7 @@ class Point : public CGameObject
 	unsigned short int point;
 	DWORD fly_start = 0;
 public:
-	Point(){}
+	Point() { point = 100; }
 	Point(unsigned short int point, float x, float y);
 
 	virtual void Render();

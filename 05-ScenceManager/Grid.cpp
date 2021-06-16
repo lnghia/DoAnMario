@@ -8,6 +8,8 @@ Grid* Grid::instance = NULL;
 
 Grid::Grid()
 {
+	colNum = 0;
+	rowNum = 0;
 }
 
 Grid::Grid(int cellWidth, int cellHeight)
@@ -58,9 +60,9 @@ void Grid::clearObjFromGrid(LPGAMEOBJECT obj) {
 
 	//DebugOut(L"a\n");
 
-	for (unsigned int r = overlapseCells[TOP]-1; r <= overlapseCells[BOTTOM]+1; ++r) {
+	for (int r = overlapseCells[TOP]-1; r <= overlapseCells[BOTTOM]+1; ++r) {
 		if (r < 0 || r >= rowNum) continue;
-		for (unsigned int c = overlapseCells[LEFT]-1; c <= overlapseCells[RIGHT]+1; ++c) {
+		for (int c = overlapseCells[LEFT]-1; c <= overlapseCells[RIGHT]+1; ++c) {
 			if (c < 0 || c >= colNum) continue;
 			if (grid[r][c].find(obj) != grid[r][c].end()) {
 				grid[r][c].erase(obj);
@@ -316,7 +318,7 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 			for (auto& _obj : grid[r][c]) {
 				float x, y;
 
-				if (obj != _obj && _obj->GetInteractivable() && _obj->GetIsActive() && uniqueChecker.find(_obj)==uniqueChecker.end()) {
+				if (obj != _obj && _obj->GetInteractivable() && _obj->GetIsActive() && uniqueChecker.find(_obj)==uniqueChecker.end() && !dynamic_cast<CMario*>(_obj)) {
 					result.push_back(_obj);
 					uniqueChecker.insert(_obj);
 				}
