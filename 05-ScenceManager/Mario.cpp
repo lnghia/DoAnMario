@@ -270,7 +270,21 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				x -= min_tx * dx + nx * 0.4f;
 				y -= min_ty * dy + ny * 0.4f;
 
+				Mushroom* mushroom = dynamic_cast<Mushroom*>(e->obj);
+				float mX, mY;
 
+				mushroom->GetPosition(mX, mY);
+				mushroom->GotObsorbed(this);
+
+				LPGAMEOBJECT point = new Point(MUSHROOM_POINT, mX, mY);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+
+				if (GetLevel() != MARIO_LEVEL_BIG) {
+					SetBackupLevel(MARIO_LEVEL_BIG);
+					SetBackupState(GetState());
+					SetStartTransforming(GetTickCount());
+					turnIntoBig();
+				}
 			}
 			else if (dynamic_cast<FloatingCoin*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;

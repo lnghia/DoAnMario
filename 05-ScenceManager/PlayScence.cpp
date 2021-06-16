@@ -667,6 +667,12 @@ void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_
 		if (player->checkAABB(obj) && obj->GetIsActive()) {
 			if (dynamic_cast<Mushroom*>(obj)) {
 				Mushroom* mushroom = dynamic_cast<Mushroom*>(obj);
+				float x, y;
+
+				mushroom->GetPosition(x, y);
+
+				LPGAMEOBJECT point = new Point(MUSHROOM_POINT, x, y);
+				Grid::GetInstance()->putObjectIntoGrid(point);
 
 				if (player->GetLevel() != MARIO_LEVEL_BIG) {
 					mushroom->GotObsorbed(player);
