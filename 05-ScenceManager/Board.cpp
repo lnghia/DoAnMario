@@ -14,6 +14,7 @@ Board::Board()
 	//clock = new JustForShow();
 	//dollarSign = new JustForShow();
 	cardStack = new EndGameItemStack();
+	speedBar = new SpeedBar();
 
 	CGame* game = CGame::GetInstance();
 
@@ -37,6 +38,7 @@ void Board::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 	y = game->GetCamY() + game->GetScreenHeight() - BOARD_BBOX_HEIGHT;
 
 	time->Update(dt);
+	speedBar->Update(dt);
 
 	UpdateComponentPos();
 }
@@ -57,6 +59,7 @@ void Board::Render()
 	//clock->Render();
 	//dollarSign->Render();
 	cardStack->Render();
+	speedBar->Render();
 }
 
 void Board::UpdatePos(float x, float y)
@@ -82,6 +85,8 @@ void Board::UpdatePos(float x, float y)
 	money->UpdatePos(tempX + MONEY_X, y + MONEY_Y);
 
 	cardStack->UpdatePos(tempX + ITEMSTACK_X, y + ITEMSTACK_Y);
+
+	speedBar->UpdatePos(tempX + SPEEDBAR_X, y + SPEEDBAR_Y);
 }
 
 void Board::UpdateComponentPos()
@@ -103,6 +108,8 @@ void Board::UpdateComponentPos()
 	money->UpdatePos(tempX + MONEY_X, y + MONEY_Y);
 
 	cardStack->UpdatePos(tempX + ITEMSTACK_X, y + ITEMSTACK_Y);
+
+	speedBar->UpdatePos(tempX + SPEEDBAR_X, y + SPEEDBAR_Y);
 }
 
 void Board::RenderBackGround()
@@ -171,6 +178,11 @@ JustForShow* Board::GetDollarSign()
 EndGameItemStack* Board::GetCardStack()
 {
 	return cardStack;
+}
+
+SpeedBar* Board::GetSpeedBar()
+{
+	return speedBar;
 }
 
 void Board::SetAniSet(int ani_set)

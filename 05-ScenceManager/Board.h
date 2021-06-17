@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "Textures.h"
 #include "TimeTicker.h"
+#include "SpeedBar.h"
 
 #define BOARD_BBOX_WIDTH	234
 #define	BOARD_BBOX_HEIGHT	48
@@ -42,6 +43,9 @@
 #define ITEMSTACK_X	161
 #define ITEMSTACK_Y	1
 
+#define SPEEDBAR_X	53
+#define SPEEDBAR_Y	7
+
 class Board :public JustForShow
 {
 	static Board* __instance;
@@ -56,6 +60,7 @@ class Board :public JustForShow
 	JustForShow* clock;
 	JustForShow* dollarSign;
 	EndGameItemStack* cardStack;
+	SpeedBar* speedBar;
 public:
 	Board();
 
@@ -77,6 +82,7 @@ public:
 	JustForShow* GetClock();
 	JustForShow* GetDollarSign();
 	EndGameItemStack* GetCardStack();
+	SpeedBar* GetSpeedBar();
 
 	void SetAniSet(int ani_set);
 

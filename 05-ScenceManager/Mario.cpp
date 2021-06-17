@@ -63,7 +63,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	if (!isFlying && !isFalling && !isGliding) vy += MARIO_GRAVITY * dt;
 
-	DebugOut(L"[DEBUG] %f - %f\n", _dy, vy);
+	//DebugOut(L"[DEBUG] %f - %f\n", _dy, vy);
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;

@@ -125,8 +125,8 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	if (tokens.size() < 3) return; // skip invalid lines - an object set must have at least id, x, y
 
 	int object_type = atoi(tokens[0].c_str());
-	float x = atof(tokens[1].c_str());
-	float y = atof(tokens[2].c_str());
+	float x = (float)atof(tokens[1].c_str());
+	float y = (float)atof(tokens[2].c_str());
 
 	int ani_set_id = atoi(tokens[3].c_str());
 
@@ -168,8 +168,8 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_PORTAL:
 	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
+		float r = (float)atof(tokens[4].c_str());
+		float b = (float)atof(tokens[5].c_str());
 		int scene_id = atoi(tokens[6].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
 	}
@@ -189,10 +189,10 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		break;
 	}
 	case OBJECT_TYPE_PIPE_HITBOX: {
-		float width = atof(tokens[4].c_str());
-		float height = atof(tokens[5].c_str());
+		float width = (float)atof(tokens[4].c_str());
+		float height = (float)atof(tokens[5].c_str());
 
-		obj = new PipeHitBox(width, height);
+		obj = new PipeHitBox((int)width, (int)height);
 
 		break;
 	}
@@ -220,10 +220,10 @@ break;
 		break;
 	}
 	case OBJECT_TYPE_PIRANHAPLANT: {
-		float pipeX = atof(tokens[4].c_str());
-		float pipeY = atof(tokens[5].c_str());
-		float pipeWidth = atof(tokens[6].c_str());
-		float pipeHeight = atof(tokens[7].c_str());
+		float pipeX = (float)atof(tokens[4].c_str());
+		float pipeY = (float)atof(tokens[5].c_str());
+		float pipeWidth = (float)atof(tokens[6].c_str());
+		float pipeHeight = (float)atof(tokens[7].c_str());
 
 		if (!player) {
 			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
@@ -330,6 +330,10 @@ void CPlayScene::_ParseSection_Board(const string& line)
 	}
 	else if (obj == "BOARD") {
 		board->SetAniSet(atoi(tokens[1].c_str()));
+	}
+	else if (obj == "SPEEDBAR") {
+		board->GetSpeedBar()->SetAniSet(atoi(tokens[1].c_str()));
+		board->GetSpeedBar()->SetPlayer(player);
 	}
 }
 
@@ -567,8 +571,6 @@ void CPlayScene::Render()
 		}
 	}
 
-	Board::GetInstance()->Render();
-
 	/*for (auto& obj : objects) {
 		if (obj != player && !obj->GetInvisible()) {
 			obj->Render();
@@ -584,6 +586,8 @@ void CPlayScene::Render()
 	}
 
 	player->FinishTransforming();
+
+	Board::GetInstance()->Render();
 }
 
 /*
