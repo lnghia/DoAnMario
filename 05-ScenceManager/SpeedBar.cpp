@@ -18,12 +18,14 @@ void SpeedBar::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 void SpeedBar::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
-	step = (player->GetIsRunning() && player->GetIsStanding()) ? 1 : -1;
+	step = ((player->GetIsRunning() && player->GetIsStanding()) || player->GetIsFlying() || player->GetIsGliding()) ? 1 : -1;
 
 	if ((DWORD)GetTickCount64() - start_running >= 100) {
 		level += step;
 		start_running = (DWORD)GetTickCount64();
 	}
+
+	if (player->GetIsFalling())	level = 0;
 
 	if (level >= (short int)animation_set->size()) {
 		level = (short int)animation_set->size() - 1;
@@ -31,7 +33,7 @@ void SpeedBar::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 	else if (level < 0) {
 		level = 0;
 	}
-	DebugOut(L"[DEBUG] %d %d\n", level, step);
+	//DebugOut(L"[DEBUG] %d %d\n", level, step);
 }
 
 void SpeedBar::Render()
