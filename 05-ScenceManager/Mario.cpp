@@ -377,7 +377,7 @@ void CMario::SetState(int state)
 		else
 		{
 			if (vx < MARIO_WALKING_SPEED) {
-				if (vx < 0) {
+				if (vx < 0 && isStanding) {
 					vx += MARIO_SKID_ACCELERATION;
 				}
 				else {
@@ -407,7 +407,7 @@ void CMario::SetState(int state)
 		else
 		{
 			if (vx > -MARIO_WALKING_SPEED) {
-				if (vx > 0) {
+				if (vx > 0 && isStanding) {
 					vx -= MARIO_SKID_ACCELERATION;
 				}
 				else {
@@ -440,25 +440,20 @@ void CMario::SetState(int state)
 		break;
 	}
 	case MARIO_STATE_IDLE: {
-		DebugOut(L"[DEBUG] %f\n", vx);
 
 		if (nx > 0) {
 			if (vx > MARIO_WALKING_SPEED) {
-				DebugOut(L"[DEBUG] 1\n");
 				vx -= MARIO_RUNNINGSLOWINGDOWN_ACCELERATION;
 			}
 			else { 
-				DebugOut(L"[DEBUG] 2\n");
 				vx -= MARIO_WALKING_SPEED; 
 			}
 		}
 		else if (nx < 0) {
 			if (vx < -MARIO_WALKING_SPEED) {
-				DebugOut(L"[DEBUG] 3\n");
 				vx += MARIO_RUNNINGSLOWINGDOWN_ACCELERATION;
 			}
 			else {
-				DebugOut(L"[DEBUG] 4\n");
 				vx += MARIO_WALKING_SPEED;
 			}
 		}

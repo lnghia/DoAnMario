@@ -110,18 +110,14 @@ void Grid::load(int cellWidth, int cellHeight)
 
 vector<int> Grid::getOverLapCells(LPGAMEOBJECT obj)
 {
-	if (dynamic_cast<FireBall*>(obj)) {
-		int tmp = 1;
-	}
-
 	float left, top, right, bottom;
 
 	obj->GetBoundingBox(left, top, right, bottom);
 
-	int col1 = left / cellWidth;
-	int col2 = right / cellWidth;
-	int row1 = top / cellHeight;
-	int row2 = bottom / cellHeight;
+	int col1 = (int)(left / cellWidth);
+	int col2 = (int)(right / cellWidth);
+	int row1 = (int)(top / cellHeight);
+	int row2 = (int)(bottom / cellHeight);
 
 	if (row1 >= rowNum || row2 >= rowNum) {
 		int t = 1;
@@ -141,18 +137,18 @@ vector<int> Grid::getOverLapCells(RECT boundingBox)
 }
 
 vector<int> Grid::getOverLapCells(const float& left, const float& top, const float& right, const float& bottom) {
-	int col1 = floor(left / cellWidth);
-	int col2 = floor(right / cellWidth);
-	int row1 = floor(top / cellHeight);
-	int row2 = floor(bottom / cellHeight);
+	int col1 = (int)floor(left / cellWidth);
+	int col2 = (int)floor(right / cellWidth);
+	int row1 = (int)floor(top / cellHeight);
+	int row2 = (int)floor(bottom / cellHeight);
 
 	return { col1, col2, row1, row2 };
 }
 
 void Grid::unload()
 {
-	for (int r = 0; r < grid.size(); ++r) {
-		for (int c = 0; c < grid[r].size(); ++c) {
+	for (int r = 0; r < (int)grid.size(); ++r) {
+		for (int c = 0; c < (int)grid[r].size(); ++c) {
 			for (auto& obj : grid[r][c]) {
 				delete obj;
 			}
@@ -308,11 +304,11 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 	}
 
 	for (int r = overLapCells[TOP]; r <= overLapCells[BOTTOM]; ++r) {
-		if (r < 0 || r >= grid.size()) {
+		if (r < 0 || r >= (int)grid.size()) {
 			break;
 		}
 		for (int c = overLapCells[LEFT]; c <= overLapCells[RIGHT]; ++c) {
-			if (c < 0 || c >= grid[r].size()) {
+			if (c < 0 || c >= (int)grid[r].size()) {
 				break;
 			}
 			for (auto& _obj : grid[r][c]) {
