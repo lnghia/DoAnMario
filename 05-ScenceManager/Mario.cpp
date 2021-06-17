@@ -140,6 +140,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
 					Grid::GetInstance()->putObjectIntoGrid(point);
+					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
 				}
 				else if (e->nx != 0)
 				{
@@ -154,12 +155,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								//level = MARIO_LEVEL_SMALL;
 								backupLevel = MARIO_LEVEL_SMALL;
 								backupState = state;
-								startTransforming = GetTickCount64();
+								startTransforming = (DWORD)GetTickCount64();
 								turnIntoSmall();
 								StartUntouchable();
 							}
 							else if (level == MARIO_LEVEL_RACOON) {
-								SetStartTransforming(GetTickCount64());
+								SetStartTransforming((DWORD)GetTickCount64());
 								RacoonToBig();
 								StartUntouchable();
 							}
@@ -278,6 +279,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				LPGAMEOBJECT point = new Point(MUSHROOM_POINT, mX, mY);
 				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(LEAF_POINT);
 
 				if (GetLevel() != MARIO_LEVEL_BIG) {
 					SetBackupLevel(MARIO_LEVEL_BIG);
@@ -291,6 +293,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				y -= min_ty * dy + ny * 0.4f;
 
 				dynamic_cast<FloatingCoin*>(e->obj)->GetObsorbed();
+				Board::GetInstance()->GetPoint()->Add(COIN_POINT);
+				Board::GetInstance()->GetMoney()->Add(COIN_MONEY);
 			}
 			else if (dynamic_cast<Leaf*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
@@ -301,6 +305,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				leaf->GotObsorbed(this);
 				LPGAMEOBJECT point = new Point(LEAF_POINT, x, y);
 				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(LEAF_POINT);
 
 				if (level != MARIO_LEVEL_RACOON && level != MARIO_LEVEL_SMALL) {
 					SetStartTransforming((DWORD)GetTickCount64());

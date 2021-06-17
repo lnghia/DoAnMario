@@ -1,6 +1,7 @@
 #include "QBrick.h"
 #include "ObjectCheatSheet.h"
 #include "Grid.h"
+#include "Board.h"
 
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
@@ -30,6 +31,8 @@ void QBrick::PopUpHiddenItem()
 		obj = new Coin(x, y);
 		obj->SetInteractivable(0);
 		obj->SetCanBeStandOn(0);
+		Board::GetInstance()->GetPoint()->Add(COIN_POINT);
+		Board::GetInstance()->GetMoney()->Add(COIN_MONEY);
 
 		break;
 	}

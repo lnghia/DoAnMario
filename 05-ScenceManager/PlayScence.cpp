@@ -207,9 +207,9 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		int width = atoi(tokens[4].c_str());
 		int height = atoi(tokens[5].c_str());
 
-obj = new ColorBrickHitBox(width, height);
+		obj = new ColorBrickHitBox(width, height);
 
-break;
+		break;
 	}
 	case OBJECT_TYPE_GROUND: {
 		int width = atoi(tokens[4].c_str());
@@ -244,10 +244,6 @@ break;
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
 	}
-
-	/*if (x == 496.0f && y == 416.0f) {
-		int mpt = 0;
-	}*/
 
 	// General object setup
 	obj->SetPosition(x, y);
@@ -398,7 +394,7 @@ void CPlayScene::Load()
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
-	Board::GetInstance();
+	Board::GetInstance()->GetWorldNum()->SetContent((int)worldNum);
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -443,10 +439,6 @@ void CPlayScene::Update(DWORD dt)
 	}
 
 	for (auto& obj : objectsInCamera) {
-		/*if (dynamic_cast<CMario*>(obj)) {
-			continue;
-		}*/
-
 		float x, y;
 
 		obj->GetPosition(x, y);
@@ -463,9 +455,6 @@ void CPlayScene::Update(DWORD dt)
 			/*delete obj;
 			obj = NULL;*/
 		}
-		/*if (!obj->GetIsActive() && dynamic_cast<FireBall*>(obj)) {
-			int tmp = 1;
-		}*/
 
 		/*if (player->GetTransforming()) {
 			break;
@@ -677,6 +666,7 @@ void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_
 
 				LPGAMEOBJECT point = new Point(MUSHROOM_POINT, x, y);
 				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(MUSHROOM_POINT);
 
 				if (player->GetLevel() != MARIO_LEVEL_BIG) {
 					mushroom->GotObsorbed(player);
@@ -696,6 +686,7 @@ void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_
 				leaf->GotObsorbed(player);
 				LPGAMEOBJECT point = new Point(LEAF_POINT, pX, pY);
 				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(MUSHROOM_POINT);
 
 				if (player->GetLevel() != MARIO_LEVEL_RACOON && player->GetLevel() != MARIO_LEVEL_SMALL) {
 					player->SetStartTransforming((DWORD)GetTickCount64());

@@ -9,6 +9,8 @@ protected:
 	CKeyEventHandler * key_handler;
 	int id;
 	LPCWSTR sceneFilePath;
+
+	UINT worldNum = 1;
 public: 
 	CScene(int id, LPCWSTR filePath);
 
@@ -17,6 +19,8 @@ public:
 	virtual void Unload() = 0;
 	virtual void Update(DWORD dt) = 0;
 	virtual void Render() = 0; 
+
+	void SetWorldNum(UINT worldNum);
 };
 typedef CScene * LPSCENE;
 

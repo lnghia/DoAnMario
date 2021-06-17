@@ -11,6 +11,7 @@
 #define COIN_DEFLECT_TIME	100
 
 #define COIN_POINT	100
+#define COIN_MONEY	1
 
 #define COIN_BBOX_HEIGHT	16
 #define COIN_BBOX_WIDTH		16
