@@ -407,8 +407,8 @@ void CMario::SetState(int state)
 				vx -= MARIO_SKID_ACCELERATION;
 			}
 		}
-			//vx = -MARIO_WALKING_SPEED;
-			//vx = (vx > 0) ? vx - MARIO_SKID_ACCELERATION : -MARIO_WALKING_SPEED;
+		//vx = -MARIO_WALKING_SPEED;
+		//vx = (vx > 0) ? vx - MARIO_SKID_ACCELERATION : -MARIO_WALKING_SPEED;
 		else
 		{
 			if (vx > -MARIO_WALKING_SPEED) {
@@ -450,8 +450,8 @@ void CMario::SetState(int state)
 			if (vx > MARIO_WALKING_SPEED) {
 				vx -= MARIO_RUNNINGSLOWINGDOWN_ACCELERATION;
 			}
-			else { 
-				vx -= MARIO_WALKING_SPEED; 
+			else {
+				vx -= MARIO_WALKING_SPEED;
 			}
 		}
 		else if (nx < 0) {
@@ -575,6 +575,22 @@ int CMario::filterSomeCommonAniByLevel()
 		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_IDLE_RIGHT] : animationsByLevel[level][MARIO_ANI_IDLE_LEFT];
 	}
 	else if (!vx && state != MARIO_STATE_IDLE) {
+		/*if (nx > 0) {
+			if (vx < 0) {
+				ani = animationsByLevel[level][MARIO_ANI_SKID_RIGHT];
+			}
+			else {
+				ani = animationsByLevel[level][MARIO_ANI_WALKING_RIGHT];
+			}
+		}
+		else {
+			if (vx > 0) {
+				ani = animationsByLevel[level][MARIO_ANI_SKID_LEFT];
+			}
+			else {
+				ani = animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
+			}
+		}*/
 		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_WALKING_RIGHT] : animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
 	}
 	else if (vx > 0) {
@@ -583,14 +599,14 @@ int CMario::filterSomeCommonAniByLevel()
 		}
 		else if (isRunning) {
 			if (isSliding) {
-				ani = animationsByLevel[level][MARIO_ANI_SLIDE_RIGHT];
+				ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_SLIDE_RIGHT];
 			}
 			else {
-				ani = animationsByLevel[level][MARIO_ANI_RUN_RIGHT];
+				ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_RUN_RIGHT];
 			}
 		}
 		else {
-			ani = animationsByLevel[level][MARIO_ANI_WALKING_RIGHT];
+			ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_WALKING_RIGHT];
 		}
 	}
 	else {
@@ -599,14 +615,14 @@ int CMario::filterSomeCommonAniByLevel()
 		}
 		else if (isRunning) {
 			if (isSliding) {
-				ani = animationsByLevel[level][MARIO_ANI_SLIDE_LEFT];
+				ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_SLIDE_LEFT];
 			}
 			else {
-				ani = animationsByLevel[level][MARIO_ANI_RUN_LEFT];
+				ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_RUN_LEFT];
 			}
 		}
 		else {
-			ani = animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
+			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
 		}
 	}
 
