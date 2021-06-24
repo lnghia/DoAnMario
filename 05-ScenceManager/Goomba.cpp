@@ -8,6 +8,7 @@
 #include "Ground.h"
 #include "FireBall.h"
 #include "PiranhaPlant.h"
+#include "RedKoopas.h"
 
 CGoomba::CGoomba()
 {
@@ -40,12 +41,15 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	//deactivateThisIfUnderGround();
 
 	if (state == GOOMBA_STATE_DIE) {
-		if (GetTickCount() - start_die < GOOMBA_BODY_EXIST_TIME) {
+		if ((DWORD)GetTickCount64() - start_die < GOOMBA_BODY_EXIST_TIME) {
 			return;
 		}
 		interactivable = 0;
 		isActive = 0;
 		Grid::GetInstance()->clearObjFromGrid(this);
+	}
+	else if (state == GOOMBA_STATE_GET_HIT) {
+		coObjects->clear();
 	}
 
 	CGame* game = CGame::GetInstance();
@@ -119,6 +123,21 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					vy = 0;
 				}
 			}
+			/*else if (dynamic_cast<RedKoopas*>(e->obj)) {
+				RedKoopas* koopas = dynamic_cast<RedKoopas*>(e->obj);
+
+				if (koopas->GetBeingHolded()) {
+					SetState(GOOMBA_STATE_DIE);
+				}
+				else {
+					if (e->nx) {
+						vx *= -1;
+					}
+					else if (e->ny) {
+						y -= min_ty * dy + ny * 0.4f;
+					}
+				}
+			}*/
 			//else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
 			//	x -= min_tx * dx + nx * 0.4f;
 			//	y -= min_ty * dy + ny * 0.4f;
@@ -150,6 +169,11 @@ void CGoomba::Render()
 	if (state == GOOMBA_STATE_DIE) {
 		ani = GOOMBA_ANI_DIE;
 	}
+	else if (state == GOOMBA_STATE_GET_HIT) {
+		ani = GOOMBA_ANI_GET_HIT;
+	}
+
+	currAni = ani;
 
 	animation_set->at(ani)->Render(x,y);
 
@@ -171,4 +195,12 @@ void CGoomba::SetState(int state)
 		case GOOMBA_STATE_WALKING: 
 			vx = -GOOMBA_WALKING_SPEED;
 	}
+}
+
+void CGoomba::GetHit()
+{
+	state = GOOMBA_STATE_GET_HIT;
+	vx = 0;
+	vy = -GOOMBA_DIE_DEFLECT_SPEED;
+	interactivable = 0;
 }

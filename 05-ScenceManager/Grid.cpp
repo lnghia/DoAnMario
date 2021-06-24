@@ -289,9 +289,9 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 
 	obj->GetSpeed(vx, vy);
 
-	if (!vx && !vy) {
+	/*if (!vx && !vy) {
 		return {};
-	}
+	}*/
 
 	overLapCells[TOP] -= (overLapCells[TOP] > 0);
 	overLapCells[BOTTOM] += (overLapCells[BOTTOM] + 1 < rowNum);

@@ -2,6 +2,7 @@
 #include "ObjectCheatSheet.h"
 #include "Grid.h"
 #include "Board.h"
+#include "PlayScence.h"
 
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
@@ -24,6 +25,9 @@ void QBrick::PopUpHiddenItem()
 	unsigned short int ani = state;
 	Grid* grid = Grid::GetInstance();
 	LPGAMEOBJECT obj = NULL;
+	CGame* game = CGame::GetInstance();
+
+	bool _backupItem = 0;
 
 	switch (hiddenItem)
 	{
@@ -42,7 +46,15 @@ void QBrick::PopUpHiddenItem()
 		break;
 	}
 	case OBJECT_TYPE_LEAF:
-		obj = new Leaf(x, y);
+		CPlayScene* playScene = dynamic_cast<CPlayScene*>(game->GetCurrentScene());
+
+		if (playScene->GetPlayer()->GetLevel() > MARIO_LEVEL_SMALL) {
+			obj = new Leaf(x, y);
+		}
+		else {
+			obj = new Mushroom(x, y);
+			_backupItem = 1;
+		}
 
 		break;
 	}
@@ -54,8 +66,13 @@ void QBrick::PopUpHiddenItem()
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 
 	if (obj) {
-
-		obj->SetAnimationSet(animation_sets->Get(hiddenItemAni));
+		if (_backupItem) {
+			obj->SetAnimationSet(animation_sets->Get(backupItemAni));
+		}
+		else {
+			obj->SetAnimationSet(animation_sets->Get(hiddenItemAni));
+		}
+		
 		grid->putObjectIntoGrid(obj);
 	}
 

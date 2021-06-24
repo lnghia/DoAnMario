@@ -158,6 +158,15 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		int hiddenItemType = atoi(tokens[4].c_str());
 		int	hiddenItemAni = atoi(tokens[5].c_str());
 
+		if (tokens.size() > 6) {
+			int backupItem = atoi(tokens[6].c_str());
+			int backupItemAni = atoi(tokens[7].c_str());
+
+			obj = new QBrick(hiddenItemType, hiddenItemAni, backupItem, backupItemAni);
+
+			break;
+		}
+
 		obj = new QBrick(hiddenItemType, hiddenItemAni);
 
 		break;
@@ -165,7 +174,25 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	case OBJECT_TYPE_BRICK:
 		obj = new CBrick();
 		break;
-	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
+	case OBJECT_TYPE_KOOPAS: {
+		short int initMovingDirec = (short int)atoi(tokens[4].c_str());
+
+		obj = new CKoopas(initMovingDirec);
+
+		break;
+	}
+	case OBJECT_TYPE_RED_KOOPAS:
+	{
+		short int initMovingDirec = (short int)atoi(tokens[4].c_str());
+		int x = atoi(tokens[5].c_str());
+		int y = atoi(tokens[6].c_str());
+		int h = atoi(tokens[7].c_str());
+		int w = atoi(tokens[8].c_str());
+
+		obj = new RedKoopas(initMovingDirec, x, y, w, h);
+
+		break;
+	}
 	case OBJECT_TYPE_PORTAL:
 	{
 		float r = (float)atof(tokens[4].c_str());
@@ -438,7 +465,15 @@ void CPlayScene::Update(DWORD dt)
 		return;
 	}
 
+	coObjects.clear();
+	coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+	player->Update(dt, &coObjects);
+
 	for (auto& obj : objectsInCamera) {
+		if (dynamic_cast<CMario*>(obj)) {
+			continue;
+		}
+
 		float x, y;
 
 		obj->GetPosition(x, y);
@@ -446,6 +481,7 @@ void CPlayScene::Update(DWORD dt)
 		coObjects.clear();
 		if (obj->GetInteractivable())
 			coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(obj);
+		//coObjects = objectsInCamera;
 		obj->Update(dt, &coObjects);
 		/*if (dynamic_cast<Coin*>(obj)) {
 			int tmp = 1;
@@ -550,9 +586,6 @@ void CPlayScene::Render()
 		}*/
 		if (obj != player && !obj->GetInvisible()) {
 			if (renderPause) {
-				if (dynamic_cast<Point*>(obj)) {
-					int tmp = 1;
-				}
 				obj->RenderCurrFrame();
 				continue;
 			}
@@ -649,6 +682,56 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 						player->StartUntouchable();
 					}
 				}
+			}
+			else if (dynamic_cast<RedKoopas*>(obj)) {
+				RedKoopas* koopas = dynamic_cast<RedKoopas*>(obj);
+				int state = koopas->GetState();
+
+				if ((player->GetBeingHoldedObj() && player->GetBeingHoldedObj() == obj)) {
+					continue;
+				}
+				else if (player->hasJustKicked) {
+					float _l, _t, _r, _b;
+					float tmpX, tmpY;
+
+					player->GetBoundingBox(_l, _t, _r, _b);
+					koopas->GetPosition(tmpX, tmpY);
+					if (player->GetNx() > 0) {
+						koopas->SetPosition(_l - 1 - 16, tmpY);
+					}
+					else {
+						koopas->SetPosition(_r + 1, tmpY);
+					}
+					player->hasJustKicked = 0;
+				}
+				else if (!player->GetUntouchable())
+				{
+					if (!koopas->GetHarmless())
+					{
+						if (player->GetLevel() == MARIO_LEVEL_BIG)
+						{
+							//level = MARIO_LEVEL_SMALL;
+							player->SetBackupLevel(MARIO_LEVEL_SMALL);
+							player->SetBackupState(player->GetState());
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->turnIntoSmall();
+							player->StartUntouchable();
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->RacoonToBig();
+							player->StartUntouchable();
+						}
+						else
+							player->SetState(MARIO_STATE_DIE);
+					}
+					else {
+						//kick
+						int tmp = (player->GetVx() > 0) ? 1 : -1;
+						koopas->GetKicked(tmp);
+					}
+				}
+
 			}
 		}
 	}
@@ -776,6 +859,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (game->IsKeyDown(DIK_A)) {
 		mario->SetIsRunning(1);
+		mario->SetCanHold(1);
 		if (abs(mario->GetVx()) >= MARIO_RUNNING_SPEED)
 		{
 			mario->SetState(MARIO_STATE_SLIDE);
@@ -786,9 +870,32 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 	}
 	else {
+		if (mario->GetCanHold() && mario->GetBeingHoldedObj()) {
+			// kick
+			int tmp = (mario->GetNx() > 0) ? 1 : -1;
+			float tmpX, tmpY;
+			float l, t, r, b;
+
+			mario->GetBoundingBox(l, t, r, b);
+			mario->GetBeingHoldedObj()->GetPosition(tmpX, tmpY);
+			//mario->GetBeingHoldedObj()->SetPosition(r + 0.4f, tmpY);
+			
+			if (mario->GetNx() > 0 || mario->GetVx() > 0) {
+				mario->GetBeingHoldedObj()->SetPosition(r + 1, tmpY);
+			}
+			else {
+				mario->GetBeingHoldedObj()->SetPosition(l - 1 - 16, tmpY);
+			}
+			
+			mario->GetBeingHoldedObj()->GetKicked(tmp);
+			mario->hasJustKicked = 1;
+			mario->SetBeingHoldedObj(NULL);
+		}
+		mario->SetCanHold(0);
 		mario->SetIsRunning(0);
 		mario->SetIsSliding(0);
 	}
+	//DebugOut(L"%d\n", mario->GetNx());
 
 	// disable control key when Mario die 
 

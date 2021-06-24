@@ -17,6 +17,7 @@
 #include "Ground.h"
 #include "FloatingCoin.h"
 #include "Board.h"
+#include "RedKoopas.h"
 
 
 class CPlayScene : public CScene

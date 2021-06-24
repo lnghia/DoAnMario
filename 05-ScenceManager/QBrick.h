@@ -16,6 +16,9 @@ class QBrick : public CGameObject
 	int hiddenItem;
 	int hiddenItemAni;
 
+	int backupItem;
+	int backupItemAni;
+
 	float oldX;
 	float oldY;
 
@@ -23,9 +26,12 @@ class QBrick : public CGameObject
 	bool hopUp = 0;
 public:
 	QBrick(){}
-	QBrick(int hiddenItem, int hiddenItemAni){
+	QBrick(const int& hiddenItem, const int& hiddenItemAni, const int& backupItem = -1, const int& backupItemAni = -1){
 		this->hiddenItem = hiddenItem;
 		this->hiddenItemAni = hiddenItemAni;
+
+		this->backupItem = backupItem;
+		this->backupItemAni = backupItemAni;
 
 		renderPriority = 101;
 

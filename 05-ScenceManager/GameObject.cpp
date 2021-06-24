@@ -149,6 +149,11 @@ DWORD CGameObject::GetDeltaTime()
 	return dt;
 }
 
+void CGameObject::SetVx(const float& vx)
+{
+	this->vx = vx;
+}
+
 void CGameObject::SetRenderPriority(unsigned int p)
 {
 	renderPriority = p;

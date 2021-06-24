@@ -74,13 +74,15 @@ public:
 	UINT currAni;
 
 public: 
-	void SetPosition(float x, float y) { this->x = x, this->y = y; }
-	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
+	void SetPosition(const float& x, const float& y) { this->x = x, this->y = y; }
+	void SetSpeed(const float& vx, const float& vy) { this->vx = vx, this->vy = vy; }
 	void GetPosition(float &x, float &y) { x = this->x; y = this->y; }
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
 	void SetCanBeStandOn(bool val);
 	bool GetCanBeStandOn();
 	DWORD GetDeltaTime();
+
+	void SetVx(const float& vx);
 
 	void SetRenderPriority(unsigned int p);
 	unsigned int GetRenderPriority();
@@ -114,6 +116,7 @@ public:
 	CGameObject();
 
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom) = 0;
+	virtual void GetKicked(const int& nx) {};
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects = NULL);
 	virtual void Render() = 0;
 	virtual void RenderCurrFrame();

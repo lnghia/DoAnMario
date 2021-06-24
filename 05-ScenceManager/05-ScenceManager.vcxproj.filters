@@ -183,6 +183,12 @@
     <ClCompile Include="ItemBox.cpp">
       <Filter>Source Files\GameBoard</Filter>
     </ClCompile>
+    <ClCompile Include="SpawnBox.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="RedKoopas.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -316,6 +322,12 @@
     </ClInclude>
     <ClInclude Include="EndGameItemStack.h">
       <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnBox.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="RedKoopas.h">
+      <Filter>Header Files\Enemies</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

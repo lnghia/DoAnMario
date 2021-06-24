@@ -160,7 +160,7 @@
 
 class CMario : public CGameObject
 {
-	vector<unsigned short int> alphaValsForUntouchable = { 255, 128 };
+	//vector<unsigned short int> alphaValsForUntouchable = { 255, 128 };
 
 	int level;
 	bool untouchable;
@@ -193,6 +193,9 @@ class CMario : public CGameObject
 	bool isGliding = 0;
 	bool isJumping = 0;
 	bool isFallingTail = 0;
+	bool canHold = 0;
+
+	LPGAMEOBJECT beingHoldedObj = NULL;
 
 	vector<vector<int>> animationsByLevel = {
 		{
@@ -247,6 +250,7 @@ class CMario : public CGameObject
 
 public:
 	bool flyUp = 0;
+	bool hasJustKicked = 0;
 
 	int transform_duration_time = 0;
 
@@ -306,11 +310,19 @@ public:
 	void SetTransforming(int val);
 	int GetTransforming();
 
+	void SetCanHold(const bool& val);
+	bool GetCanHold();
+
+	void SetBeingHoldedObj(LPGAMEOBJECT obj);
+	LPGAMEOBJECT GetBeingHoldedObj();
+
 	void SetStartTransforming(DWORD startTransforming);
 	DWORD GetStartTransforming();
 
 	float GetOldX();
 	float GetOldY();
+
+	int GetNx();
 
 	float GetVx();
 	float GetVy();

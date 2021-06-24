@@ -155,6 +155,8 @@
     <ClCompile Include="PointCounter.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="QBrick.cpp" />
+    <ClCompile Include="RedKoopas.cpp" />
+    <ClCompile Include="SpawnBox.cpp" />
     <ClCompile Include="SpeedBar.cpp" />
     <ClCompile Include="TimeTicker.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -201,6 +203,8 @@
     <ClInclude Include="PointCounter.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="QBrick.h" />
+    <ClInclude Include="RedKoopas.h" />
+    <ClInclude Include="SpawnBox.h" />
     <ClInclude Include="SpeedBar.h" />
     <ClInclude Include="TimeTicker.h" />
     <ClInclude Include="Utils.h" />
