@@ -13,16 +13,16 @@
 
 class QBrick : public CGameObject
 {
-	int hiddenItem;
-	int hiddenItemAni;
+	int hiddenItem = 0;
+	int hiddenItemAni = 0;
 
-	int backupItem;
-	int backupItemAni;
+	int backupItem = 0;
+	int backupItemAni = 0;
 
-	float oldX;
-	float oldY;
+	float oldX = 0;
+	float oldY = 0;
 
-	DWORD start_hopUp;
+	DWORD start_hopUp = NULL;
 	bool hopUp = 0;
 public:
 	QBrick(){}

@@ -887,6 +887,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->GetBeingHoldedObj()->SetPosition(l - 1 - 16, tmpY);
 			}
 			
+			mario->StartKicking();
 			mario->GetBeingHoldedObj()->GetKicked(tmp);
 			mario->hasJustKicked = 1;
 			mario->SetBeingHoldedObj(NULL);

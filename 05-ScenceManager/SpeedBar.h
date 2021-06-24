@@ -9,7 +9,7 @@
 class SpeedBar : public JustForShow
 {
 	short int level = 0;
-	CMario* player;
+	CMario* player = NULL;
 	short int step = 0;
 
 	DWORD start_running;

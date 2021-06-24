@@ -72,7 +72,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<UINT> exceptions;
 
 	float l1, r1, t1, b1;
-	float l2, r2, t2, b2;
+	//float l2, r2, t2, b2;
 
 	GetBoundingBox(l1, t1, r1, b1);
 
@@ -120,7 +120,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		//
 		// Collision logic with other objects
 		//
-		float px, py;
+		//float px, py;
 
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
@@ -194,7 +194,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else if(koopas->GetState() == KOOPAS_STATE_IN_SHELL) {
 						// spin
-						koopas->GetKicked(nx);
+						koopas->GetKicked((int)nx);
 					}
 					/*LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
 					Grid::GetInstance()->putObjectIntoGrid(point);
@@ -269,6 +269,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							//kick
 							int tmp = (vx > 0) ? 1 : -1;
 							koopas->GetKicked(tmp);
+							StartKicking();
 						}
 					}
 				}
@@ -703,7 +704,10 @@ int CMario::filterSomeCommonAniByLevel()
 
 	//DebugOut(L"[IS JUMPING] %d\n", isJumping);
 
-	if (isJumping) {
+	if (isKicking && (DWORD)GetTickCount64() - start_kicking < MARIO_KICKING_TIME) {
+		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_KICK_RIGHT] : animationsByLevel[level][MARIO_ANI_KICK_LEFT];
+	}
+	else if (isJumping) {
 		if (beingHoldedObj) {
 			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_LIFT_JUMP_RIGHT] : animationsByLevel[level][MARIO_ANI_LIFT_JUMP_LEFT];
 		}
@@ -936,6 +940,16 @@ void CMario::SetCanHold(const bool& val)
 bool CMario::GetCanHold()
 {
 	return canHold;
+}
+
+void CMario::SetIsKicking(bool val)
+{
+	isKicking = val;
+}
+
+bool CMario::GetIsKicking()
+{
+	return isKicking;
 }
 
 void CMario::SetBeingHoldedObj(LPGAMEOBJECT obj)

@@ -22,8 +22,8 @@ class FloatingCoin : public CGameObject
 protected:
 	DWORD deflect_start = 0;
 
-	float containerX;
-	float containerY;
+	float containerX = 0;
+	float containerY = 0;
 
 	bool passedDestrucPoint = 0;
 public:

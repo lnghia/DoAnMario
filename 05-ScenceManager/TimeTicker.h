@@ -8,15 +8,15 @@
 
 class TimeTicker : public CGameObject
 {
-	TimeTicker* instance;
-	DWORD start;
-	Displayer* displayer;
+	TimeTicker* instance = NULL;
+	DWORD start = NULL;
+	Displayer* displayer = NULL;
 
 	int timer;
 	int currMoment;
 
-	int width;
-	int height;
+	int width = 0;
+	int height = 0;
 
 	bool isTicking = 0;
 public:

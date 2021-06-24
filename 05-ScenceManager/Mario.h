@@ -179,6 +179,8 @@
 #define MARIO_ANI_LIFT_JUMP_LEFT	19
 #define MARIO_ANI_LIFT_IDLE_RIGHT	20
 #define MARIO_ANI_LIFT_IDLE_LEFT	21
+#define MARIO_ANI_KICK_RIGHT	22
+#define MARIO_ANI_KICK_LEFT		23
 
 
 #define MARIO_ANI_DIE				8
@@ -199,6 +201,7 @@
 #define MARIO_UNTOUCHABLE_TIME 3000
 #define MARIO_TRANSFORM_SIZE_TIME 800
 #define MARIO_TRANSFORM_RACOON_TIME 450
+#define MARIO_KICKING_TIME	200
 
 #define MARIO_SIZE_TRANSFORMING	1
 #define MARIO_RACOOON_TRANSFORMING	2
@@ -226,6 +229,7 @@ class CMario : public CGameObject
 
 	DWORD startTransforming = (DWORD)0;
 	DWORD startFlying;
+	DWORD start_kicking;
 
 	int transforming;
 
@@ -242,6 +246,7 @@ class CMario : public CGameObject
 	bool isJumping = 0;
 	bool isFallingTail = 0;
 	bool canHold = 0;
+	bool isKicking = 0;
 
 	LPGAMEOBJECT beingHoldedObj = NULL;
 
@@ -268,7 +273,9 @@ class CMario : public CGameObject
 			MARIO_ANI_SMALL_LIFT_THINGS_JUMP_RIGHT,
 			MARIO_ANI_SMALL_LIFT_THINGS_JUMP_LEFT,
 			MARIO_ANI_SMALL_IDLE_LIFT_RIGHT,
-			MARIO_ANI_SMALL_IDLE_LIFT_LEFT
+			MARIO_ANI_SMALL_IDLE_LIFT_LEFT,
+			MARIO_ANI_SMALL_KICK_RIGHT,
+			MARIO_ANI_SMALL_KICK_LEFT
 		},
 		{
 			MARIO_ANI_BIG_IDLE_RIGHT,
@@ -292,7 +299,9 @@ class CMario : public CGameObject
 			MARIO_ANI_BIG_LIFT_THINGS_JUMP_RIGHT,
 			MARIO_ANI_BIG_LIFT_THINGS_JUMP_LEFT,
 			MARIO_ANI_BIG_IDLE_LIFT_RIGHT,
-			MARIO_ANI_BIG_IDLE_LIFT_LEFT
+			MARIO_ANI_BIG_IDLE_LIFT_LEFT,
+			MARIO_ANI_BIG_KICK_RIGHT,
+			MARIO_ANI_BIG_KICK_LEFT
 		},
 		{
 			MARIO_ANI_RACOON_IDLE_RIGHT,
@@ -316,7 +325,9 @@ class CMario : public CGameObject
 			MARIO_ANI_RACOON_LIFT_THINGS_JUMP_RIGHT,
 			MARIO_ANI_RACOON_LIFT_THINGS_JUMP_LEFT,
 			MARIO_ANI_RACOON_IDLE_LIFT_RIGHT,
-			MARIO_ANI_RACOON_IDLE_LIFT_LEFT
+			MARIO_ANI_RACOON_IDLE_LIFT_LEFT,
+			MARIO_ANI_RACOON_KICK_RIGHT,
+			MARIO_ANI_RACOON_KICK_LEFT
 		}
 	};
 
@@ -385,6 +396,9 @@ public:
 	void SetCanHold(const bool& val);
 	bool GetCanHold();
 
+	void SetIsKicking(bool val);
+	bool GetIsKicking();
+
 	void SetBeingHoldedObj(LPGAMEOBJECT obj);
 	LPGAMEOBJECT GetBeingHoldedObj();
 
@@ -439,5 +453,14 @@ public:
 		else if (transforming == MARIO_RACOOON_TRANSFORMING) {
 			finishRacoonTransforming();
 		}
+	}
+
+	void StartKicking() {
+		isKicking = 1;
+		start_kicking = (DWORD)GetTickCount64();
+	}
+
+	void FinishKicking() {
+		isKicking = 0;
 	}
 };

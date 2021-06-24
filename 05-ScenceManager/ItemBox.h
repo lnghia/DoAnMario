@@ -7,7 +7,7 @@
 
 class ItemBox : public JustForShow
 {
-	JustForShow* item;
+	JustForShow* item = NULL;
 public:
 	ItemBox() {};
 	ItemBox(int itemTypeId, int itemTypeAni, float x, float y);

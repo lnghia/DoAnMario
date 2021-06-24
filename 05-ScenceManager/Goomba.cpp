@@ -188,7 +188,7 @@ void CGoomba::SetState(int state)
 		case GOOMBA_STATE_DIE:
 			y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1);
 			interactivable = 0;
-			start_die = GetTickCount();
+			start_die = (DWORD)GetTickCount64();
 			vx = 0;
 			vy = 0;
 			break;
