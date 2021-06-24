@@ -704,10 +704,20 @@ int CMario::filterSomeCommonAniByLevel()
 	//DebugOut(L"[IS JUMPING] %d\n", isJumping);
 
 	if (isJumping) {
-		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_JUMP_RIGHT] : animationsByLevel[level][MARIO_ANI_JUMP_LEFT];
+		if (beingHoldedObj) {
+			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_LIFT_JUMP_RIGHT] : animationsByLevel[level][MARIO_ANI_LIFT_JUMP_LEFT];
+		}
+		else {
+			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_JUMP_RIGHT] : animationsByLevel[level][MARIO_ANI_JUMP_LEFT];
+		}
 	}
 	else if (!vx && state == MARIO_STATE_IDLE) {
-		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_IDLE_RIGHT] : animationsByLevel[level][MARIO_ANI_IDLE_LEFT];
+		if (beingHoldedObj) {
+			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_LIFT_IDLE_RIGHT] : animationsByLevel[level][MARIO_ANI_LIFT_IDLE_LEFT];
+		}
+		else {
+			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_IDLE_RIGHT] : animationsByLevel[level][MARIO_ANI_IDLE_LEFT];
+		}
 	}
 	else if (!vx && state != MARIO_STATE_IDLE) {
 		/*if (nx > 0) {
@@ -726,38 +736,83 @@ int CMario::filterSomeCommonAniByLevel()
 				ani = animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
 			}
 		}*/
-		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_WALKING_RIGHT] : animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
+		if (beingHoldedObj) {
+			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_LIFT_RIGHT] : animationsByLevel[level][MARIO_ANI_LIFT_LEFT];
+		}
+		else {
+			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_WALKING_RIGHT] : animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
+		}
 	}
 	else if (vx > 0) {
 		if (isJumping && !isFlying) {
-			ani = animationsByLevel[level][MARIO_ANI_JUMP_RIGHT];
+			if (beingHoldedObj) {
+				ani = animationsByLevel[level][MARIO_ANI_LIFT_JUMP_RIGHT];
+			}
+			else {
+				ani = animationsByLevel[level][MARIO_ANI_JUMP_RIGHT];
+			}
 		}
 		else if (isRunning) {
 			if (isSliding) {
-				ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_SLIDE_RIGHT];
+				if (beingHoldedObj) {
+					ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_LIFT_LEFT] : animationsByLevel[level][MARIO_ANI_LIFT_RIGHT];
+				}
+				else {
+					ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_SLIDE_RIGHT];
+				}
 			}
 			else {
-				ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_RUN_RIGHT];
+				if (beingHoldedObj) {
+					ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_LIFT_LEFT] : animationsByLevel[level][MARIO_ANI_LIFT_RIGHT];
+				}
+				else {
+					ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_RUN_RIGHT];
+				}
 			}
 		}
 		else {
-			ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_WALKING_RIGHT];
+			if (beingHoldedObj) {
+				ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_LIFT_LEFT] : animationsByLevel[level][MARIO_ANI_LIFT_RIGHT];
+			}
+			else {
+				ani = (nx < 0) ? animationsByLevel[level][MARIO_ANI_SKID_LEFT] : animationsByLevel[level][MARIO_ANI_WALKING_RIGHT];
+			}
 		}
 	}
 	else {
 		if (isJumping && !isFlying) {
-			ani = animationsByLevel[level][MARIO_ANI_JUMP_LEFT];
+			if (beingHoldedObj) {
+				ani = animationsByLevel[level][MARIO_ANI_LIFT_JUMP_LEFT];
+			}
+			else {
+				ani = animationsByLevel[level][MARIO_ANI_JUMP_LEFT];
+			}
 		}
 		else if (isRunning) {
 			if (isSliding) {
-				ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_SLIDE_LEFT];
+				if (beingHoldedObj) {
+					ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_LIFT_RIGHT] : animationsByLevel[level][MARIO_ANI_LIFT_LEFT];
+				}
+				else {
+					ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_SLIDE_LEFT];
+				}
 			}
 			else {
-				ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_RUN_LEFT];
+				if (beingHoldedObj) {
+					ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_LIFT_RIGHT] : animationsByLevel[level][MARIO_ANI_LIFT_LEFT];
+				}
+				else {
+					ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_RUN_LEFT];
+				}
 			}
 		}
 		else {
-			ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
+			if (beingHoldedObj) {
+				ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_LIFT_RIGHT] : animationsByLevel[level][MARIO_ANI_LIFT_LEFT];
+			}
+			else {
+				ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_SKID_RIGHT] : animationsByLevel[level][MARIO_ANI_WALKING_LEFT];
+			}
 		}
 	}
 
