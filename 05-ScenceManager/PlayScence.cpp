@@ -10,6 +10,7 @@
 #include "Map.h"
 #include "Grid.h"
 #include "Wood.h"
+#include "BrokenBrick.h"
 
 #include "ObjectCheatSheet.h"
 
@@ -19,6 +20,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
+	objId = 0;
 }
 
 /*
@@ -76,7 +78,7 @@ void CPlayScene::_ParseSection_ANIMATIONS(const string& line)
 	LPANIMATION ani = new CAnimation();
 
 	int ani_id = atoi(tokens[0].c_str());
-	for (int i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
+	for (int i = 1; i < (int)tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
 	{
 		int sprite_id = atoi(tokens[i].c_str());
 		int frame_time = atoi(tokens[i + 1].c_str());
@@ -102,7 +104,7 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(const string& line)
 		int tmp = 1;
 	}
 
-	for (int i = 1; i < tokens.size(); i++)
+	for (int i = 1; i < (int)tokens.size(); i++)
 	{
 		int ani_id = atoi(tokens[i].c_str());
 
@@ -267,6 +269,12 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		obj = new FloatingCoin(x, y);
 		break;
 	}
+	case OBJECT_TYPE_BROKEN_BRICK: {
+		int hiddenItemType = (int)atoi(tokens[4].c_str());
+
+		obj = new BrokenBrick(hiddenItemType);
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -278,8 +286,185 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
 	obj->SetAnimationSet(ani_set);
-	objects.push_back(obj);
+	//objects.push_back(obj);
 	Grid::GetInstance()->putObjectIntoGrid(obj);
+}
+
+void CPlayScene::_ParseSection_OBJECTS(const string& line, ofstream& writer, ofstream& writer2)
+{
+	vector<string> tokens = split(line);
+
+	//DebugOut(L"--> %s\n",ToWSTR(line).c_str());
+
+	if (tokens.size() < 3) return; // skip invalid lines - an object set must have at least id, x, y
+
+	int object_type = atoi(tokens[0].c_str());
+	float x = (float)atof(tokens[1].c_str());
+	float y = (float)atof(tokens[2].c_str());
+
+	int ani_set_id = atoi(tokens[3].c_str());
+
+	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
+
+	CGameObject* obj = NULL;
+
+	if (object_type == 10) {
+		int tmp = 1;
+	}
+
+	switch (object_type)
+	{
+	case OBJECT_TYPE_MARIO:
+		if (player != NULL)
+		{
+			DebugOut(L"[ERROR] MARIO object was created before!\n");
+			return;
+		}
+		obj = new CMario(x, y);
+		player = (CMario*)obj;
+
+		DebugOut(L"[INFO] Player object created!\n");
+		break;
+	case OBJECT_TYPE_GOOMBA:
+		obj = new CGoomba();
+		break;
+	case OBJECT_TYPE_QBRICK: {
+		int hiddenItemType = atoi(tokens[4].c_str());
+		int	hiddenItemAni = atoi(tokens[5].c_str());
+
+		if (tokens.size() > 6) {
+			int backupItem = atoi(tokens[6].c_str());
+			int backupItemAni = atoi(tokens[7].c_str());
+
+			obj = new QBrick(hiddenItemType, hiddenItemAni, backupItem, backupItemAni);
+
+			break;
+		}
+
+		obj = new QBrick(hiddenItemType, hiddenItemAni);
+
+		break;
+	}
+	case OBJECT_TYPE_BRICK:
+		obj = new CBrick();
+		break;
+	case OBJECT_TYPE_KOOPAS: {
+		short int initMovingDirec = (short int)atoi(tokens[4].c_str());
+
+		obj = new CKoopas(initMovingDirec);
+
+		break;
+	}
+	case OBJECT_TYPE_RED_KOOPAS:
+	{
+		short int initMovingDirec = (short int)atoi(tokens[4].c_str());
+		int x = atoi(tokens[5].c_str());
+		int y = atoi(tokens[6].c_str());
+		int h = atoi(tokens[7].c_str());
+		int w = atoi(tokens[8].c_str());
+
+		obj = new RedKoopas(initMovingDirec, x, y, w, h);
+
+		break;
+	}
+	case OBJECT_TYPE_PORTAL:
+	{
+		float r = (float)atof(tokens[4].c_str());
+		float b = (float)atof(tokens[5].c_str());
+		int scene_id = atoi(tokens[6].c_str());
+		obj = new CPortal(x, y, r, b, scene_id);
+	}
+	break;
+	case OBJECT_TYPE_JUST_FOR_SHOW: {
+		obj = new JustForShow();
+		obj->SetRenderPriority(30);
+		break;
+	}
+
+	case OBJECT_TYPE_INVISIBLE: {
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+
+		obj = new InteractivableTransObject(width, height);
+
+		break;
+	}
+	case OBJECT_TYPE_PIPE_HITBOX: {
+		float width = (float)atof(tokens[4].c_str());
+		float height = (float)atof(tokens[5].c_str());
+
+		obj = new PipeHitBox((int)width, (int)height);
+
+		break;
+	}
+	case OBJECT_TYPE_PIPE_FOR_SHOW: {
+		obj = new JustForShow();
+
+		obj->SetRenderPriority(99);
+
+		break;
+	}
+	case OBJECT_TYPE_COLOR_BRICK_HITBOX: {
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+
+		obj = new ColorBrickHitBox(width, height);
+
+		break;
+	}
+	case OBJECT_TYPE_GROUND: {
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+
+		obj = new Ground(width, height);
+
+		break;
+	}
+	case OBJECT_TYPE_PIRANHAPLANT: {
+		float pipeX = (float)atof(tokens[4].c_str());
+		float pipeY = (float)atof(tokens[5].c_str());
+		float pipeWidth = (float)atof(tokens[6].c_str());
+		float pipeHeight = (float)atof(tokens[7].c_str());
+
+		if (!player) {
+			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
+		}
+
+		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player);
+		break;
+	}
+	case OBJECT_TYPE_WOOD: {
+		obj = new Wood();
+		break;
+	}
+	case OBJECT_TYPE_FLOATING_COIN: {
+		obj = new FloatingCoin(x, y);
+		break;
+	}
+	default:
+		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
+		return;
+	}
+
+	// General object setup
+	obj->SetPosition(x, y);
+
+	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+
+	obj->SetAnimationSet(ani_set);
+	//objects.push_back(obj);
+	Grid::GetInstance()->putObjectIntoGrid(obj);
+
+	vector<int> cords = Grid::GetInstance()->getOverLapCells(obj);
+
+	string out_line = to_string(objId);
+	string out_line2 = to_string(objId) + "\t" + line;
+	for (auto& cord : cords) {
+		out_line += "\t" + to_string(cord);
+	}
+
+	writer << out_line << '\n';
+	writer2 << out_line2 << '\n';
 }
 
 void CPlayScene::_ParseSection_GRID(const string& line)
@@ -470,7 +655,7 @@ void CPlayScene::Update(DWORD dt)
 	player->Update(dt, &coObjects);
 
 	for (auto& obj : objectsInCamera) {
-		if (dynamic_cast<CMario*>(obj)) {
+		if (dynamic_cast<CMario*>(obj) || !obj) {
 			continue;
 		}
 
@@ -510,7 +695,7 @@ void CPlayScene::Update(DWORD dt)
 
 	collidableObjsToPlayer.clear();
 
-	//Grid::GetInstance()->cleanObjTrashBin();
+	Grid::GetInstance()->cleanObjTrashBin();
 
 	/*for (size_t i = 0; i < objectsInCamera.size(); i++)
 	{
@@ -571,7 +756,7 @@ void CPlayScene::Render()
 
 	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
 
-	bool renderPause = ((player->GetUntouchable() && (DWORD)GetTickCount64() - player->GetUntouchableStart() < player->transform_duration_time) ||
+	bool renderPause = ((player->GetUntouchable() && (DWORD)GetTickCount64() - player->GetUntouchableStart() < (DWORD)player->transform_duration_time) ||
 		(player->GetTransforming() && (DWORD)GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time) ||
 		player->GetState() == MARIO_STATE_DIE);
 
@@ -858,6 +1043,11 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (mario->GetState() == MARIO_STATE_DIE) return;
 
 	if (game->IsKeyDown(DIK_A)) {
+		if (!mario->tailAttacked) {
+			// start attack tail
+			mario->tailAttacked = 1;
+			mario->StartAttackingWithTail();
+		}
 		mario->SetIsRunning(1);
 		mario->SetCanHold(1);
 		if (abs(mario->GetVx()) >= MARIO_RUNNING_SPEED)
@@ -895,6 +1085,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		mario->SetCanHold(0);
 		mario->SetIsRunning(0);
 		mario->SetIsSliding(0);
+		mario->tailAttacked = 0;
 	}
 	//DebugOut(L"%d\n", mario->GetNx());
 

@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "Board.h"
 #include "Mario.h"
+#include "BrokenBrick.h"
 
 RedKoopas::RedKoopas()
 {
@@ -287,6 +288,36 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						vx *= -1;
 						dynamic_cast<QBrick*>(e->obj)->PopUpHiddenItem();
 					}
+				}
+			}
+			else if (dynamic_cast<BrokenBrick*>(e->obj)) {
+				BrokenBrick* brokenBrick = dynamic_cast<BrokenBrick*>(e->obj);
+
+				if (e->nx) {
+					float l, t, r, b;
+
+					e->obj->GetBoundingBox(l, t, r, b);
+
+					if (e->nx) {
+						if (state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT) {
+							if (vx > 0) {
+								SetState(KOOPAS_STATE_WALKING_LEFT);
+							}
+							else {
+								SetState(KOOPAS_STATE_WALKING_RIGHT);
+							}
+						}
+						else if (state == KOOPAS_STATE_SPIN) {
+							vx *= -1;
+							brokenBrick->GetBroken();
+						}
+
+						//vx *= -1;
+					}
+				}
+
+				if (ny) {
+					vy = 0;
 				}
 			}
 		}

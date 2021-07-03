@@ -27,11 +27,14 @@ protected:
 
 	vector<LPGAMEOBJECT> objects;
 
+	UINT objId;
+
 	void _ParseSection_TEXTURES(const string& line);
 	void _ParseSection_SPRITES(const string& line);
 	void _ParseSection_ANIMATIONS(const string& line);
 	void _ParseSection_ANIMATION_SETS(const string& line);
 	void _ParseSection_OBJECTS(const string& line);
+	void _ParseSection_OBJECTS(const string& line, ofstream& writer, ofstream& writer2);
 	void _ParseSection_GRID(const string& line);
 	void _ParseSection_MAP(const string& line);
 	void _ParseSection_Board(const string& line);

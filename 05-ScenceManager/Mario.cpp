@@ -78,11 +78,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	coEvents.clear();
 
-	for (UINT i = 0; i < (UINT)coObjects->size(); ++i) {
-		LPGAMEOBJECT tmp = coObjects->at(i);
+	//shared_ptr<CGameObject> tmp;
 
-		if (beingHoldedObj && tmp == beingHoldedObj) {
-			coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), tmp), coObjects->end());
+	for (UINT i = 0; i < (UINT)coObjects->size(); ++i) {
+		//tmp.reset(coObjects->at(i));
+
+		if (beingHoldedObj && beingHoldedObj == coObjects->at(i)) {
+			coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), coObjects->at(i)), coObjects->end());
 		}
 	}
 
@@ -192,7 +194,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						koopas->InShell();
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
-					else if(koopas->GetState() == KOOPAS_STATE_IN_SHELL) {
+					else if (koopas->GetState() == KOOPAS_STATE_IN_SHELL) {
 						// spin
 						koopas->GetKicked((int)nx);
 					}
@@ -422,31 +424,36 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (beingHoldedObj) {
 		Grid::GetInstance()->clearObjFromGrid(beingHoldedObj);
 
-		int tmp = (nx > 0) ? 10 : -16 + 5;
-
-		if (level == MARIO_LEVEL_SMALL) {
-			//float tmpX = x + (nx > 0) ? 10 : -16 + 5;
-			//float tmpX = x - 16 + 5;
-			float tmpX = x + tmp;
-			float tmpY = y - 1;
-
-			beingHoldedObj->SetPosition(tmpX, tmpY);
-		}
-		else if (level != MARIO_LEVEL_RACOON) {
-			//float tmpX = x + (nx > 0) ? 10.0f : 5.0f;
-			float tmpX = x + tmp;
-			float tmpY = y + 8;
-
-			beingHoldedObj->SetPosition(tmpX, round(tmpY));
+		if (dynamic_cast<Tail*>(beingHoldedObj)) {
+			beingHoldedObj->Update(dt, coObjects);
 		}
 		else {
-			//float tmpX = x + (nx > 0) ? 10.0f : 5.0f;
-			float tmpX = x + tmp;
-			float tmpY = y + 10;
+			int tmp = (nx > 0) ? 10 : -16 + 5;
 
-			beingHoldedObj->SetPosition(tmpX, tmpY);
+			if (level == MARIO_LEVEL_SMALL) {
+				//float tmpX = x + (nx > 0) ? 10 : -16 + 5;
+				//float tmpX = x - 16 + 5;
+				float tmpX = x + tmp;
+				float tmpY = y - 1;
+
+				beingHoldedObj->SetPosition(tmpX, tmpY);
+			}
+			else if (level != MARIO_LEVEL_RACOON) {
+				//float tmpX = x + (nx > 0) ? 10.0f : 5.0f;
+				float tmpX = x + tmp;
+				float tmpY = y + 8;
+
+				beingHoldedObj->SetPosition(tmpX, round(tmpY));
+			}
+			else {
+				//float tmpX = x + (nx > 0) ? 10.0f : 5.0f;
+				float tmpX = x + tmp;
+				float tmpY = y + 10;
+
+				beingHoldedObj->SetPosition(tmpX, tmpY);
+			}
+			beingHoldedObj->SetVx(vx);
 		}
-		beingHoldedObj->SetVx(vx);
 
 		Grid::GetInstance()->putObjectIntoGrid(beingHoldedObj);
 	}
@@ -479,6 +486,19 @@ void CMario::Render()
 		else if (isFallingTail) {
 			ani = (nx > 0) ? MARIO_ANI_RACOON_FALL_TAIL_RIGHT : MARIO_ANI_RACOON_FALL_TAIL_LEFT;
 		}
+		else if (level == MARIO_LEVEL_RACOON && isAttackingTail) {
+			if ((DWORD)GetTickCount64() - start_attacking_tail < 180) {
+				if ((DWORD)GetTickCount64() - start_attacking_tail > 50 && !moveABit) {
+					x += (nx > 0) ? 6 : -6;
+					moveABit = 1;
+				}
+				ani = (nx > 0) ? MARIO_ANI_RACOON_ATTACK_TAIL_RIGHT : MARIO_ANI_RACOON_ATTACK_TAIL_LEFT;
+			}
+			else {
+				FinishAttackingWithTail();
+				ani = filterSomeCommonAniByLevel();
+			}
+		}
 		else {
 			ani = filterSomeCommonAniByLevel();
 		}
@@ -495,7 +515,7 @@ void CMario::Render()
 
 	animation_set->at(ani)->Render(x, y, alpha);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CMario::SetState(int state)
@@ -950,6 +970,16 @@ void CMario::SetIsKicking(bool val)
 bool CMario::GetIsKicking()
 {
 	return isKicking;
+}
+
+void CMario::SetIsAttackingTail(bool val)
+{
+	isAttackingTail = val;
+}
+
+bool CMario::GetIsAttackingTail()
+{
+	return isAttackingTail;
 }
 
 void CMario::SetBeingHoldedObj(LPGAMEOBJECT obj)

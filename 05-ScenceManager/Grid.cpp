@@ -91,6 +91,7 @@ void Grid::ObjIntoTrash(LPGAMEOBJECT obj)
 void Grid::cleanObjTrashBin()
 {
 	for (auto& obj : noMoreNeeded) {
+		clearObjFromGrid(obj);
 		delete obj;
 	}
 

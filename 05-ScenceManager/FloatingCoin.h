@@ -27,7 +27,7 @@ protected:
 
 	bool passedDestrucPoint = 0;
 public:
-	FloatingCoin() {}
+	FloatingCoin() {};
 	FloatingCoin(float x, float y);
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);

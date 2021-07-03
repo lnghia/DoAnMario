@@ -1,5 +1,7 @@
 #pragma once
 #include "GameObject.h"
+#include "Tail.h"
+#include "Grid.h"
 
 #define MARIO_WALKING_SPEED		0.1f 
 #define MARIO_WALKING_MAX_SPEED	0.1f
@@ -156,6 +158,9 @@
 #define MARIO_ANI_RACOON_IDLE_LIFT_RIGHT	76
 #define MARIO_ANI_RACOON_IDLE_LIFT_LEFT		77
 
+#define MARIO_ANI_RACOON_ATTACK_TAIL_RIGHT	78
+#define MARIO_ANI_RACOON_ATTACK_TAIL_LEFT	79
+
 // Indexes are defined for filtering some common animations by level
 #define MARIO_ANI_IDLE_RIGHT	0
 #define MARIO_ANI_IDLE_LEFT		1
@@ -171,8 +176,8 @@
 #define	MARIO_ANI_SLIDE_LEFT	11
 #define	MARIO_ANI_SKID_RIGHT	12
 #define MARIO_ANI_SKID_LEFT		13
-#define MARIO_ANI_KICK_RIGHT	14
-#define MARIO_ANI_KICK_LEFT		15
+//#define MARIO_ANI_KICK_RIGHT	14
+//#define MARIO_ANI_KICK_LEFT		15
 #define MARIO_ANI_LIFT_RIGHT	16
 #define MARIO_ANI_LIFT_LEFT		17
 #define MARIO_ANI_LIFT_JUMP_RIGHT	18
@@ -202,6 +207,7 @@
 #define MARIO_TRANSFORM_SIZE_TIME 800
 #define MARIO_TRANSFORM_RACOON_TIME 450
 #define MARIO_KICKING_TIME	200
+#define MARIO_ATTACKING_TAIL_TIME	200
 
 #define MARIO_SIZE_TRANSFORMING	1
 #define MARIO_RACOOON_TRANSFORMING	2
@@ -230,6 +236,7 @@ class CMario : public CGameObject
 	DWORD startTransforming = (DWORD)0;
 	DWORD startFlying;
 	DWORD start_kicking;
+	DWORD start_attacking_tail;
 
 	int transforming;
 
@@ -247,10 +254,12 @@ class CMario : public CGameObject
 	bool isFallingTail = 0;
 	bool canHold = 0;
 	bool isKicking = 0;
+	bool isAttackingTail = 0;
+	bool moveABit = 0;
 
 	LPGAMEOBJECT beingHoldedObj = NULL;
 
-	vector<vector<int>> animationsByLevel = {
+	vector<vector<short int>> animationsByLevel = {
 		{
 			MARIO_ANI_SMALL_IDLE_RIGHT,
 			MARIO_ANI_SMALL_IDLE_LEFT,
@@ -334,6 +343,7 @@ class CMario : public CGameObject
 public:
 	bool flyUp = 0;
 	bool hasJustKicked = 0;
+	bool tailAttacked = 0;
 
 	int transform_duration_time = 0;
 
@@ -348,7 +358,7 @@ public:
 
 	void StartFlying() { startFlying = (DWORD)GetTickCount64(); isFlying = 1; isFalling = 0; isStanding = 0; isGliding = 0; vy = MARIO_RACOON_FLY_VY; };
 	void StartGliding() {
-		isGliding = 1; isFalling = 0; isStanding = 0; 
+		isGliding = 1; isFalling = 0; isStanding = 0;
 		vy = MARIO_RACOON_GLIDE_VY;
 	};
 	void StartFalling() {
@@ -399,6 +409,9 @@ public:
 	void SetIsKicking(bool val);
 	bool GetIsKicking();
 
+	void SetIsAttackingTail(bool val);
+	bool GetIsAttackingTail();
+
 	void SetBeingHoldedObj(LPGAMEOBJECT obj);
 	LPGAMEOBJECT GetBeingHoldedObj();
 
@@ -440,7 +453,7 @@ public:
 	void StartTransforming() {
 		if (transforming == MARIO_SIZE_TRANSFORMING) {
 			RenderSizeTransforming();
-		}	
+		}
 		else if (transforming == MARIO_RACOOON_TRANSFORMING) {
 			RenderBigToRacoonTransforming();
 		}
@@ -462,5 +475,29 @@ public:
 
 	void FinishKicking() {
 		isKicking = 0;
+	}
+
+	void StartAttackingWithTail() {
+		isAttackingTail = 1;
+		start_attacking_tail = (DWORD)GetTickCount64();
+
+		/*float maxRange = (nx > 0) ? x + 25.0f : -10.0f;
+
+		beingHoldedObj = new Tail(nx, maxRange);*/
+
+		//Grid::GetInstance()->putObjectIntoGrid(beingHoldedObj);
+	}
+
+	void FinishAttackingWithTail() {
+		moveABit = 0;
+		x += (nx > 0) ? -6 : 6;
+		isAttackingTail = 0;
+
+		//Grid::GetInstance()->clearObjFromGrid(beingHoldedObj);
+		//delete beingHoldedObj;
+		//beingHoldedObj = NULL;
+
+		/*Grid::GetInstance()->ObjIntoTrash(beingHoldedObj);
+		beingHoldedObj = NULL;*/
 	}
 };

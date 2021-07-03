@@ -18,7 +18,7 @@ void SpeedBar::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 void SpeedBar::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
-	step = ((player->GetIsRunning() && player->GetIsStanding()) || player->GetIsFlying() || player->GetIsGliding()) ? 1 : -1;
+	step = (player->GetVx() && (player->GetIsRunning() && player->GetIsStanding()) || player->GetIsFlying() || player->GetIsGliding()) ? 1 : -1;
 
 	if ((DWORD)GetTickCount64() - start_running >= 100) {
 		level += step;

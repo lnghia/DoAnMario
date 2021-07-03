@@ -7,8 +7,8 @@ class HiddenItem : public CGameObject
 protected:
 	DWORD deflect_start = 0;
 
-	float containerX;
-	float containerY;
+	float containerX = -1;
+	float containerY = -1;
 
 	bool passedDestrucPoint = 0;
 public:
