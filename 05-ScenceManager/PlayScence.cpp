@@ -716,11 +716,16 @@ void CPlayScene::Update(DWORD dt)
 	_cx = game->GetCamX();
 	_cy = game->GetCamY();
 
-	cx -= game->GetScreenWidth() / 2;
+	if (!player->GetTransforming() && !player->GetIsAttackingTail()) {
+		cx -= game->GetScreenWidth() / 2;
+	}
+	else {
+		cx = _cx;
+	}
 
-	if (player->GetIsFlying() || player->GetIsFalling() || player->GetIsGliding() || player->GetIsFallingTail()) {
+	if (player->GetIsFlying() || player->GetIsFalling() || player->GetIsGliding() || (player->GetIsFallingTail() && _cy + game->GetScreenHeight() < Map::getInstance()->getHeight()) || _cy + game->GetScreenHeight() < Map::getInstance()->getHeight()) {
 		cy -= game->GetScreenHeight() / 2;
-		if (cy + game->GetScreenHeight() > Map::getInstance()->getHeight()) {
+		if (_cy + game->GetScreenHeight() > Map::getInstance()->getHeight()) {
 			cy = (float)(Map::getInstance()->getHeight() - game->GetScreenHeight() - 1);
 		}
 	}
@@ -981,8 +986,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			mario->SetState(MARIO_STATE_FLY);
 			mario->flyUp = 1;
 		}
-		else if (!mario->GetIsStanding() && mario->GetLevel() == MARIO_LEVEL_RACOON && mario->vy > 0) {
-			mario->SetState(MARIO_STATE_FALL_TAIL);
+		else if (!mario->GetIsStanding() && mario->GetLevel() == MARIO_LEVEL_RACOON && !mario->GetIsFlying() && !mario->GetIsGliding() && !mario->GetIsFalling()) {
+			//mario->SetState(MARIO_STATE_FALL_TAIL);
+			mario->StartFallingTail();
 		}
 		else {
 			mario->SetState(MARIO_STATE_JUMP);

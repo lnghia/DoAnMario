@@ -41,16 +41,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		Reset();
 	}
 
-	if (transforming && GetTickCount64() - startTransforming < transform_duration_time) {
+	if (transforming && (DWORD)GetTickCount64() - startTransforming < transform_duration_time) {
 		return;
 	}
-	if (isFlying && GetTickCount64() - startFlying > 200 && state != MARIO_STATE_DIE) {
+	if (isFlying && (DWORD)GetTickCount64() - startFlying > 200 && state != MARIO_STATE_DIE) {
 		if (GetTickCount64() - startFlying > 2000) {
 			SetState(MARIO_STATE_FALL);
 		}
 		else {
 			SetState(MARIO_STATE_GLIDE);
 		}
+	}
+	else if (isFallingTail && (DWORD)GetTickCount64() - start_falling_tail > 200 && state != MARIO_STATE_DIE) {
+		isFallingTail = 0;
 	}
 
 	oldX = x;
@@ -63,7 +66,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	Grid::GetInstance()->clearObjFromGrid(this);
 
 	// Simple fall down
-	if (!isFlying && !isFalling && !isGliding) vy += MARIO_GRAVITY * dt;
+	if (!isFlying && !isFalling && !isGliding && !isFallingTail) vy += MARIO_GRAVITY * dt;
 
 	//DebugOut(L"[DEBUG] %f - %f\n", _dy, vy);
 
@@ -503,7 +506,7 @@ void CMario::Render()
 			ani = filterSomeCommonAniByLevel();
 		}
 	}
-
+	currAni = ani;
 
 	int alpha = 255;
 
@@ -979,7 +982,7 @@ void CMario::SetIsAttackingTail(bool val)
 
 bool CMario::GetIsAttackingTail()
 {
-	return isAttackingTail;
+	return isAttackingTail && currAni == MARIO_ANI_RACOON_ATTACK_TAIL_LEFT || currAni == MARIO_ANI_RACOON_ATTACK_TAIL_RIGHT;
 }
 
 void CMario::SetBeingHoldedObj(LPGAMEOBJECT obj)

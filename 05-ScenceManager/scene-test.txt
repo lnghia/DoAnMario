@@ -1657,6 +1657,7 @@ maps\map_indexes_man1.txt	481	2816	16	16	400	16	8
 8	2448	384	51
 
 # piranha plant (which can shoot)
+# id_type	id	x	y	animation_set	pipeX	pipeY	pipeWidth	pipeHeight
 10	360	368	52	352	368	30	32
 
 # pipe

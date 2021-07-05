@@ -237,6 +237,7 @@ class CMario : public CGameObject
 	DWORD startFlying;
 	DWORD start_kicking;
 	DWORD start_attacking_tail;
+	DWORD start_falling_tail;
 
 	int transforming;
 
@@ -499,5 +500,10 @@ public:
 
 		/*Grid::GetInstance()->ObjIntoTrash(beingHoldedObj);
 		beingHoldedObj = NULL;*/
+	}
+
+	void StartFallingTail() {
+		SetState(MARIO_STATE_FALL_TAIL);
+		start_falling_tail = (DWORD)GetTickCount64();
 	}
 };
