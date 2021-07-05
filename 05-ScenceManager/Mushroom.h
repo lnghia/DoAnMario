@@ -20,7 +20,7 @@
 
 #define MUSHROOM_GRAVITY		0.002f
 
-#define MUSHROOM_POINT			200
+#define MUSHROOM_POINT			1000
 
 class Mushroom : public HiddenItem
 {

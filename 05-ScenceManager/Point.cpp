@@ -31,7 +31,7 @@ Point::Point(unsigned short int point, float x, float y)
 
 			break;
 		}
-		/*case 400: {
+		case 400: {
 			this->point = POINT_ANI_400;
 
 			break;
@@ -61,8 +61,13 @@ Point::Point(unsigned short int point, float x, float y)
 
 			break;
 		}
+		case 1: {
+			this->point = POINT_ANI_1UP; 
+
+			break;
+		}
 		default:
-			break;*/
+			break;
 	}
 	currAni = this->point;
 }

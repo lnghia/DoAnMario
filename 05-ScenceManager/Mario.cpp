@@ -388,7 +388,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				LPGAMEOBJECT point = new Point(MUSHROOM_POINT, mX, mY);
 				Grid::GetInstance()->putObjectIntoGrid(point);
-				Board::GetInstance()->GetPoint()->Add(LEAF_POINT);
+				Board::GetInstance()->GetPoint()->Add(MUSHROOM_POINT);
 
 				if (GetLevel() != MARIO_LEVEL_BIG) {
 					SetBackupLevel(MARIO_LEVEL_BIG);

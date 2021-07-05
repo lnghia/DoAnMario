@@ -10,6 +10,9 @@
 #define POINT_ANI_2000	5
 #define POINT_ANI_4000	6
 #define POINT_ANI_8000	7
+#define POINT_ANI_1UP	8
+
+#define POINT_1UP	1
 
 #define POINT_ANI_SET	911
 
