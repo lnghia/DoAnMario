@@ -87,7 +87,7 @@ void QBrick::HopUpABit()
 	if (state == QBRICK_STATE_MYSTERIOUS) {
 		oldY = y;
 		//vx = -0.5f;
-		y -= 1.5f;
+		y -= 3.0f;
 		state = QBRICK_STATE_NO_MORE_MYSTERIOUS;
 		start_hopUp = GetTickCount();
 		hopUp = 1;
