@@ -404,6 +404,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					isStanding = 0;
 					beingBouncedUp = 1;
 					start_prepare_bouncing_up = (DWORD)GetTickCount64();
+					vx = (vx > 0) ? 0.05f : -0.05f;
 				}
 			}
 			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
