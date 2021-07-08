@@ -38,6 +38,8 @@ public:
 		canBeStandOn = 1;
 
 		currAni = 0;
+
+		state == QBRICK_STATE_MYSTERIOUS;
 	}
 
 	virtual void Render();
@@ -45,8 +47,8 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void RenderCurrFrame();
 
-	void PopUpHiddenItem();
+	virtual void PopUpHiddenItem();
 
-	void HopUpABit();
+	virtual void HopUpABit();
 };
 

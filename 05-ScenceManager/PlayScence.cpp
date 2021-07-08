@@ -11,6 +11,7 @@
 #include "Grid.h"
 #include "Wood.h"
 #include "BrokenBrick.h"
+#include "BrokenQuestionBrick.h"
 
 #include "ObjectCheatSheet.h"
 
@@ -273,6 +274,21 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		int hiddenItemType = (int)atoi(tokens[4].c_str());
 
 		obj = new BrokenBrick(hiddenItemType);
+		break;
+	}
+	case OBJECT_TYPE_QUESTION_BROKEN_BRICK: {
+		obj = new BrokenQuestionBrick(x, y);
+
+		int item;
+		int ani;
+
+		for (UINT i = 4; i < tokens.size(); i += 2) {
+			item = (int)atoi(tokens[i].c_str());
+			ani = (int)atoi(tokens[i + 1].c_str());
+
+			obj->AddHiddenItem(item, ani);
+		}
+
 		break;
 	}
 	default:
@@ -1075,14 +1091,14 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->GetBoundingBox(l, t, r, b);
 			mario->GetBeingHoldedObj()->GetPosition(tmpX, tmpY);
 			//mario->GetBeingHoldedObj()->SetPosition(r + 0.4f, tmpY);
-			
+
 			if (mario->GetNx() > 0 || mario->GetVx() > 0) {
 				mario->GetBeingHoldedObj()->SetPosition(r + 1, tmpY);
 			}
 			else {
 				mario->GetBeingHoldedObj()->SetPosition(l - 1 - 16, tmpY);
 			}
-			
+
 			mario->StartKicking();
 			mario->GetBeingHoldedObj()->GetKicked(tmp);
 			mario->hasJustKicked = 1;

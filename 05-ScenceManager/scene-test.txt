@@ -1106,7 +1106,7 @@
 2052	200052
 
 # QUESTION BRICK 
-22	602	410
+22	602	410	90013
 
 # BRICK 
 2	601
@@ -1965,7 +1965,11 @@ maps\map_indexes_man1.txt	481	2816	16	16	400	16	8
 
 #broken brick
 # id_type	id	x	y	animation_set	hiddenItemType
-54	752	384	90013	52
+#54	752	384	90013	52
+
+#question broken brick
+# id_type	id	x	y	animation_set	hiddenItemType	hiddenItemAniSet	...
+55	752	352	22	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90
 
 
 [BOARD]

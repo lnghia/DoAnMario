@@ -12,6 +12,8 @@ Coin::Coin(float x, float y)
 	vy = COIN_SPEED_Y;
 
 	renderPriority = 999;
+
+	interactivable = 0;
 }
 
 void Coin::GetBoundingBox(float& l, float& t, float& r, float& b)

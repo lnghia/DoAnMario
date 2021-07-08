@@ -6,7 +6,7 @@
 
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
-	if (hopUp && GetTickCount() - start_hopUp >= 150) {
+	if (hopUp && (DWORD)GetTickCount64() - start_hopUp >= 150) {
 		y = oldY;
 	}
 }

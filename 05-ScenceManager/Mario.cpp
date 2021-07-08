@@ -18,6 +18,7 @@
 #include "FloatingCoin.h"
 #include "RedKoopas.h"
 #include "Koopas.h"
+#include "BrokenQuestionBrick.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -199,7 +200,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else if (koopas->GetState() == KOOPAS_STATE_IN_SHELL) {
 						// spin
-						koopas->GetKicked((int)nx);
+						int tmp = (nx > 0) ? -1 : 1;
+						koopas->GetKicked((int)tmp);
 					}
 					/*LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
 					Grid::GetInstance()->putObjectIntoGrid(point);
@@ -359,6 +361,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (e->ny > 0) {
 					QBrick* qBrick = dynamic_cast<QBrick*>(e->obj);
+
+					qBrick->PopUpHiddenItem();
+				}
+			}
+			else if (dynamic_cast<BrokenQuestionBrick*>(e->obj)) {
+				if (e->nx != 0) {
+					vx = 0;
+					isRunning = 0;
+					isSliding = 0;
+				}
+				else if (e->ny != 0) vy = 0;
+
+				if (e->ny > 0) {
+					BrokenQuestionBrick* qBrick = dynamic_cast<BrokenQuestionBrick*>(e->obj);
 
 					qBrick->PopUpHiddenItem();
 				}
