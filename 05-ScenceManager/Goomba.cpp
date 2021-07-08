@@ -123,6 +123,12 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					vy = 0;
 				}
 			}
+			else if (dynamic_cast<RedKoopas*>(e->obj)) {
+				if (e->ny) {
+					y -= min_ty * dy + ny * 0.4f;
+					//GetHit();
+				}
+			}
 			/*else if (dynamic_cast<RedKoopas*>(e->obj)) {
 				RedKoopas* koopas = dynamic_cast<RedKoopas*>(e->obj);
 

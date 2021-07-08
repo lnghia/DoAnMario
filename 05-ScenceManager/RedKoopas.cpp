@@ -140,11 +140,13 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			int tmp = 1;
 			if (nx > 0) {
 				SetState(KOOPAS_STATE_WALKING_LEFT);
-				l = beneathSurfaceX - (r - l) / 2;
+				x = beneathSurfaceX + beneathSurfaceW - (r - l) / 2;
+				//l = beneathSurfaceX - (r - l) / 2;
 			}
 			else {
 				SetState(KOOPAS_STATE_WALKING_RIGHT);
-				r = beneathSurfaceX + beneathSurfaceW + (r - l) / 2;
+				//r = beneathSurfaceX + beneathSurfaceW + (r - l) / 2;
+				x = beneathSurfaceX - (r - l) / 2;
 			}
 		}
 	}
@@ -271,6 +273,23 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							}
 							//vx *= -1;
 						}
+					}
+				}
+				else if (e->ny) {
+					float l, t, r, b;
+
+					e->obj->GetBoundingBox(l, t, r, b);
+
+					CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+
+					if (beingHolded || state == KOOPAS_STATE_SPIN && goomba->GetState() != GOOMBA_STATE_DIE && goomba->GetState() != GOOMBA_STATE_GET_HIT) {
+						float gX, gY;
+
+						goomba->GetHit();
+						goomba->GetPosition(gX, gY);
+						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, gX, gY);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
 					}
 				}
 			}
