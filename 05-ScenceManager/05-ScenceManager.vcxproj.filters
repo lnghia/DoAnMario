@@ -192,14 +192,20 @@
     <ClCompile Include="Tail.cpp">
       <Filter>Source Files\Player</Filter>
     </ClCompile>
-    <ClCompile Include="BrokenBrick.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Fragment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NoteBrick.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="BrokenBrick.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="BrokenQuestionBrick.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
     <ClCompile Include="PSwitch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\BackGroundObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -344,14 +350,20 @@
     <ClInclude Include="Tail.h">
       <Filter>Header Files\Player</Filter>
     </ClInclude>
-    <ClInclude Include="BrokenBrick.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Fragment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NoteBrick.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="BrokenBrick.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="BrokenQuestionBrick.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
     <ClInclude Include="PSwitch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\BackGroundObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1969,7 +1969,10 @@ maps\map_indexes_man1.txt	481	2816	16	16	400	16	8
 
 #question broken brick
 # id_type	id	x	y	animation_set	hiddenItemType	hiddenItemAniSet	...
-55	752	352	22	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90
+#55	752	352	22	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90	16	90
+
+# note brick
+56	752	352	22
 
 
 [BOARD]

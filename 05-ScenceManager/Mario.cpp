@@ -19,6 +19,7 @@
 #include "RedKoopas.h"
 #include "Koopas.h"
 #include "BrokenQuestionBrick.h"
+#include "NoteBrick.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -139,6 +140,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				isFalling = 0;
 				isGliding = 0;
 				isFallingTail = 0;
+				beingBouncedUp = 0;
 			}
 			//isJumping = isFlying = isFalling = !isStanding;
 
@@ -379,6 +381,31 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					qBrick->PopUpHiddenItem();
 				}
 			}
+			else if (dynamic_cast<NoteBrick*>(e->obj)) {
+				if (e->nx != 0) {
+					vx = 0;
+					isRunning = 0;
+					isSliding = 0;
+				}
+				else if (e->ny != 0) vy = 0;
+
+				if (e->ny > 0) {
+					NoteBrick* qBrick = dynamic_cast<NoteBrick*>(e->obj);
+
+					qBrick->HopUpABit();
+				}
+				else if (e->ny < 0) {
+					NoteBrick* qBrick = dynamic_cast<NoteBrick*>(e->obj);
+
+					qBrick->MoveDownABit();
+					vy = -MARIO_JUMP_SPEED_Y;
+					state = MARIO_STATE_JUMP;
+					isJumping = 1;
+					isStanding = 0;
+					beingBouncedUp = 1;
+					start_prepare_bouncing_up = (DWORD)GetTickCount64();
+				}
+			}
 			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
 
 				if (e->ny < 0) {
@@ -601,7 +628,7 @@ void CMario::SetState(int state)
 		break;
 	}
 	case MARIO_STATE_JUMP: {
-		if (!isStanding) {
+		if (!isStanding && !beingBouncedUp) {
 			return;
 		}
 
@@ -614,7 +641,14 @@ void CMario::SetState(int state)
 		else {
 			vy = -MARIO_JUMP_SPEED_Y;
 		}*/
-		vy = -MARIO_JUMP_SPEED_Y;
+		if (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 150) {
+			vy = -0.35f;
+		}
+		else if (!beingBouncedUp) {
+			vy = -MARIO_JUMP_SPEED_Y;
+		}
+
+		//vy = (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 180) ? -0.4f : -MARIO_JUMP_SPEED_Y;
 		isStanding = false;
 		isJumping = true;
 		break;

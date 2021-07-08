@@ -12,6 +12,7 @@
 #include "Wood.h"
 #include "BrokenBrick.h"
 #include "BrokenQuestionBrick.h"
+#include "NoteBrick.h"
 
 #include "ObjectCheatSheet.h"
 
@@ -288,6 +289,11 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 			obj->AddHiddenItem(item, ani);
 		}
+
+		break;
+	}
+	case OBJECT_TYPE_NOTE_BRICK: {
+		obj = new NoteBrick(x, y);
 
 		break;
 	}

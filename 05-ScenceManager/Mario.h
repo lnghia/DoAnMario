@@ -238,6 +238,7 @@ class CMario : public CGameObject
 	DWORD start_kicking;
 	DWORD start_attacking_tail;
 	DWORD start_falling_tail;
+	DWORD start_prepare_bouncing_up;
 
 	int transforming;
 
@@ -257,6 +258,7 @@ class CMario : public CGameObject
 	bool isKicking = 0;
 	bool isAttackingTail = 0;
 	bool moveABit = 0;
+	bool beingBouncedUp = 0;
 
 	LPGAMEOBJECT beingHoldedObj = NULL;
 
