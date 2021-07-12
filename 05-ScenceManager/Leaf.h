@@ -9,7 +9,7 @@
 
 #define LEAF_FALL_RIGHT	0
 #define LEAF_FALL_LEFT	1
-#define LEAF_FALL_SPEED_VX	0.04f 
+#define LEAF_FALL_SPEED_VX	0.07f 
 #define LEAF_FALL_SPEED_VY	0.02f
 #define LEAF_RISING_SPEED_VY	1.0f
 
@@ -30,8 +30,16 @@ class Leaf : public HiddenItem
 	float xMin = 0;
 	DWORD rise_start;
 	int rising = 0;
+
+	int xOrbit = 0;
+
+	float yOrbit = 0;
+	float topY = 0;
+	bool topYFirstTimeUpdated = 0;
 public:
 	Leaf(float x, float y) :HiddenItem(x, y) {
+		nx = 1;
+
 		vx = LEAF_FALL_SPEED_VX;
 		vy = LEAF_FALL_SPEED_VY;
 		xMax = x + LEAF_BBOX_WIDTH * 2;
@@ -41,4 +49,7 @@ public:
 
 	void StartRising() { rising = 1; rise_start = (DWORD)GetTickCount64(); }
 	void SetState(int state);
+
+	float FallingForward(int tmp);
+	float FallingBackward(int tmp);
 };
