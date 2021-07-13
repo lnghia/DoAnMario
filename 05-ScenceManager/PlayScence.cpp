@@ -13,6 +13,7 @@
 #include "BrokenBrick.h"
 #include "BrokenQuestionBrick.h"
 #include "NoteBrick.h"
+#include "EndGameBrick.h"
 
 #include "ObjectCheatSheet.h"
 
@@ -297,6 +298,11 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		break;
 	}
+	case OBJECT_TYPE_ENDGAME_BRICK: {
+		obj = new EndGameBrick();
+
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -461,6 +467,11 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line, ofstream& writer, ofs
 	}
 	case OBJECT_TYPE_FLOATING_COIN: {
 		obj = new FloatingCoin(x, y);
+		break;
+	}
+	case OBJECT_TYPE_ENDGAME_BRICK: {
+		obj = new EndGameBrick();
+
 		break;
 	}
 	default:

@@ -20,6 +20,7 @@
 #include "Koopas.h"
 #include "BrokenQuestionBrick.h"
 #include "NoteBrick.h"
+#include "EndGameBrick.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -464,6 +465,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					SetStartTransforming((DWORD)GetTickCount64());
 					BigToRacoon();
 				}
+			}
+			else if (dynamic_cast<EndGameBrick*>(e->obj)) {
+				if (e->nx != 0) {
+					vx = 0;
+					isRunning = 0;
+					isSliding = 0;
+				}
+				else if (e->ny != 0) vy = 0;
+
+				EndGameBrick* _obj = dynamic_cast<EndGameBrick*>(e->obj);
+
+				int chosenCard = _obj->PopUpChoosenItem();
+				Board::GetInstance()->GetCardStack()->push(chosenCard);
 			}
 		}
 	}

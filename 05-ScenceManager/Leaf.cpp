@@ -62,7 +62,7 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 			x += dx;
 
 			if (nx > 0) {
-				y = topY + round(FallingForward(xOrbit++));
+				y = topY + FallingForward(xOrbit++);
 
 				if (xOrbit > 32) {
 					topY = y;
@@ -72,7 +72,7 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 				}
 			}
 			else {
-				y = topY + round(FallingBackward(xOrbit--));
+				y = topY + FallingBackward(xOrbit--);
 
 				if (xOrbit < 0) {
 					topY = y;
@@ -122,7 +122,7 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 					x += dx;
 
 					if (nx > 0) {
-						y = topY + round(FallingForward(xOrbit++));
+						y = topY + FallingForward(xOrbit++);
 
 						if (xOrbit > 32) {
 							topY = y;
@@ -132,7 +132,7 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 						}
 					}
 					else {
-						y = topY + round(FallingBackward(xOrbit--));
+						y = topY + FallingBackward(xOrbit--);
 
 						if (xOrbit < 0) {
 							topY = y;
@@ -144,8 +144,6 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 				}
 			}
 		}
-
-		DebugOut(L"%f - %f\n", topY, y);
 
 		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 	}
@@ -170,10 +168,10 @@ void Leaf::SetState(int state)
 
 float Leaf::FallingForward(int tmp)
 {
-	return -(pow((float)tmp - 24.0f, 2) / 36 - 16);
+	return -(pow((float)tmp - 24.0f, 2) / 36.0f - 16.0f);
 }
 
 float Leaf::FallingBackward(int tmp)
 {
-	return -(pow((float)tmp - 8.0f, 2) / 36 - 16);
+	return -(pow((float)tmp - 8.0f, 2) / 36.0f - 16.0f);
 }

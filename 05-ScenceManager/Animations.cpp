@@ -51,6 +51,11 @@ void CAnimation::RenderCurrFrame(float x, float y, int alpha)
 	frames[currentFrame]->GetSprite()->Draw(x, y, alpha);
 }
 
+int CAnimation::GetCurrFrame()
+{
+	return currentFrame;
+}
+
 void CAnimation::_Render(float x, float y, int alpha)
 {
 	/*int height1, height2;

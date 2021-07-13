@@ -10,9 +10,17 @@
 
 class EndGameItemStack : public JustForShow
 {
+	int currItem = 0;
+
 	vector<ItemBox*> itemStack;
 public:
-	EndGameItemStack() {};
+	EndGameItemStack() {
+		itemStack.resize(3);
+		for (UINT i = 0; i < 3; ++i) {
+			itemStack[i] = new ItemBox();
+			itemStack[i]->SetAniSet(ITEMBOX_ANI_EMPTY);
+		}
+	};
 	EndGameItemStack(float x, float y);
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
@@ -21,5 +29,7 @@ public:
 
 	void UpdatePos(float x, float y);
 	void SetAniSet(int ani_set);
+
+	void push(int itemType);
 };
 

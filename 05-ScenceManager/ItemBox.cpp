@@ -48,3 +48,25 @@ void ItemBox::Render()
 	}
 	//DebugOut(L"[Debug] ITEM BOX IS EMPTY\n");
 }
+
+void ItemBox::SetItem(int itemType)
+{
+	if(!item) item = new JustForShow();
+
+	item->SetPosition(x, y);
+
+	switch (itemType)
+	{
+	case OBJECT_TYPE_MUSHROOM_CARD:
+		item->SetAniSet(ITEMBOX_ANI_MUSHROOM);
+		break;
+	case OBJECT_TYPE_FLOWER_CARD:
+		item->SetAniSet(ITEMBOX_ANI_FLOWER);
+		break;
+	case OBJECT_TYPE_STAR_CARD:
+		item->SetAniSet(ITEMBOX_ANI_STAR);
+		break;
+	default:
+		break;
+	}
+}
