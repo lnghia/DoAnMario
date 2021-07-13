@@ -60,5 +60,6 @@ void EndGameItemStack::push(int itemType)
 	if (itemType >= 0) {
 		if (!itemStack[currItem]) itemStack[currItem] = new ItemBox();
 		itemStack[currItem++]->SetItem(itemType);
+		currItem %= 4;
 	}
 }
