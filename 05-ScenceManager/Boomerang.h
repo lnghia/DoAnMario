@@ -16,15 +16,22 @@
 
 #define BOOMERANG_GRAVITY		0.0002f
 
-#define BOOMERANG_ANI_RIGHT	1
-#define BOOMERANG_ANI_LEFT	0
+#define BOOMERANG_ANI_RIGHT					1
+#define BOOMERANG_ANI_LEFT					0
+#define BOOMERANG_ANI_BEING_HOLDED_LEFT		2
+#define BOOMERANG_ANI_BEING_HOLDED_RIGHT	3
 
+#define BOOMERANG_ANI_SET	110000
+
+#define BOOMERANG_BEINGHOLDED_TIME	300
 
 class Boomerang : public CGameObject
 {
 	float originY = 0;
 
 	bool isHolded = 1;
+
+	DWORD start_flying = 0;
 public:
 	int nx;
 	int	ny;

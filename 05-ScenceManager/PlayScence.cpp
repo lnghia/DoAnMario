@@ -14,6 +14,8 @@
 #include "BrokenQuestionBrick.h"
 #include "NoteBrick.h"
 #include "EndGameBrick.h"
+#include "BoomerangGuy.h"
+
 
 #include "ObjectCheatSheet.h"
 
@@ -300,6 +302,18 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	}
 	case OBJECT_TYPE_ENDGAME_BRICK: {
 		obj = new EndGameBrick();
+
+		break;
+	}
+	case OBJECT_TYPE_BOOMERANG_GUY: {
+		float xMax = (float)atof(tokens[4].c_str());
+		float xMin = (float)atof(tokens[5].c_str());
+
+		if (!player) {
+			DebugOut(L"[Error] Player is not ready for initiating Boomerang Guy");
+		}
+
+		obj = new BoomerangGuy(xMax, xMin, player);
 
 		break;
 	}
@@ -955,6 +969,28 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 					}
 				}
 
+			}
+			else if (dynamic_cast<Boomerang*>(obj)) {
+				if (!player->GetUntouchable())
+				{
+					if (player->GetLevel() == MARIO_LEVEL_BIG)
+					{
+						//level = MARIO_LEVEL_SMALL;
+						player->SetBackupLevel(MARIO_LEVEL_SMALL);
+						player->SetBackupLevel(player->GetState());
+						player->StartTransforming();
+						player->turnIntoSmall();
+						player->StartUntouchable();
+						player->StartTransforming();
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->RacoonToBig();
+						player->StartUntouchable();
+					}
+					else
+						player->SetState(MARIO_STATE_DIE);
+				}
 			}
 		}
 	}

@@ -21,6 +21,8 @@
 #include "BrokenQuestionBrick.h"
 #include "NoteBrick.h"
 #include "EndGameBrick.h"
+#include "Boomerang.h"
+#include "BoomerangGuy.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -478,6 +480,60 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				int chosenCard = _obj->PopUpChoosenItem();
 				Board::GetInstance()->GetCardStack()->push(chosenCard);
+			}
+			else if (dynamic_cast<Boomerang*>(e->obj)) {
+				if (untouchable == 0)
+				{
+					if (level == MARIO_LEVEL_BIG)
+					{
+						//level = MARIO_LEVEL_SMALL;
+						backupLevel = MARIO_LEVEL_SMALL;
+						backupState = state;
+						startTransforming = (DWORD)GetTickCount64();
+						turnIntoSmall();
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_RACOON) {
+						SetStartTransforming((DWORD)GetTickCount64());
+						RacoonToBig();
+						StartUntouchable();
+					}
+					else
+						SetState(MARIO_STATE_DIE);
+				}
+			}
+			else if (dynamic_cast<BoomerangGuy*>(e->obj)) {
+				BoomerangGuy* guy = dynamic_cast<BoomerangGuy*>(e->obj);
+
+				if (e->ny < 0) {
+					if (guy->GetState() != BROS_STATE_DIE)
+					{
+						guy->SetState(BROS_STATE_DIE);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+					LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+					Grid::GetInstance()->putObjectIntoGrid(point);
+					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+				}
+				else if (untouchable == 0)
+				{
+					if (level == MARIO_LEVEL_BIG)
+					{
+						//level = MARIO_LEVEL_SMALL;
+						backupLevel = MARIO_LEVEL_SMALL;
+						backupState = state;
+						startTransforming = (DWORD)GetTickCount64();
+						turnIntoSmall();
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_RACOON) {
+						SetStartTransforming((DWORD)GetTickCount64());
+						RacoonToBig();
+						StartUntouchable();
+					}
+					else
+						SetState(MARIO_STATE_DIE);
+				}
 			}
 		}
 	}

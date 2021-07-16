@@ -3,6 +3,7 @@
 #include "Board.h"
 #include "Mario.h"
 #include "BrokenBrick.h"
+#include "BoomerangGuy.h"
 
 RedKoopas::RedKoopas()
 {
@@ -337,6 +338,25 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (ny) {
 					vy = 0;
+				}
+			}
+			else if (dynamic_cast<BoomerangGuy*>(e->obj)) {
+				BoomerangGuy* guy = dynamic_cast<BoomerangGuy*>(e->obj);
+
+				if (state == KOOPAS_STATE_SPIN && (vx > 0 && guy->GetDirection() < 0) || (vx < 0 && guy->GetDirection() > 0)) {
+					float _vx, _vy;
+
+					e->obj->GetSpeed(_vx, _vy);
+					e->obj->SetSpeed(_vx, -BROS_JUMP_SPEED);
+
+					x -= min_tx * dx + nx * 0.4f;
+				}
+				else if(state == KOOPAS_STATE_SPIN){
+					// die
+					guy->SetState(BROS_STATE_DIE);
+					LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+					Grid::GetInstance()->putObjectIntoGrid(point);
+					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
 				}
 			}
 		}

@@ -2,22 +2,33 @@
 #include "Utils.h"
 #include "Grid.h"
 #include "Mario.h"
+#include "Ground.h"
+#include "Wood.h"
+#include "PipeHitBox.h"
+#include "Brick.h"
+#include "QBrick.h"
+//#include "Koopas.h"
+//#include "RedKoopas.h"
 
 #define OBJECT_TYPE_BOOMERANG 26
 
-BoomerangGuy::BoomerangGuy(float max, float min)
+BoomerangGuy::BoomerangGuy(float max, float min, CMario* player)
 {
 	xMax = round(max);
 	xMin = round(min);
 	SetState(BROS_STATE_WALKING);
 	nx = -1;
 	LoadBoomerang();
+
+	this->player = player;
+
+	interactivable = 1; invisible = 0; renderPriority = 110;
 }
 
 void BoomerangGuy::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	left = x + BROS_BOOMERANG_BBOX_WIDTH - BROS_BBOX_WIDTH;
-	top = y + BROS_BOOMERANG_BBOX_HEIGHT - BROS_BBOX_HEIGHT;
+	left = x;
+	top = y;
 	right = left + BROS_BBOX_WIDTH;
 	bottom = top + BROS_BBOX_HEIGHT;
 }
@@ -50,31 +61,54 @@ void BoomerangGuy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//		SetState(BROS_STATE_WALKING_NO_BOOMERANG);
 	//	}
 
+	if (player) {
+		float px, py;
+
+		player->GetPosition(px, py);
+
+		if (px < x) {
+			FaceLeft();
+		}
+		else {
+			FaceRight();
+		}
+	}
+
 	if (state != BROS_STATE_DIE) {
-		if ((DWORD)GetTickCount64() - load_start > 1000) {
+		if (boomerang && (DWORD)GetTickCount64() - start_hold_boomerang >= BROS_THROWBOOMERANGDELAY_TIME) {
+			ThrowBoomerang();
+		}
+		else if ((DWORD)GetTickCount64() - load_start > BROS_LOADBOOMERANG_TIME) {
 			//ThrowBoomerang();
 			TakeOutBoomerang();
-			ThrowBoomerang();
 			load_start = (DWORD)GetTickCount64();
 		}
 	}
 
 	for (UINT i = 0; i < (UINT)coObjects->size(); ++i) {
-		if (dynamic_cast<CMario*>(coObjects->at(i))) {
-			float mx, my;
+		if (dynamic_cast<Boomerang*>(coObjects->at(i))) {
+			coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), coObjects->at(i)), coObjects->end());
 
-			coObjects->at(i)->GetPosition(mx, my);
+			//float mx, my;
 
-			if (mx < x) {
-				FaceLeft();
-			}
-			else {
-				FaceRight();
-			}
+			///*coObjects->at(i)->GetPosition(mx, my);
+
+			//if (mx < x) {
+			//	FaceLeft();
+			//}
+			//else {
+			//	FaceRight();
+			//}*/
+
+			//if (coObjects->at(i)->GetState() == KOOPAS_STATE_IN_SHELL) {
+			//	vy = -BROS_JUMP_SPEED;
+			//}
 		}
 	}
 
 	CGameObject::Update(dt);
+
+	Grid::GetInstance()->clearObjFromGrid(this);
 
 	//
 	// TO-DO: make sure Koopas can interact with the world and to each of them too!
@@ -103,20 +137,36 @@ void BoomerangGuy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// todo: this is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 		x += min_tx * dx + nx * 0.4f;
-		//y += min_ty * dy + ny * 0.4f;
-
-		if (ny != 0) vy = 0;
+		y += min_ty * dy + ny * 0.4f;
 
 		for (int i = 0; i < (int)coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<Boomerang*>(e->obj)) 
+			/*if (dynamic_cast<Boomerang*>(e->obj)) 
 			{
 				Boomerang* boomerang = dynamic_cast<Boomerang*>(e->obj);
+				boomerang->SetInvisible(1);
+				boomerang->SetInteractivable(0);
 				Grid::GetInstance()->ObjIntoTrash(boomerang);
-				SetState(BROS_STATE_WALKING);
+				//SetState(BROS_STATE_WALKING);
 				load_start = (DWORD)GetTickCount64();
+			}
+			else*/ if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj)) {
+
+				if (e->nx) {
+					float l, t, r, b;
+
+					e->obj->GetBoundingBox(l, t, r, b);
+
+					if (e->nx) {
+						vx *= -1;
+					}
+				}
+
+				if (ny) {
+					vy = 0;
+				}
 			}
 			/*else if (abs(nx) > 0.0001f)
 				vx = -vx;*/
@@ -137,29 +187,32 @@ void BoomerangGuy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
+	Grid::GetInstance()->putObjectIntoGrid(this);
 }
 
 
 
 void BoomerangGuy::Render()
 {
-	int ani = (nx > 0) ? BROS_ANI_WALKING_RIGHT : BROS_ANI_WALKING_LEFT;
+	int ani = (nx > 0) ? BROS_ANI_WALKING_RIGHT_WITH_BOOMERANG : BROS_ANI_WALKING_LEFT_WITH_BOOMERANG;
 
-	if (holdingBoomerang && (DWORD)GetTickCount64() - load_start < 500) {
+	/*if (holdingBoomerang && (DWORD)GetTickCount64() - load_start < 500) {
 		ani = (nx > 0) ? BROS_ANI_THREW_RIGHT : BROS_ANI_THREW_LEFT;
 	}
-	else if(state == BROS_STATE_DIE) {
+	else */if(state == BROS_STATE_DIE) {
 		ani = BROS_ANI_DIE;
+	}
+	else if (!boomerang) {
+		ani = (nx > 0) ? BROS_ANI_THREW_RIGHT : BROS_ANI_THREW_LEFT;
+		//boomerang->Render();
 	}
 
 	currAni = ani;
 
-	if (boomerang) {
-		ani = (nx > 0) ? BROS_ANI_THREW_RIGHT : BROS_ANI_THREW_LEFT;
-		boomerang->Render();
-	}
+	if (boomerang) boomerang->Render();
+	animation_set->at(ani)->Render(x, y);
 
-	animation_set->at(ani)->Render(round(x), round(y));
+	//RenderBoundingBox();
 }
 
 void BoomerangGuy::SetState(int state)
@@ -169,7 +222,7 @@ void BoomerangGuy::SetState(int state)
 	{
 	case BROS_STATE_DIE:
 		vx = 0;
-		vy = 0;
+		vy = -BROS_DIE_DEFLECT_SPEED;
 		break;
 	case BROS_STATE_WALKING:
 		vx = BROS_WALKING_SPEED;
@@ -181,13 +234,27 @@ void BoomerangGuy::SetState(int state)
 void BoomerangGuy::FaceRight()
 {
 	nx = 1;
-	vx = BROS_WALKING_SPEED;
+	//vx = BROS_WALKING_SPEED;
 }
 
 void BoomerangGuy::FaceLeft()
 {
 	nx = -1;
-	vx = -BROS_WALKING_SPEED;
+	//vx = -BROS_WALKING_SPEED;
+}
+
+float BoomerangGuy::GetDirection()
+{
+	return nx;
+}
+
+CMario* BoomerangGuy::GetPlayer()
+{
+	return player;
+}
+
+void BoomerangGuy::SetPlayer(CMario* player) {
+	this->player = player;
 }
 
 void BoomerangGuy::TakeOutBoomerang()		// create fireball function
@@ -222,7 +289,7 @@ void BoomerangGuy::ThrowBoomerang()
 
 	boomerang->GetPosition(bx, by);
 
-	boomerang->UpdateY(by - 1);
+	boomerang->UpdateY(by - 1.0f);
 
 	boomerang->SetInteractivable(1);
 	boomerang->SetIsHolded(0);

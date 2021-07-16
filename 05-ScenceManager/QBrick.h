@@ -39,7 +39,7 @@ public:
 
 		currAni = 0;
 
-		state == QBRICK_STATE_MYSTERIOUS;
+		state = QBRICK_STATE_MYSTERIOUS;
 	}
 
 	virtual void Render();

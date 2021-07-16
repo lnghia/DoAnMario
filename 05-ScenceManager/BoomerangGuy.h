@@ -2,9 +2,12 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "Boomerang.h"
+#include "Mario.h"
 
 #define BROS_WALKING_SPEED	0.035f
 #define BROS_GRAVITY		0.001f
+#define BROS_JUMP_SPEED		0.25f
+#define BROS_DIE_DEFLECT_SPEED	 0.2f
 
 #define BROS_BOOMERANG_BBOX_WIDTH 24
 #define BROS_BOOMERANG_BBOX_HEIGHT 29
@@ -15,15 +18,18 @@
 #define BROS_STATE_DIE					 200
 #define BROS_STATE_WALKING_NO_BOOMERANG	 300
 
-#define BROS_ANI_WALKING_RIGHT	0
-#define BROS_ANI_WALKING_LEFT	1
+#define BROS_ANI_WALKING_RIGHT_WITH_BOOMERANG		2
+#define BROS_ANI_WALKING_LEFT_WITH_BOOMERANG		0
+#define BROS_ANI_WALKING_RIGHT_WITHOUT_BOOMERANG	3
+#define BROS_ANI_WALKING_LEFT_WITHOUT_BOOMERANG		1
 #define BROS_ANI_THREW_RIGHT	2
-#define BROS_ANI_THREW_LEFT		3
+#define BROS_ANI_THREW_LEFT		1
 #define BROS_ANI_DIE			4
 
-#define BOOMERANG_ANI_SET_ID	332
+#define BOOMERANG_ANI_SET_ID	110000
 
-#define BROS_LOADBOOMERANG_TIME 4000
+#define BROS_LOADBOOMERANG_TIME			2000
+#define BROS_THROWBOOMERANGDELAY_TIME	250
 
 
 class BoomerangGuy : public CGameObject
@@ -39,12 +45,17 @@ class BoomerangGuy : public CGameObject
 
 	DWORD start_hold_boomerang = 0;
 
+	CMario* player = NULL;
+
 public:
 	float xMax = 0;
 	float xMin = 0;
 	int Load = 0;
-	DWORD load_start;
-	BoomerangGuy(float max, float min);
+	DWORD load_start = 0;
+
+	BoomerangGuy() { interactivable = 1; invisible = 0; renderPriority = 101; };
+	BoomerangGuy(float max, float min, CMario* player = NULL);
+
 	void TakeOutBoomerang();
 	void ThrowBoomerang();
 	virtual void SetState(int state);
@@ -53,4 +64,9 @@ public:
 
 	void FaceRight();
 	void FaceLeft();
+
+	float GetDirection();
+
+	CMario* GetPlayer();
+	void SetPlayer(CMario* player);
 };

@@ -505,6 +505,12 @@ public:
 	}
 
 	void StartFallingTail() {
+		if (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 150) {
+			state = MARIO_STATE_JUMP;
+			vy = -0.35f;
+			return;
+		}
+
 		SetState(MARIO_STATE_FALL_TAIL);
 		start_falling_tail = (DWORD)GetTickCount64();
 	}
