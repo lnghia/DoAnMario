@@ -57,7 +57,7 @@ int EndGameBrick::PopUpChoosenItem()
 
 	_obj->SetPosition(x, y);
 
-	//state = ENDGAME_BRICK_STATE_EMPTY;
+	state = ENDGAME_BRICK_STATE_EMPTY;
 
 	Grid::GetInstance()->putObjectIntoGrid(_obj);
 

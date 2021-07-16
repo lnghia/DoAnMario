@@ -70,3 +70,11 @@ void ItemBox::SetItem(int itemType)
 		break;
 	}
 }
+
+void ItemBox::UpdatePos(float x, float y)
+{
+	this->x = x;
+	this->y = y;
+
+	if(item) item->SetPosition(x, y);
+}

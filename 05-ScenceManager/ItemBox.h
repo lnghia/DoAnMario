@@ -24,5 +24,7 @@ public:
 	virtual void Render();
 
 	void SetItem(int itemType);
+
+	void UpdatePos(float x, float y);
 };
 

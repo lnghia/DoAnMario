@@ -74,7 +74,7 @@ public:
 	UINT currAni;
 
 public: 
-	void SetPosition(const float& x, const float& y) { this->x = x, this->y = y; }
+	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(const float& vx, const float& vy) { this->vx = vx, this->vy = vy; }
 	void GetPosition(float &x, float &y) { x = this->x; y = this->y; }
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
