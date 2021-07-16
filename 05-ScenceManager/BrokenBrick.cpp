@@ -25,7 +25,7 @@ void BrokenBrick::Render()
 	}
 	else {
 		int ani = BROKENBRICK_ANI_BRICK;
-		animation_set->at(ani)->Render(round(x), round(y));
+		animation_set->at(ani)->Render(x, y);
 	}
 	
 	//RenderBoundingBox();

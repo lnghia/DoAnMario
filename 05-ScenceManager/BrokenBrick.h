@@ -3,7 +3,7 @@
 #include "Fragment.h"
 #include "FloatingCoin.h"
 
-#define BROKENBRICK_ANI_BRICK	0
+#define BROKENBRICK_ANI_BRICK	90013
 //#define BROKENBRICK_ANI_COIN	1
 #define BROKENBRICK_ANI_FRAGMENT	1
 
