@@ -22,6 +22,8 @@
 
 #define MUSHROOM_POINT			1000
 
+#define MUSHROOM_ANI_SET	93
+
 class Mushroom : public HiddenItem
 {
 public:
@@ -34,6 +36,8 @@ public:
 		vy = MUSHROOM_RISING_UP;
 
 		state = MUSHROOM_STATE_APPEAR;
+
+		animation_set = CAnimationSets::GetInstance()->Get(MUSHROOM_ANI_SET);
 	};
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);

@@ -156,6 +156,11 @@ void CGameObject::SetVx(const float& vx)
 	this->vx = vx;
 }
 
+void CGameObject::SetVy(float vy)
+{
+	this->vy = vy;
+}
+
 void CGameObject::SetRenderPriority(unsigned int p)
 {
 	renderPriority = p;

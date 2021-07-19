@@ -214,6 +214,8 @@
 
 #define MARIO_RACOON_TAIL_LENGTH	7
 
+#define MARIO_RACOON_HEAD_TO_TAIL_DIS	20
+
 
 class CMario : public CGameObject
 {
@@ -261,6 +263,7 @@ class CMario : public CGameObject
 	bool beingBouncedUp = 0;
 
 	LPGAMEOBJECT beingHoldedObj = NULL;
+	LPGAMEOBJECT tail = NULL;
 
 	vector<vector<short int>> animationsByLevel = {
 		{
@@ -484,11 +487,20 @@ public:
 		isAttackingTail = 1;
 		start_attacking_tail = (DWORD)GetTickCount64();
 
-		/*float maxRange = (nx > 0) ? x + 25.0f : -10.0f;
+		//DebugOut(L"[DEBUG] %f\n", nx);
 
-		beingHoldedObj = new Tail(nx, maxRange);*/
+		float maxRange = (nx > 0) ? x + 25.0f : x - 10.0f;
 
-		//Grid::GetInstance()->putObjectIntoGrid(beingHoldedObj);
+		tail = new Tail(nx, maxRange);
+
+		if (nx > 0) {
+			tail->SetPosition(x, y + MARIO_RACOON_HEAD_TO_TAIL_DIS);
+		}
+		else {
+			tail->SetPosition(x + MARIO_RACOON_BBOX_WIDTH, y + MARIO_RACOON_HEAD_TO_TAIL_DIS);
+		}
+
+		Grid::GetInstance()->putObjectIntoGrid(tail);
 	}
 
 	void FinishAttackingWithTail() {
@@ -496,7 +508,9 @@ public:
 		x += (nx > 0) ? -6 : 6;
 		isAttackingTail = 0;
 
-		//Grid::GetInstance()->clearObjFromGrid(beingHoldedObj);
+		//Grid::GetInstance()->clearObjFromGrid(tail);
+		//delete tail;
+		tail = NULL;
 		//delete beingHoldedObj;
 		//beingHoldedObj = NULL;
 

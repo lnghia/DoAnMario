@@ -219,6 +219,9 @@
     <ClCompile Include="ChoosenEndGameItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BangEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -387,6 +390,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChoosenEndGameItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BangEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

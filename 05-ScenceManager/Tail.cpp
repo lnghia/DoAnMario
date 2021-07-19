@@ -5,15 +5,22 @@
 #include "RedKoopas.h"
 #include "Goomba.h"
 #include "Board.h"
+#include "BangEffect.h"
 
 Tail::Tail(int nx, float maxX)
 {
-	//invisible = 1;
+	invisible = 0;
 	interactivable = 1;
 	isActive = 1;
 	vx = TAIL_SPEED * nx;
 	this->nx = nx;
 	this->maxX = maxX;
+
+	animation_set = NULL;
+}
+
+void Tail::RenderCurrFrame()
+{
 }
 
 void Tail::GetBoundingBox(float& l, float& t, float& r, float& b)
@@ -75,6 +82,11 @@ void Tail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 					goomba->GetHit();
 					goomba->GetPosition(gX, gY);
+
+					BangEffect* bangEffect = new BangEffect();
+					bangEffect->SetPosition(gX, gY);
+					Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
 					LPGAMEOBJECT point = new Point(MUSHROOM_POINT, gX, gY);
 					Grid::GetInstance()->putObjectIntoGrid(point);
 					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);

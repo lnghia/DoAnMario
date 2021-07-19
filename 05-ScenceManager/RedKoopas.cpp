@@ -4,6 +4,7 @@
 #include "Mario.h"
 #include "BrokenBrick.h"
 #include "BoomerangGuy.h"
+#include "BangEffect.h"
 
 RedKoopas::RedKoopas()
 {
@@ -260,6 +261,12 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 						goomba->GetHit();
 						goomba->GetPosition(gX, gY);
+						goomba->SetVy(-GOOMBA_DIE_GET_HIT_BY_SHELL_DEFLECT_SPEED);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(gX, gY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
 						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, gX, gY);
 						Grid::GetInstance()->putObjectIntoGrid(point);
 						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
@@ -288,6 +295,11 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 						goomba->GetHit();
 						goomba->GetPosition(gX, gY);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(gX, gY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
 						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, gX, gY);
 						Grid::GetInstance()->putObjectIntoGrid(point);
 						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);

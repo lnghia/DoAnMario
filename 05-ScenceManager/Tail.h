@@ -15,5 +15,7 @@ class Tail : public CGameObject
 public:
 	float maxX = 0.0f;
 	Tail(int nx, float maxX);
+
+	virtual void RenderCurrFrame();
 };
 

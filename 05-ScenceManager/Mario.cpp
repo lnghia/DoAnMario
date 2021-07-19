@@ -585,6 +585,8 @@ void CMario::Render()
 {
 	//DebugOut(L"[is sliding] %d - %d - %d - %d\n", isSliding, isFlying, isFalling, isJumping);
 
+	//DebugOut(L"[nx render] %d\n", nx);
+
 	int ani = -1;
 	if (state == MARIO_STATE_DIE)
 		ani = MARIO_ANI_DIE;

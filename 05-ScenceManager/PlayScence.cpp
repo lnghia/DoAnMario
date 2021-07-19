@@ -742,8 +742,6 @@ void CPlayScene::Update(DWORD dt)
 
 	collidableObjsToPlayer.clear();
 
-	Grid::GetInstance()->cleanObjTrashBin();
-
 	/*for (size_t i = 0; i < objectsInCamera.size(); i++)
 	{
 		coObjects.clear();
@@ -829,6 +827,10 @@ void CPlayScene::Render()
 			obj->Render();
 		}
 	}
+
+	objectsInCamera.clear();
+
+	Grid::GetInstance()->cleanObjTrashBin();
 
 	/*for (auto& obj : objects) {
 		if (obj != player && !obj->GetInvisible()) {
@@ -1118,7 +1120,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (mario->GetState() == MARIO_STATE_DIE) return;
 
 	if (game->IsKeyDown(DIK_A)) {
-		if (!mario->tailAttacked) {
+		if (!mario->tailAttacked && mario->GetLevel() == MARIO_LEVEL_RACOON) {
 			// start attack tail
 			mario->tailAttacked = 1;
 			mario->StartAttackingWithTail();

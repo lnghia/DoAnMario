@@ -48,8 +48,11 @@ void QBrick::PopUpHiddenItem()
 	case OBJECT_TYPE_LEAF:
 		CPlayScene* playScene = dynamic_cast<CPlayScene*>(game->GetCurrentScene());
 
-		if (playScene->GetPlayer()->GetLevel() > MARIO_LEVEL_SMALL) {
+		if (playScene->GetPlayer()->GetLevel() == MARIO_LEVEL_BIG) {
 			obj = new Leaf(x, y);
+		}
+		else if (playScene->GetPlayer()->GetLevel() == MARIO_LEVEL_RACOON) {
+			// flower turn to fire mario
 		}
 		else {
 			obj = new Mushroom(x, y);
@@ -67,7 +70,7 @@ void QBrick::PopUpHiddenItem()
 
 	if (obj) {
 		if (_backupItem) {
-			obj->SetAnimationSet(animation_sets->Get(backupItemAni));
+			//obj->SetAnimationSet(animation_sets->Get(backupItemAni));
 		}
 		else {
 			obj->SetAnimationSet(animation_sets->Get(hiddenItemAni));
@@ -89,9 +92,14 @@ void QBrick::HopUpABit()
 		//vx = -0.5f;
 		y -= 3.0f;
 		state = QBRICK_STATE_NO_MORE_MYSTERIOUS;
-		start_hopUp = GetTickCount();
+		start_hopUp = (DWORD)GetTickCount64();
 		hopUp = 1;
 	}
+}
+
+void QBrick::PushHiddenItem(int itemType, int ani)
+{
+	backUpItem.push({ itemType, ani });
 }
 
 void QBrick::Render()

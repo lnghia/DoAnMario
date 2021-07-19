@@ -83,6 +83,7 @@ public:
 	DWORD GetDeltaTime();
 
 	void SetVx(const float& vx);
+	void SetVy(float vy);
 
 	void SetRenderPriority(unsigned int p);
 	unsigned int GetRenderPriority();
