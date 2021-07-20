@@ -158,9 +158,13 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA:
-		obj = new CGoomba();
+	case OBJECT_TYPE_GOOMBA: {
+		int level = (int)atoi(tokens[4].c_str());
+
+		obj = new CGoomba(level);
+
 		break;
+	}
 	case OBJECT_TYPE_QBRICK: {
 		int hiddenItemType = atoi(tokens[4].c_str());
 		int	hiddenItemAni = atoi(tokens[5].c_str());
@@ -258,12 +262,13 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		float pipeY = (float)atof(tokens[5].c_str());
 		float pipeWidth = (float)atof(tokens[6].c_str());
 		float pipeHeight = (float)atof(tokens[7].c_str());
+		int level = (int)atoi(tokens[8].c_str());
 
 		if (!player) {
 			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
 		}
 
-		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player);
+		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player, level);
 		break;
 	}
 	case OBJECT_TYPE_WOOD: {
@@ -367,9 +372,13 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line, ofstream& writer, ofs
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA:
-		obj = new CGoomba();
+	case OBJECT_TYPE_GOOMBA: {
+		int level = (int)atoi(tokens[4].c_str());
+
+		obj = new CGoomba(level);
+
 		break;
+	}
 	case OBJECT_TYPE_QBRICK: {
 		int hiddenItemType = atoi(tokens[4].c_str());
 		int	hiddenItemAni = atoi(tokens[5].c_str());
@@ -467,12 +476,13 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line, ofstream& writer, ofs
 		float pipeY = (float)atof(tokens[5].c_str());
 		float pipeWidth = (float)atof(tokens[6].c_str());
 		float pipeHeight = (float)atof(tokens[7].c_str());
+		int level = (int)atoi(tokens[8].c_str());
 
 		if (!player) {
 			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
 		}
 
-		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player);
+		obj = new PiranhaPlant(pipeX, pipeY, pipeWidth, pipeHeight, player, level);
 		break;
 	}
 	case OBJECT_TYPE_WOOD: {

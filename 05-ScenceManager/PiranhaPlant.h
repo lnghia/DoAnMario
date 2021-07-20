@@ -7,6 +7,12 @@
 
 #define PIRANHAPLANT_BBOX_WIDTH  16
 #define PIRANHAPLANT_BBOX_HEIGHT 32
+#define PIRANHAPLANT_BBOX_HEIGHT_SMALL	24
+
+#define PIRANHAPLANT_ANI_NUM	8
+
+#define PIRANHAPLANT_LEVEL_BIG		0
+#define PIRANHAPLANT_LEVEL_SMALL	1
 
 #define PIRANHAPLANT_ANI_BOTLEFT_STILL		0
 #define PIRANHAPLANT_ANI_BOTLEFT			1
@@ -49,8 +55,10 @@ class PiranhaPlant : public CGameObject
 
 	unsigned int dirX, dirY;
 
+	int level = 0;
+
 public:
-	PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player);
+	PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player, int level = 0);
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
