@@ -259,7 +259,7 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (beingHolded || state == KOOPAS_STATE_SPIN && goomba->GetState() != GOOMBA_STATE_DIE && goomba->GetState() != GOOMBA_STATE_GET_HIT) {
 						float gX, gY;
 
-						goomba->GetHit(nx);
+						goomba->GetHitByShell();
 						goomba->GetPosition(gX, gY);
 						goomba->SetVy(-GOOMBA_DIE_GET_HIT_BY_SHELL_DEFLECT_SPEED);
 
@@ -293,7 +293,7 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (beingHolded || state == KOOPAS_STATE_SPIN && goomba->GetState() != GOOMBA_STATE_DIE && goomba->GetState() != GOOMBA_STATE_GET_HIT) {
 						float gX, gY;
 
-						goomba->GetHit(nx);
+						goomba->GetHitByShell();
 						goomba->GetPosition(gX, gY);
 
 						BangEffect* bangEffect = new BangEffect();

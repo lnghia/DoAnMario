@@ -4,7 +4,7 @@
 
 #define GOOMBA_WALKING_SPEED 0.05f;
 #define GOOMBA_DIE_DEFLECT_SPEED					0.3f
-#define GOOMBA_DIE_GET_HIT_BY_SHELL_DEFLECT_SPEED	0.1f
+#define GOOMBA_DIE_GET_HIT_BY_SHELL_DEFLECT_SPEED	0.2f
 #define GOOMBA_JUMP_SPEED							0.22f
 #define GOOMBA_GET_HIT_BY_TAIL_VX					0.022f
 
@@ -57,6 +57,7 @@ public:
 	virtual void SetState(int state);
 
 	void GetHit(int nx);
+	void GetHitByShell();
 	int GetLevel();
 	void SetLevel(int level);
 	void GetJumpedOn();

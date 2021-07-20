@@ -254,6 +254,14 @@ void CGoomba::GetHit(int nx)
 	vx = nx * GOOMBA_GET_HIT_BY_TAIL_VX;
 }
 
+void CGoomba::GetHitByShell()
+{
+	state = GOOMBA_STATE_GET_HIT;
+	vx = 0;
+	vy = -GOOMBA_DIE_GET_HIT_BY_SHELL_DEFLECT_SPEED;
+	interactivable = 0;
+}
+
 int CGoomba::GetLevel()
 {
 	return level;
