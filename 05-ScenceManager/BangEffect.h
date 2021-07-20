@@ -13,7 +13,7 @@ class BangEffect : public JustForShow
 {
 	DWORD start_live = 0;
 public:
-	BangEffect() { start_live = (DWORD)GetTickCount64(); }
+	BangEffect() { start_live = (DWORD)GetTickCount64(); renderPriority = 102; }
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
