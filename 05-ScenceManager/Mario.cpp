@@ -156,12 +156,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					if (goomba->GetState() != GOOMBA_STATE_DIE)
 					{
-						goomba->SetState(GOOMBA_STATE_DIE);
+						//goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
+						goomba->GetJumpedOn();
 					}
-					LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+				/*	LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
 					Grid::GetInstance()->putObjectIntoGrid(point);
-					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);*/
 				}
 				else if (e->nx != 0)
 				{
