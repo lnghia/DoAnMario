@@ -159,6 +159,7 @@
     <ClCompile Include="Musroom.cpp" />
     <ClCompile Include="NoteBrick.cpp" />
     <ClCompile Include="PipeHitBox.cpp" />
+    <ClCompile Include="PiranhaFlower.cpp" />
     <ClCompile Include="PiranhaPlant.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="PointCounter.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="NoteBrick.h" />
     <ClInclude Include="ObjectCheatSheet.h" />
     <ClInclude Include="PipeHitBox.h" />
+    <ClInclude Include="PiranhaFlower.h" />
     <ClInclude Include="PiranhaPlant.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="PointCounter.h" />

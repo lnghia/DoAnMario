@@ -23,6 +23,7 @@
 #include "EndGameBrick.h"
 #include "Boomerang.h"
 #include "BoomerangGuy.h"
+#include "PiranhaFlower.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -317,7 +318,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(MARIO_STATE_DIE);
 				}
 			}
-			else if (dynamic_cast<PiranhaPlant*>(e->obj)) {
+			else if (dynamic_cast<PiranhaPlant*>(e->obj) || dynamic_cast<PiranhaFlower*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
 				y -= min_ty * dy + ny * 0.4f;
 

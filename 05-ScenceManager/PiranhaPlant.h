@@ -40,6 +40,7 @@
 
 class PiranhaPlant : public CGameObject
 {
+protected:
 	LPGAMEOBJECT player;
 
 	float pipeX, pipeY;
@@ -58,6 +59,7 @@ class PiranhaPlant : public CGameObject
 	int level = 0;
 
 public:
+	PiranhaPlant() {};
 	PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player, int level = 0);
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

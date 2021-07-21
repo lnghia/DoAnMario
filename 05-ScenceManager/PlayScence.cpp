@@ -15,6 +15,7 @@
 #include "NoteBrick.h"
 #include "EndGameBrick.h"
 #include "BoomerangGuy.h"
+#include "PiranhaFlower.h"
 
 
 #include "ObjectCheatSheet.h"
@@ -320,6 +321,20 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		obj = new BoomerangGuy(xMax, xMin, player);
 
+		break;
+	}
+	case OBJECT_TYPE_PIRANHA_FLOWER: {
+		float pipeX = (float)atof(tokens[4].c_str());
+		float pipeY = (float)atof(tokens[5].c_str());
+		float pipeWidth = (float)atof(tokens[6].c_str());
+		float pipeHeight = (float)atof(tokens[7].c_str());
+		int level = (int)atoi(tokens[8].c_str());
+
+		if (!player) {
+			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
+		}
+
+		obj = new PiranhaFlower(pipeX, pipeY, pipeWidth, pipeHeight, player, level);
 		break;
 	}
 	default:

@@ -80,7 +80,7 @@ void Tail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (goomba->GetState() != GOOMBA_STATE_DIE && goomba->GetState() != GOOMBA_STATE_GET_HIT) {
 					float gX, gY;
 
-					goomba->GetHit(nx * -1);
+					goomba->GetHit((int)nx * -1);
 					goomba->GetPosition(gX, gY);
 
 					BangEffect* bangEffect = new BangEffect();
