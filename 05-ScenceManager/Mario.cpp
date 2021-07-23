@@ -161,9 +161,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 						goomba->GetJumpedOn();
 					}
-				/*	LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
-					Grid::GetInstance()->putObjectIntoGrid(point);
-					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);*/
+					/*	LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);*/
 				}
 				else if (e->nx != 0)
 				{
@@ -216,7 +216,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				else if (e->nx != 0)
 				{
-					x -= min_tx * dx + nx * 0.4f;
+					//x -= min_tx * dx + nx * 0.4f;
 
 					if (/*isRunning && isStanding*/ canHold && koopas->GetHarmless()) {
 						beingHoldedObj = koopas;
@@ -276,8 +276,109 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								RacoonToBig();
 								StartUntouchable();
 							}
-							else
+							else {
 								SetState(MARIO_STATE_DIE);
+								x -= min_tx * dx + nx * 0.4f;
+							}
+						}
+						else {
+							//kick
+							int tmp = (vx > 0) ? 1 : -1;
+							koopas->GetKicked(tmp);
+							StartKicking();
+						}
+					}
+				}
+			}
+			else if (dynamic_cast<CKoopas*>(e->obj)) {
+				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+				int state = koopas->GetState();
+
+				if (e->ny < 0)
+				{
+					if (state == KOOPAS_STATE_WALKING || state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT)
+					{
+						//koopas->SetState(KOOPAS_STATE_IN_SHELL);
+						//koopas->InShell();
+						koopas->GetJumpedOn((nx > 0) ? -1 : 1);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+					else if (koopas->GetState() == KOOPAS_STATE_IN_SHELL) {
+						// spin
+						int tmp = (nx > 0) ? -1 : 1;
+						koopas->GetJumpedOn(tmp);
+						//koopas->GetKicked((int)tmp);
+					}
+					/*LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+					Grid::GetInstance()->putObjectIntoGrid(point);
+					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);*/
+				}
+				else if (e->nx != 0)
+				{
+					//x -= min_tx * dx + nx * 0.4f;
+
+					if (/*isRunning && isStanding*/ canHold && koopas->GetHarmless()) {
+						beingHoldedObj = koopas;
+						koopas->IsHolded();
+						//Grid::GetInstance()->clearObjFromGrid(koopas);
+
+						/*if (level == MARIO_LEVEL_SMALL) {
+							float tmpX = x + (vx > 0) ? 10 : 5;
+							float tmpY = y - 1;
+
+							koopas->SetPosition(tmpX, tmpY);
+						}
+						else if(level != MARIO_LEVEL_RACOON) {
+							float tmpX = x + (vx > 0) ? 10 : 5;
+							float tmpY = y + 8;
+
+							koopas->SetPosition(tmpX, tmpY);
+						}
+						else {
+							float tmpX = x + (vx > 0) ? 10 : 5;
+							float tmpY = y + 10;
+
+							koopas->SetPosition(tmpX, tmpY);
+						}
+
+						Grid::GetInstance()->putObjectIntoGrid(koopas);*/
+					}
+					else if (untouchable == 0)
+					{
+						if (hasJustKicked) {
+							float _l, _t, _r, _b;
+							float tmpX, tmpY;
+
+							hasJustKicked = 0;
+							GetBoundingBox(_l, _t, _r, _b);
+							koopas->GetPosition(tmpX, tmpY);
+							if (nx > 0) {
+								koopas->SetPosition(_l - 1 - 16, tmpY);
+							}
+							else {
+								koopas->SetPosition(_r + 3, tmpY);
+							}
+						}
+						else if (!koopas->GetHarmless())
+						{
+							if (level == MARIO_LEVEL_BIG)
+							{
+								//level = MARIO_LEVEL_SMALL;
+								backupLevel = MARIO_LEVEL_SMALL;
+								backupState = state;
+								startTransforming = (DWORD)GetTickCount64();
+								turnIntoSmall();
+								StartUntouchable();
+							}
+							else if (level == MARIO_LEVEL_RACOON) {
+								SetStartTransforming((DWORD)GetTickCount64());
+								RacoonToBig();
+								StartUntouchable();
+							}
+							else {
+								SetState(MARIO_STATE_DIE);
+								x -= min_tx * dx + nx * 0.4f;
+							}
 						}
 						else {
 							//kick

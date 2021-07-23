@@ -1,4 +1,9 @@
 #include "Koopas.h"
+#include "BangEffect.h"
+#include "BoomerangGuy.h"
+#include "Board.h"
+#include "BrokenBrick.h"
+
 
 CKoopas::CKoopas()
 {
@@ -7,13 +12,13 @@ CKoopas::CKoopas()
 	renderPriority = 101;
 }
 
-CKoopas::CKoopas(short int nx)
+CKoopas::CKoopas(short int nx, int level)
 {
 	interactivable = 1;
 	renderPriority = 101;
 
-	this->nx = nx;
-	initNx = nx;
+	this->nx = (int)nx;
+	initNx = (int)nx;
 
 	if (nx > 0) {
 		SetState(KOOPAS_STATE_WALKING_RIGHT);
@@ -24,10 +29,11 @@ CKoopas::CKoopas(short int nx)
 		vx = -KOOPAS_WALKING_SPEED;
 	}
 
+	this->level = level;
 	//vx = (nx > 0) ? KOOPAS_WALKING_SPEED : -KOOPAS_WALKING_SPEED;
 }
 
-void CKoopas::GetBoundingBox(float &left, float &top, float &right, float &bottom)
+void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	left = x;
 	top = y;
@@ -39,7 +45,7 @@ void CKoopas::GetBoundingBox(float &left, float &top, float &right, float &botto
 		bottom = y + KOOPAS_BBOX_HEIGHT;
 }
 
-void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
+void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	if (y > Map::getInstance()->getHeight()) {
 		/*interactivable = 0;
@@ -56,13 +62,13 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		return;
 	}
 
-	if (state == KOOPAS_STATE_DIE) {
+	/*if (state == KOOPAS_STATE_DIE) {
 		if ((DWORD)GetTickCount64() - spawn_delay < KOOPAS_DIE_TIME) {
 			return;
 		}
 		Spawn();
 	}
-	else if (state == KOOPAS_STATE_IN_SHELL && (DWORD)GetTickCount64() - in_shell > 600) {
+	else */if (state == KOOPAS_STATE_IN_SHELL && (DWORD)GetTickCount64() - in_shell > 5000) {
 		OutShell();
 	}
 	else if (outShell) {
@@ -129,7 +135,134 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 			e->obj->GetPosition(bx, by);
 
-			if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj) || dynamic_cast<CGoomba*>(e->obj)) {
+			isStanding = (e->ny < 0) ? e->obj->GetCanBeStandOn() : false;
+
+			if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj)) {
+
+				if (e->nx) {
+					float l, t, r, b;
+
+					e->obj->GetBoundingBox(l, t, r, b);
+
+					if (state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT) {
+						if (vx > 0) {
+							SetState(KOOPAS_STATE_WALKING_LEFT);
+						}
+						else {
+							SetState(KOOPAS_STATE_WALKING_RIGHT);
+						}
+					}
+					else if (state == KOOPAS_STATE_SPIN) {
+						vx *= -1;
+					}
+				}
+
+				if (ny) {
+					if (isStanding && level != KOOPAS_LEVEL_GREEN_WALKING) {
+						vy = -KOOPAS_JUMP_SPEED;
+					}
+					else {
+						vy = 0;
+					}
+
+					if (state == KOOPAS_STATE_IN_SHELL) {
+						vx = 0;
+					}
+				}
+			}
+			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
+				if (e->ny < 0) {
+					if (isStanding && level != KOOPAS_LEVEL_GREEN_WALKING) {
+						vy = -KOOPAS_JUMP_SPEED;
+					}
+					else {
+						vy = 0;
+					}
+				}
+				else {
+					x -= min_tx * dx + nx * 0.4f;
+					y -= min_ty * dy + ny * 0.4f;
+
+					x += _dx;
+					y += _dy;
+				}
+			}
+			else if (dynamic_cast<CGoomba*>(e->obj)) {
+				if (e->nx) {
+					float l, t, r, b;
+
+					e->obj->GetBoundingBox(l, t, r, b);
+
+					CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+
+					if (beingHolded || state == KOOPAS_STATE_SPIN && goomba->GetState() != GOOMBA_STATE_DIE && goomba->GetState() != GOOMBA_STATE_GET_HIT) {
+						float gX, gY;
+
+						goomba->GetHitByShell();
+						goomba->GetPosition(gX, gY);
+						goomba->SetVy(-GOOMBA_DIE_GET_HIT_BY_SHELL_DEFLECT_SPEED);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(gX, gY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
+						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, gX, gY);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+					}
+					else {
+						if (e->nx) {
+							if (vx > 0) {
+								SetState(KOOPAS_STATE_WALKING_LEFT);
+							}
+							else {
+								SetState(KOOPAS_STATE_WALKING_RIGHT);
+							}
+							//vx *= -1;
+						}
+					}
+				}
+				else if (e->ny) {
+					float l, t, r, b;
+
+					e->obj->GetBoundingBox(l, t, r, b);
+
+					CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+
+					if (beingHolded || state == KOOPAS_STATE_SPIN && goomba->GetState() != GOOMBA_STATE_DIE && goomba->GetState() != GOOMBA_STATE_GET_HIT) {
+						float gX, gY;
+
+						goomba->GetHitByShell();
+						goomba->GetPosition(gX, gY);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(gX, gY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
+						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, gX, gY);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+					}
+				}
+			}
+			else if (dynamic_cast<QBrick*>(e->obj)) {
+				if (e->nx) {
+					if (state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT) {
+						if (vx > 0) {
+							SetState(KOOPAS_STATE_WALKING_LEFT);
+						}
+						else {
+							SetState(KOOPAS_STATE_WALKING_RIGHT);
+						}
+					}
+					else if (state == KOOPAS_STATE_SPIN) {
+						vx *= -1;
+						dynamic_cast<QBrick*>(e->obj)->PopUpHiddenItem();
+					}
+				}
+			}
+			else if (dynamic_cast<BrokenBrick*>(e->obj)) {
+				BrokenBrick* brokenBrick = dynamic_cast<BrokenBrick*>(e->obj);
 
 				if (e->nx) {
 					float l, t, r, b;
@@ -137,12 +270,101 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					e->obj->GetBoundingBox(l, t, r, b);
 
 					if (e->nx) {
-						vx *= -1;
+						if (state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT) {
+							if (vx > 0) {
+								SetState(KOOPAS_STATE_WALKING_LEFT);
+							}
+							else {
+								SetState(KOOPAS_STATE_WALKING_RIGHT);
+							}
+						}
+						else if (state == KOOPAS_STATE_SPIN) {
+							vx *= -1;
+							brokenBrick->GetBroken();
+						}
+
+						//vx *= -1;
 					}
 				}
 
 				if (ny) {
 					vy = 0;
+				}
+			}
+			else if (dynamic_cast<BoomerangGuy*>(e->obj)) {
+				BoomerangGuy* guy = dynamic_cast<BoomerangGuy*>(e->obj);
+
+				float tmpX, tmpY;
+
+				guy->GetPosition(tmpX, tmpY);
+
+				if (state == KOOPAS_STATE_SPIN && (vx > 0 && guy->GetDirection() < 0) || (vx < 0 && guy->GetDirection() > 0)) {
+					float _vx, _vy;
+
+					e->obj->GetSpeed(_vx, _vy);
+					e->obj->SetSpeed(_vx, -BROS_JUMP_SPEED);
+
+					x -= min_tx * dx + nx * 0.4f;
+				}
+				else if (state == KOOPAS_STATE_SPIN) {
+					// die
+					guy->SetState(BROS_STATE_DIE);
+
+					BangEffect* bangEffect = new BangEffect();
+					bangEffect->SetPosition(tmpX, tmpY);
+					Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
+					LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+					Grid::GetInstance()->putObjectIntoGrid(point);
+					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+				}
+			}
+			else if (dynamic_cast<CKoopas*>(e->obj)) {
+				CKoopas* k = dynamic_cast<CKoopas*>(e->obj);
+
+				float tmpX, tmpY;
+
+				k->GetPosition(tmpX, tmpY);
+
+				if (k->GetState() != KOOPAS_STATE_DIE) {
+					if (state == KOOPAS_STATE_SPIN && k->GetState() == KOOPAS_STATE_SPIN) {
+						SetState(KOOPAS_STATE_DIE);
+						k->SetState(KOOPAS_STATE_DIE);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+					}
+					else if (state == KOOPAS_STATE_SPIN) {
+						x -= min_tx * dx + nx * 0.4f;
+						y -= min_ty * dy + ny * 0.4f;
+
+						k->SetState(KOOPAS_STATE_DIE);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
+						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+					}
+					else if (k->GetHarmless() && k->GetState() != KOOPAS_STATE_WALKING_LEFT && k->GetState() != KOOPAS_STATE_WALKING_RIGHT) {
+						SetState(KOOPAS_STATE_DIE);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
+						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+					}
+					else if (state != KOOPAS_STATE_IN_SHELL) {
+						vx *= -1;
+						nx *= -1;
+						state = (vx > 0) ? KOOPAS_STATE_WALKING_RIGHT : KOOPAS_STATE_WALKING_LEFT;
+					}
 				}
 			}
 		}
@@ -161,24 +383,26 @@ void CKoopas::Render()
 		ani = KOOPAS_ANI_DIE;
 	}
 	else if (state == KOOPAS_STATE_IN_SHELL || beingHolded) {
-		ani = KOOPAS_ANI_SHELL_IDLE;
+		ani = (upward) ? KOOPAS_ANI_SHELL_UPWARD_GREEN : KOOPAS_ANI_SHELL_IDLE;
 	}
 	else if (state == KOOPAS_STATE_SPIN) {
-		ani = KOOPAS_ANI_SHELL_SPIN;
+		ani = (upward) ? KOOPAS_ANI_SPIN_UPWARD_GREEN : KOOPAS_ANI_SHELL_SPIN;
 	}
 	else if (state == KOOPAS_STATE_WALKING_RIGHT) {
-		ani = KOOPAS_ANI_WALKING_RIGHT;
+		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_RIGHT : (isStanding) ? KOOPAS_ANI_WALKING_RIGHT_GREEN_FLYING : KOOPAS_ANI_FLYING_RIGHT_GREEN_FLYING;
 	}
 	else if (state == KOOPAS_STATE_WALKING_LEFT) {
-		ani = KOOPAS_ANI_WALKING_LEFT;
+		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_LEFT : (isStanding) ? KOOPAS_ANI_WALKING_LEFT_GREEN_FLYING : KOOPAS_ANI_FLYING_LEFT_GREEN_FLYING;
 	}
 	else if (state == KOOPAS_STATE_DIE) {
-		ani = KOOPAS_ANI_DIE;
+		ani = KOOPAS_ANI_SHELL_UPWARD_GREEN;
 	}
 
 	if (outShell) {
-		ani = KOOPAS_ANI_OUT_A_SHELL;
+		ani = (upward) ? KOOPAS_ANI_OUT_A_SHELL_UPWARD_GREEN : KOOPAS_ANI_OUT_A_SHELL;
 	}
+
+	currAni = ani;
 
 	animation_set->at(ani)->Render(x, y);
 
@@ -193,8 +417,9 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_DIE:
 		y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE + 1;
 		vx = 0;
-		vy = KOOPAS_DIE_DEFLECT_SPEED;
+		vy = -KOOPAS_DIE_DEFLECT_SPEED;
 		spawn_delay = (DWORD)GetTickCount64();
+		interactivable = 0;
 		break;
 	case KOOPAS_STATE_WALKING:
 		if (nx > 0) {
@@ -233,17 +458,25 @@ void CKoopas::Spawn() {
 	Grid::GetInstance()->putObjectIntoGrid(this);
 }
 
-void CKoopas::GetHit(bool byTail)
+void CKoopas::GetHit(bool byTail, int nx)
 {
 	if (byTail) {
-		SetState(KOOPAS_STATE_DIE);
+		InShell();
+		upward = 1;
+		level = KOOPAS_LEVEL_GREEN_WALKING;
+		vy = -KOOPAS_DIE_DEFLECT_SPEED;
+		vx = nx * KOOPAS_GET_HIT_VX;
 	}
 	else {
-		SetState(KOOPAS_STATE_IN_SHELL);
+		SetState(KOOPAS_STATE_DIE);
 	}
+
+	BangEffect* bangEffect = new BangEffect();
+	bangEffect->SetPosition(x, y);
+	Grid::GetInstance()->putObjectIntoGrid(bangEffect);
 }
 
-void CKoopas::GetKicked(const int& nx)
+void CKoopas::GetKicked(int nx)
 {
 	beingHolded = 0;
 	harmless = 0;
@@ -317,6 +550,7 @@ void CKoopas::OutShell()
 void CKoopas::FinishOutShell() {
 	outShell = 0;
 	harmless = 0;
+	upward = 0;
 	y -= (KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE);
 	vx = backupVx;
 	vy = 0;
@@ -332,4 +566,28 @@ void CKoopas::SetPos(const float& x, const float& y)
 {
 	this->x = x;
 	this->y = y;
+}
+
+void CKoopas::GetJumpedOn(int nx)
+{
+	if (level > KOOPAS_LEVEL_GREEN_WALKING) {
+		LooseWings();
+	}
+	else if (state == KOOPAS_STATE_IN_SHELL) {
+		GetKicked(nx);
+	}
+	else if (state == KOOPAS_STATE_WALKING || state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT) {
+		InShell();
+	}
+
+	LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
+	Grid::GetInstance()->putObjectIntoGrid(point);
+	Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+}
+
+void CKoopas::LooseWings()
+{
+	level = KOOPAS_LEVEL_GREEN_WALKING;
+	vy = 0;
+	state = (nx < 0) ? KOOPAS_STATE_WALKING_LEFT : KOOPAS_STATE_WALKING_RIGHT;
 }

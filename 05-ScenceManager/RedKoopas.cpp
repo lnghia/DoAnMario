@@ -90,13 +90,13 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		return;
 	}
 
-	if (state == KOOPAS_STATE_DIE) {
+	/*if (state == KOOPAS_STATE_DIE) {
 		if ((DWORD)GetTickCount64() - spawn_delay < KOOPAS_DIE_TIME) {
 			return;
 		}
 		Spawn();
 	}
-	else if (state == KOOPAS_STATE_IN_SHELL) {
+	else */if (state == KOOPAS_STATE_IN_SHELL) {
 		if ((DWORD)GetTickCount64() - in_shell > 5000) {
 			OutShell();
 		}
@@ -234,11 +234,17 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (ny) {
 					vy = 0;
+					if (state == KOOPAS_STATE_IN_SHELL) {
+						vx = 0;
+					}
 				}
 			}
 			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
 				if (e->ny < 0) {
 					vy = 0;
+					if (state == KOOPAS_STATE_IN_SHELL) {
+						vx = 0;
+					}
 				}
 				else {
 					x -= min_tx * dx + nx * 0.4f;
@@ -363,12 +369,60 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 					x -= min_tx * dx + nx * 0.4f;
 				}
-				else if(state == KOOPAS_STATE_SPIN){
+				else if (state == KOOPAS_STATE_SPIN) {
 					// die
 					guy->SetState(BROS_STATE_DIE);
 					LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
 					Grid::GetInstance()->putObjectIntoGrid(point);
 					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+				}
+			}
+			else if (dynamic_cast<CKoopas*>(e->obj)) {
+				CKoopas* k = dynamic_cast<CKoopas*>(e->obj);
+
+				float tmpX, tmpY;
+
+				k->GetPosition(tmpX, tmpY);
+
+				if (k->GetState() != KOOPAS_STATE_DIE) {
+					if (state == KOOPAS_STATE_SPIN && k->GetState() == KOOPAS_STATE_SPIN) {
+						SetState(KOOPAS_STATE_DIE);
+						k->SetState(KOOPAS_STATE_DIE);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+					}
+					else if (state == KOOPAS_STATE_SPIN) {
+						x -= min_tx * dx + nx * 0.4f;
+						y -= min_ty * dy + ny * 0.4f;
+
+						k->SetState(KOOPAS_STATE_DIE);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
+						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+					}
+					else if (k->GetHarmless() && k->GetState() != KOOPAS_STATE_WALKING_LEFT && k->GetState() != KOOPAS_STATE_WALKING_RIGHT) {
+						SetState(KOOPAS_STATE_DIE);
+
+						BangEffect* bangEffect = new BangEffect();
+						bangEffect->SetPosition(tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+
+						LPGAMEOBJECT point = new Point(MUSHROOM_POINT, tmpX, tmpY);
+						Grid::GetInstance()->putObjectIntoGrid(point);
+						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+					}
+					else if (state != KOOPAS_STATE_IN_SHELL) {
+						vx *= -1;
+						nx *= -1;
+						state = (vx > 0) ? KOOPAS_STATE_WALKING_RIGHT : KOOPAS_STATE_WALKING_LEFT;
+					}
 				}
 			}
 		}
@@ -405,10 +459,10 @@ void RedKoopas::Render()
 		ani = KOOPAS_ANI_DIE;
 	}
 	else if (state == KOOPAS_STATE_IN_SHELL) {
-		ani = KOOPAS_ANI_SHELL_IDLE;
+		ani = (upward) ? REDKOOPAS_ANI_IN_SHELL_UPWARD : KOOPAS_ANI_SHELL_IDLE;
 	}
 	else if (state == KOOPAS_STATE_SPIN) {
-		ani = KOOPAS_ANI_SHELL_SPIN;
+		ani = (upward) ? REDKOOPAS_ANI_SPIN_UPWARD : KOOPAS_ANI_SHELL_SPIN;
 	}
 	else if (state == KOOPAS_STATE_WALKING_RIGHT) {
 		ani = KOOPAS_ANI_WALKING_RIGHT;
@@ -417,11 +471,11 @@ void RedKoopas::Render()
 		ani = KOOPAS_ANI_WALKING_LEFT;
 	}
 	else if (state == KOOPAS_STATE_DIE) {
-		ani = KOOPAS_ANI_DIE;
+		ani = REDKOOPAS_ANI_IN_SHELL_UPWARD;
 	}
 
 	if (outShell) {
-		ani = REDKOOPAS_ANI_OUT_A_SHELL;
+		ani = (upward) ? REDKOOPAS_ANI_IN_SHELL_UPWARD : REDKOOPAS_ANI_OUT_A_SHELL;
 	}
 
 	currAni = ani;
@@ -439,8 +493,9 @@ void RedKoopas::SetState(int state)
 	case KOOPAS_STATE_DIE:
 		y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE + 1;
 		vx = 0;
-		vy = KOOPAS_DIE_DEFLECT_SPEED;
+		vy = -KOOPAS_DIE_DEFLECT_SPEED;
 		spawn_delay = (DWORD)GetTickCount64();
+		interactivable = 0;
 		break;
 		/*case KOOPAS_STATE_WALKING:
 			if (nx > 0) {

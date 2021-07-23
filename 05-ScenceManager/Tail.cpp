@@ -92,6 +92,9 @@ void Tail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
 				}
 			}
+			else if (dynamic_cast<CKoopas*>(e->obj)) {
+				e->obj->GetHit(1, (vx > 0) ? 1 : -1);
+			}
 			//else if (dynamic_cast<CPlant*>(e->obj))					// obj is plant
 			//{
 			//	CPlant* plant = dynamic_cast<CPlant*>(e->obj);

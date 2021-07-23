@@ -1,7 +1,10 @@
 #pragma once
 #include "Koopas.h"
 
-#define REDKOOPAS_ANI_OUT_A_SHELL	4
+#define REDKOOPAS_ANI_OUT_A_SHELL			4
+#define REDKOOPAS_ANI_IN_SHELL_UPWARD		5
+#define REDKOOPAS_ANI_OUT_A_SHELL_UPWARD	6
+#define REDKOOPAS_ANI_SPIN_UPWARD			7
 
 class RedKoopas : public CKoopas
 {
@@ -11,7 +14,6 @@ class RedKoopas : public CKoopas
 	int beneathSurfaceY;
 	int beneathSurfaceW;
 	int beneathSurfaceH;
-
 public:
 	RedKoopas();
 	RedKoopas(short int nx);

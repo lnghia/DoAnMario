@@ -188,8 +188,9 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		break;
 	case OBJECT_TYPE_KOOPAS: {
 		short int initMovingDirec = (short int)atoi(tokens[4].c_str());
+		int level = (int)atoi(tokens[5].c_str());
 
-		obj = new CKoopas(initMovingDirec);
+		obj = new CKoopas(initMovingDirec, level);
 
 		break;
 	}
@@ -716,8 +717,8 @@ void CPlayScene::Update(DWORD dt)
 		return;
 	}
 
-	if ((player->GetUntouchable() && GetTickCount64() - player->GetUntouchableStart() < player->transform_duration_time) ||
-		(player->GetTransforming() && GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time)) {
+	if ((player->GetUntouchable() && (DWORD)GetTickCount64() - player->GetUntouchableStart() < player->transform_duration_time) ||
+		(player->GetTransforming() && (DWORD)GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time)) {
 
 		return;
 	}
@@ -905,6 +906,10 @@ void CPlayScene::Unload()
 
 void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidable_objs)
 {
+	float ml, mt, mr, mb;
+
+	player->GetBoundingBox(ml, mt, mr, mb);
+
 	for (auto& obj : collidable_objs) {
 		if (player->checkAABB(obj) && obj->GetIsActive()) {
 			if (dynamic_cast<CGoomba*>(obj)) {
@@ -970,7 +975,11 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 				}
 				else if (!player->GetUntouchable())
 				{
-					if (!koopas->GetHarmless())
+					float tmpx, tmpy;
+
+					koopas->GetPosition(tmpx, tmpy);
+
+					if (!koopas->GetHarmless() && mb > tmpy)
 					{
 						if (player->GetLevel() == MARIO_LEVEL_BIG)
 						{
@@ -996,6 +1005,59 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 					}
 				}
 
+			}
+			else if (dynamic_cast<CKoopas*>(obj)) {
+				CKoopas* koopas = dynamic_cast<CKoopas*>(obj);
+				int state = koopas->GetState();
+
+				if ((player->GetBeingHoldedObj() && player->GetBeingHoldedObj() == obj)) {
+					continue;
+				}
+				else if (player->hasJustKicked) {
+					float _l, _t, _r, _b;
+					float tmpX, tmpY;
+
+					player->GetBoundingBox(_l, _t, _r, _b);
+					koopas->GetPosition(tmpX, tmpY);
+					if (player->GetNx() > 0) {
+						koopas->SetPosition(_l - 1 - 16, tmpY);
+					}
+					else {
+						koopas->SetPosition(_r + 1, tmpY);
+					}
+					player->hasJustKicked = 0;
+				}
+				else if (!player->GetUntouchable())
+				{
+					float tmpx, tmpy;
+
+					koopas->GetPosition(tmpx, tmpy);
+
+					if (!koopas->GetHarmless() && mb > tmpy)
+					{
+						if (player->GetLevel() == MARIO_LEVEL_BIG)
+						{
+							//level = MARIO_LEVEL_SMALL;
+							player->SetBackupLevel(MARIO_LEVEL_SMALL);
+							player->SetBackupState(player->GetState());
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->turnIntoSmall();
+							player->StartUntouchable();
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->RacoonToBig();
+							player->StartUntouchable();
+						}
+						else
+							player->SetState(MARIO_STATE_DIE);
+					}
+					else {
+						//kick
+						int tmp = (player->GetVx() > 0) ? 1 : -1;
+						koopas->GetKicked(tmp);
+					}
+				}
 			}
 			else if (dynamic_cast<Boomerang*>(obj)) {
 				if (!player->GetUntouchable())

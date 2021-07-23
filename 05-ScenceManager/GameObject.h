@@ -117,12 +117,13 @@ public:
 	CGameObject();
 
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom) = 0;
-	virtual void GetKicked(const int& nx) {};
+	virtual void GetKicked(int nx) {};
 	virtual void AddHiddenItem(int hiddenItem, int hiddenItemAni) {};
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects = NULL);
 	virtual void Render() = 0;
 	virtual void RenderCurrFrame();
 	virtual void SetState(int state) { this->state = state; }
+	virtual void GetHit(bool byTail, int nx) {};
 
 	bool checkAABB(LPGAMEOBJECT obj);
 
