@@ -7,18 +7,20 @@
 #define LEAF_BBOX_WIDTH  16
 #define LEAF_BBOX_HEIGHT 14
 
-#define LEAF_FALL_RIGHT	0
-#define LEAF_FALL_LEFT	1
-#define LEAF_FALL_SPEED_VX	0.07f 
-#define LEAF_FALL_SPEED_VY	0.02f
-#define LEAF_RISING_SPEED_VY	1.0f
+#define LEAF_FALL_RIGHT			0
+#define LEAF_FALL_LEFT			1
+#define LEAF_FALL_SPEED_VX		0.07f 
+#define LEAF_FALL_SPEED_VY		0.02f
+#define LEAF_RISING_SPEED_VY	0.2f
 
-#define LEAF_RISING_TIME 800
+#define LEAF_RISING_TIME	800
 
 
 #define LEAF_STATE_FALLING	100
 
-#define LEAF_POINT		200
+#define LEAF_POINT			200
+
+#define LEAF_RISING_DIS		48.0f
 
 
 class Leaf : public HiddenItem
@@ -28,6 +30,7 @@ class Leaf : public HiddenItem
 	virtual void Render();
 	float xMax = 0;
 	float xMin = 0;
+	float yMax = 0;
 	DWORD rise_start;
 	int rising = 0;
 
@@ -44,6 +47,7 @@ public:
 		vy = LEAF_FALL_SPEED_VY;
 		xMax = x + LEAF_BBOX_WIDTH * 2;
 		xMin = x - 1;
+		yMax = y - LEAF_RISING_DIS;
 		StartRising();
 	};
 

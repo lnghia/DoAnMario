@@ -71,6 +71,8 @@ public:
 
 	unsigned int renderPriority = 0;
 
+	//bool isPaused = 0;
+
 	UINT currAni;
 
 public: 

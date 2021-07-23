@@ -25,14 +25,19 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 
 	grid->clearObjFromGrid(this);
 
-	if ((DWORD)GetTickCount64() - rise_start > LEAF_RISING_TIME)
+	/*if ((DWORD)GetTickCount64() - rise_start > LEAF_RISING_TIME)
 	{
+		rise_start = 0;
+		rising = 0;
+	}*/
+
+	if (y <= yMax) {
 		rise_start = 0;
 		rising = 0;
 	}
 
 	if (rising)
-		y -= LEAF_RISING_SPEED_VY;
+		y -= LEAF_RISING_SPEED_VY * dt;
 	else {
 		state = LEAF_STATE_FALLING;
 		renderPriority = 102;
