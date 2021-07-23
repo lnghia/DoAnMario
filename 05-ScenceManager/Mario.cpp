@@ -197,6 +197,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				RedKoopas* koopas = dynamic_cast<RedKoopas*>(e->obj);
 				int state = koopas->GetState();
 
+				float kt, kl, kr, kb;
+
+				koopas->GetBoundingBox(kl, kt, kr, kb);
+
 				if (e->ny < 0)
 				{
 					if (state == KOOPAS_STATE_WALKING || state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT)
@@ -207,8 +211,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else if (koopas->GetState() == KOOPAS_STATE_IN_SHELL) {
 						// spin
-						int tmp = (nx > 0) ? -1 : 1;
-						koopas->GetKicked((int)tmp);
+						int tmp = (x < kl + (kr - kl) / 2) ? 1 : -1;
+
+						koopas->GetKicked(tmp);
 					}
 					/*LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
 					Grid::GetInstance()->putObjectIntoGrid(point);
@@ -294,6 +299,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 				int state = koopas->GetState();
 
+				float kt, kl, kr, kb;
+
+				koopas->GetBoundingBox(kl, kt, kr, kb);
+
 				if (e->ny < 0)
 				{
 					if (state == KOOPAS_STATE_WALKING || state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT)
@@ -305,7 +314,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else if (koopas->GetState() == KOOPAS_STATE_IN_SHELL) {
 						// spin
-						int tmp = (nx > 0) ? -1 : 1;
+						int tmp = (x < kl + (kr - kl) / 2) ? 1 : -1;
+
 						koopas->GetJumpedOn(tmp);
 						//koopas->GetKicked((int)tmp);
 					}
