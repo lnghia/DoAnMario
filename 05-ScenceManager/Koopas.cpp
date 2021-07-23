@@ -80,6 +80,10 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
+	if (state == KOOPAS_STATE_SPIN && (DWORD)GetTickCount64() - just_got_kicked > KOOPAS_GET_KICKED_HARMLESS_TIME) {
+		harmless = 0;
+	}
+
 	CGame* game = CGame::GetInstance();
 
 	Grid* grid = Grid::GetInstance();
@@ -479,10 +483,11 @@ void CKoopas::GetHit(bool byTail, int nx)
 void CKoopas::GetKicked(int nx)
 {
 	beingHolded = 0;
-	harmless = 0;
+	harmless = 1;
 	state = KOOPAS_STATE_SPIN;
 	vx = (nx > 0) ? KOOPAS_SPIN_SPEED : -KOOPAS_SPIN_SPEED;
 	this->nx = nx;
+	just_got_kicked = (DWORD)GetTickCount64();
 }
 
 bool CKoopas::GetBeingHolded()

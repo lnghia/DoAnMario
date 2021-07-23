@@ -33,7 +33,8 @@
 #define KOOPAS_ANI_OUT_A_SHELL_UPWARD_GREEN		11
 #define KOOPAS_ANI_SPIN_UPWARD_GREEN			12
 
-#define KOOPAS_DIE_TIME	1000
+#define KOOPAS_DIE_TIME					1000
+#define KOOPAS_GET_KICKED_HARMLESS_TIME	100
 
 #define KOOPAS_GRAVITY	0.0008f
 
@@ -60,6 +61,7 @@ protected:
 	DWORD spawn_delay = NULL;
 	DWORD in_shell = NULL;
 	DWORD out_shell_start = NULL;
+	DWORD just_got_kicked = NULL;
 
 	float initX;
 	float initY;

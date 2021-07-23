@@ -110,12 +110,9 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	//DebugOut(L"%d %d\n", state, coEventsResult.size());
-	if (state == 3) {
-		int tmp = 1;
+	if (state == KOOPAS_STATE_SPIN && (DWORD)GetTickCount64() - just_got_kicked > KOOPAS_GET_KICKED_HARMLESS_TIME) {
+		harmless = 0;
 	}
-
-
 
 	//unique_ptr<CGame> game = CGame::GetInstance();
 
