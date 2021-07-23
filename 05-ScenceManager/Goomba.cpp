@@ -20,7 +20,8 @@ CGoomba::CGoomba()
 
 CGoomba::CGoomba(int level)
 {
-	SetState(GOOMBA_STATE_WALKING);
+	SetState(GOOMBA_STATE_JUMP);
+	vx = -GOOMBA_WALKING_SPEED;
 	interactivable = 1;
 	renderPriority = 101;
 	this->level = level;
@@ -29,7 +30,8 @@ CGoomba::CGoomba(int level)
 void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	left = x;
-	top = (level == GOOMBA_LEVEL_WALK) ? y : (isStanding) ? y + GOOMBA_WING_TO_HEAD_DIS_STANDING : y + GOOMBA_WING_TO_HEAD_DIS_STANDING;
+	//top = (level == GOOMBA_LEVEL_WALK) ? y : (isStanding) ? y + GOOMBA_WING_TO_HEAD_DIS_STANDING : y + GOOMBA_WING_TO_HEAD_DIS_STANDING;
+	top = (level == GOOMBA_LEVEL_WALK) ? y : y + GOOMBA_WING_TO_HEAD_DIS_JUMPING;
 	right = x + ((level == GOOMBA_LEVEL_WALK) ? GOOMBA_BBOX_WIDTH : GOOMBA_FLYING_BBOX_WIDTH);
 	//right = x + GOOMBA_BBOX_WIDTH;
 
@@ -37,10 +39,11 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 		bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
 	else {
 		if (level == GOOMBA_LEVEL_WALK) {
-			bottom = y + GOOMBA_BBOX_HEIGHT;
+			bottom = top + GOOMBA_BBOX_HEIGHT;
 		}
 		else {
-			bottom = y + ((isStanding) ? GOOMBA_FLYING_STANDING_BBOX_HEIGHT : GOOMBA_FLYING_BBOX_HEIGHT);
+			//bottom = y + ((isStanding) ? GOOMBA_FLYING_STANDING_BBOX_HEIGHT : GOOMBA_FLYING_BBOX_HEIGHT);
+			bottom = top + 15;
 		}
 	}
 }
@@ -70,10 +73,13 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (state == GOOMBA_STATE_DIE || state == GOOMBA_STATE_GET_HIT) {
 		coObjects->clear();
 	}
-	else if (level != GOOMBA_LEVEL_WALK && isStanding && (DWORD)GetTickCount64() - start_walking > GOOMBA_WALKING_TIME) {
+	else if (level != GOOMBA_LEVEL_WALK && isStanding && state == GOOMBA_STATE_WALKING && (DWORD)GetTickCount64() - start_walking > GOOMBA_WALKING_TIME) {
 		isStanding = 0;
-		vy = -GOOMBA_JUMP_SPEED;
+		vy = -GOOMBA_PREPARE_TO_JUMP_SPEED;
+		start_preparing_to_jump = (DWORD)GetTickCount64();
+		state = GOOMBA_STATE_PREPARE_TO_JUMP;
 	}
+
 
 	CGame* game = CGame::GetInstance();
 
@@ -81,7 +87,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	grid->clearObjFromGrid(this);
 
-	vy += GOOMBA_GRAVITY * dt;
+	vy += (state == GOOMBA_STATE_WALKING) ? GOOMBA_GRAVITY * dt : GOOMBA_JUMP_GRAVITY * dt;
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -130,12 +136,17 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			e->obj->GetPosition(bx, by);
 
-			bool tmp = isStanding;
-
 			isStanding = (e->ny < 0) ? e->obj->GetCanBeStandOn() : false;
 
-			if (isStanding && !tmp) {
+			if (isStanding && state == GOOMBA_STATE_JUMP && level != GOOMBA_LEVEL_WALK) {
 				start_walking = (DWORD)GetTickCount64();
+				state = GOOMBA_STATE_WALKING;
+				vy = 0;
+			}
+			else if (level != GOOMBA_LEVEL_WALK && isStanding && state == GOOMBA_STATE_PREPARE_TO_JUMP && (DWORD)GetTickCount64() - start_preparing_to_jump > 400) {
+				isStanding = 0;
+				vy = -GOOMBA_JUMP_SPEED;
+				state = GOOMBA_STATE_JUMP;
 			}
 
 			if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj) || dynamic_cast<CGoomba*>(e->obj)) {
@@ -151,7 +162,19 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 
 				if (ny) {
-					vy = 0;
+					//vy = (state == GOOMBA_STATE_PREPARE_TO_JUMP) ? -GOOMBA_PREPARE_TO_JUMP_SPEED : (state == GOOMBA_STATE_JUMP) ? -GOOMBA_JUMP_SPEED : 0;
+					//subIsStanding = isStanding;
+					if (isStanding && state == GOOMBA_STATE_PREPARE_TO_JUMP && level != GOOMBA_LEVEL_WALK) {
+						vy = -GOOMBA_PREPARE_TO_JUMP_SPEED;
+						isStanding = 0;
+					}
+					else if (state == GOOMBA_STATE_JUMP && level != GOOMBA_LEVEL_WALK) {
+						vy = -GOOMBA_JUMP_SPEED;
+						isStanding = 0;
+					}
+					else {
+						vy = 0;
+					}
 				}
 			}
 			else if (dynamic_cast<RedKoopas*>(e->obj)) {
@@ -209,7 +232,7 @@ void CGoomba::Render()
 			ani = GOOMBA_ANI_FLY_WALKING;
 		}
 		else {
-			ani = GOOMBA_ANI_FLY_JUMPING;
+			ani = (state == GOOMBA_STATE_JUMP) ? GOOMBA_ANI_FLY_JUMPING : GOOMBA_ANI_FLY_JUMPING;
 		}
 	}
 
@@ -219,7 +242,7 @@ void CGoomba::Render()
 	else if (state == GOOMBA_STATE_GET_HIT) {
 		ani = GOOMBA_ANI_GET_HIT;
 	}
-	
+
 	currAni = ani;
 
 	animation_set->at(ani)->Render(x, y);
@@ -286,7 +309,9 @@ void CGoomba::GetJumpedOn()
 
 void CGoomba::LooseWings()
 {
-	y += (((isStanding) ? GOOMBA_FLYING_STANDING_BBOX_HEIGHT : GOOMBA_FLYING_BBOX_HEIGHT) - GOOMBA_BBOX_HEIGHT);
+	y += (GOOMBA_FLYING_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT - 1);
 	x += GOOMBA_WING_TO_TOE_DIS;
 	level = GOOMBA_LEVEL_WALK;
+	vy = 0;
+	state = GOOMBA_STATE_WALKING;
 }
