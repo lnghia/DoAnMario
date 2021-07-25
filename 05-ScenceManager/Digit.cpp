@@ -42,7 +42,7 @@ void Digit::SetDigit(UINT val)
 }
 
 int Digit::GetDigit() {
-	return digit;
+	return (int)digit;
 }
 
 void Digit::SetAniSet(int ani_set)

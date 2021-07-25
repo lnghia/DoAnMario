@@ -84,6 +84,11 @@ public:
 	EndGameItemStack* GetCardStack();
 	SpeedBar* GetSpeedBar();
 
+	void AddLives(int val);
+	void SubLives(int val);
+	void SetLives(int val);
+	int LivesCount();
+
 	void SetAniSet(int ani_set);
 
 	static Board* GetInstance();

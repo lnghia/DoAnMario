@@ -33,9 +33,11 @@ public:
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 
 	void Add(int val);
+	void Sub(int val);
 	void SetContent(int val);
-	void SetContent(string& str);	
+	void SetContent(string& str);
 	void UpdatePos(float x, float y);
+	int GetContent();
 
 	void SetAniSet(int ani_set);
 };

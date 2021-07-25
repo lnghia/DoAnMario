@@ -12,6 +12,7 @@ protected:
 
 	UINT worldNum = 1;
 public: 
+	CScene() {};
 	CScene(int id, LPCWSTR filePath);
 
 	CKeyEventHandler * GetKeyEventHandler() { return key_handler; }

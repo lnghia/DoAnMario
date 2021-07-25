@@ -44,6 +44,11 @@ void TimeTicker::StartTicking()
 	isTicking = 1;
 }
 
+void TimeTicker::SetTime(int time)
+{
+	displayer->SetContent(time);
+}
+
 void TimeTicker::SetAniSet(int ani_set)
 {
 	displayer->SetAniSet(ani_set);

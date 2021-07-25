@@ -34,6 +34,31 @@ void Displayer::Add(int val)
 	}
 }
 
+void Displayer::Sub(int val)
+{
+	int content = 0;
+
+	for (auto& chr : characters) {
+		content = content * 10 + chr->GetDigit();
+	}
+
+	if (!content) {
+		return;
+	}
+
+	int result = 0, remainder = 0;
+	int i = characters.size(), unit, temp;
+
+	while ((val || remainder) && i--) {
+		unit = val % 10;
+		val /= 10;
+		temp = characters[i]->GetDigit();
+		temp -= (remainder + unit);
+		remainder = (temp < 0);
+		characters[i]->SetDigit(temp + 10);
+	}
+}
+
 void Displayer::SetContent(int val)
 {
 	if (val <= 0) {
@@ -72,6 +97,17 @@ void Displayer::UpdatePos(float x, float y)
 	for (auto& c : characters) {
 		c->SetPosition(x + i++ * DIGIT_BBOX_WIDTH, y);
 	}
+}
+
+int Displayer::GetContent()
+{
+	int sum = 0;
+
+	for (auto& chr : characters) {
+		sum = sum * 10 + chr->GetDigit();
+	}
+
+	return sum;
 }
 
 void Displayer::SetAniSet(int ani_set)

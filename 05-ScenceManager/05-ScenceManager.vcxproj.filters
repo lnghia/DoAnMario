@@ -49,6 +49,12 @@
     <Filter Include="Source Files\GameBoard">
       <UniqueIdentifier>{67b906f2-91f9-49b3-aefa-cc849b7ab312}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{c9b27b1d-26f4-45b0-bbf7-818818d890b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes\Intro">
+      <UniqueIdentifier>{051ef7cd-d839-46af-84b3-5f93a31d6988}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -225,6 +231,9 @@
     <ClCompile Include="PiranhaFlower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IntroScene.cpp">
+      <Filter>Header Files\Scenes\Intro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -400,6 +409,9 @@
     </ClInclude>
     <ClInclude Include="PiranhaFlower.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroScene.h">
+      <Filter>Header Files\Scenes\Intro</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -185,6 +185,25 @@ SpeedBar* Board::GetSpeedBar()
 	return speedBar;
 }
 
+void Board::AddLives(int val)
+{
+	lives->Add(val);
+}
+
+void Board::SubLives(int val) {
+	lives->Sub(val);
+}
+
+void Board::SetLives(int val)
+{
+	lives->SetContent(val);
+}
+
+int Board::LivesCount()
+{
+	return lives->GetContent();
+}
+
 void Board::SetAniSet(int ani_set)
 {
 	animation_set = CAnimationSets::GetInstance()->Get(ani_set);
