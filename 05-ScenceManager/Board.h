@@ -61,6 +61,8 @@ class Board :public JustForShow
 	JustForShow* dollarSign;
 	EndGameItemStack* cardStack;
 	SpeedBar* speedBar;
+
+	int latestCardType = 0;
 public:
 	Board();
 
@@ -84,9 +86,13 @@ public:
 	EndGameItemStack* GetCardStack();
 	SpeedBar* GetSpeedBar();
 
+	int GetLatestCardType();
+	void SetLatestCardType(int val);
+
 	void AddLives(int val);
 	void SubLives(int val);
 	void SetLives(int val);
+	void RefreshPos();
 	int LivesCount();
 
 	void SetAniSet(int ani_set);

@@ -18,12 +18,15 @@
 #include "FloatingCoin.h"
 #include "Board.h"
 #include "RedKoopas.h"
+#include "CourseClearBoard.h"
 
 
 class CPlayScene : public CScene
 {
 protected:
 	CMario* player;					// A play scene has to have player, right? 
+
+	CourseClearBoard* courseBoard = NULL;
 
 	vector<LPGAMEOBJECT> objects;
 

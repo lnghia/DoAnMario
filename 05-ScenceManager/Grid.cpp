@@ -107,6 +107,10 @@ void Grid::load(int cellWidth, int cellHeight)
 	rowNum = (int)ceil((float)Map::getInstance()->getHeight() / cellHeight);
 
 	grid.resize(rowNum, vector<unordered_set<LPGAMEOBJECT>>(colNum, unordered_set<LPGAMEOBJECT>()));
+	/*grid.resize(rowNum);
+	for (auto& tmp : grid) {
+		tmp.resize(colNum);
+	}*/
 }
 
 vector<int> Grid::getOverLapCells(LPGAMEOBJECT obj)
@@ -150,15 +154,19 @@ void Grid::unload()
 {
 	for (int r = 0; r < (int)grid.size(); ++r) {
 		for (int c = 0; c < (int)grid[r].size(); ++c) {
-			for (auto& obj : grid[r][c]) {
-				delete obj;
-			}
-			grid[r][c].clear();
+			//for (auto& obj : grid[r][c]) {
+			//	/*if (!dynamic_cast<CMario*>(obj)) {
+			//		delete obj;
+			//	}*/
+			//	delete obj;
+			//}
+			if(grid[r][c].size()) grid[r][c].clear();
 		}
-		grid[r].clear();
+		if(grid[r].size()) grid[r].clear();
 	}
+	grid.clear();
 
-	grid.resize(rowNum, vector<unordered_set<LPGAMEOBJECT>>(colNum, unordered_set<LPGAMEOBJECT>()));
+	//grid.resize(rowNum, vector<unordered_set<LPGAMEOBJECT>>(colNum, unordered_set<LPGAMEOBJECT>()));
 
 	DebugOut(L"[INFO] Grid unloaded!\n");
 }

@@ -33,6 +33,7 @@ public:
 
 	void UpdatePos(float x, float y);
 	void StartTicking();
+	void StopTicking();
 	void SetTime(int time);
 	void SetAniSet(int ani_set);
 

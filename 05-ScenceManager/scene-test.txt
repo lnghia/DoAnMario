@@ -23,10 +23,19 @@
 150	textures\enemies-2.png	0	128	128
 160	textures\fragment.png	224	163	216
 170	textures\Goal.png	0	183	239
+180	textures\GameClear.png	0	0	0
 
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]
+
+# Course clear board
+#star
+90	0	0	248	73	180
+#flower
+91	0	75	248	148	180
+#mushroom
+92	0	151	248	224	180
 
 #BROKEN BRICK
 90013	274	188	290	204	50
@@ -698,6 +707,15 @@
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
 
+# Course clear board
+#star
+90	90	100
+#flower
+91	91	100
+#mushroom
+92	92	100
+
+
 #BROKEN BRICK
 90013	90013	1000	90014	100	90015	100	90016	100
 
@@ -1297,6 +1315,10 @@
 # MARIO
 1	400	401	402	403	500	501	502	503	599	10	11	12	13	134	135	151	154	156	157	158	159	504	505	160	161	176	177	506	507	172	173	174	175	164	166	178	181	184	186	188	191	192	193	194	195	196	197	1100	400001	400002	300001	300002	500001	500002	400010	400009	300007	300008	500009	500010	400003	400006	300005	300003	500006	500003	400004	400005	300006	300004	500005	500004	400011	400012	300010	300009	500011	500012	500013	500014
 
+
+# Course clear board
+#star - flower - mushroom
+96	90	91	92
 
 
 #FRAGMENT
@@ -2232,6 +2254,13 @@ maps\map_indexes_man1.txt	481	2816	16	16	400	16	8
 # boomerang guy
 #59	176	368	110008	173	180
 #53	96	384	1013	-1	0	416	16	608
+
+# course clear board
+9990	2528	240	96
+
+# --- SCENE PORTAL ----
+# type	l	t	ani_set_id	r	b	scene_id
+50	2832	368	0	2848	416	4
 
 [BOARD]
 BOARD	2052

@@ -187,6 +187,12 @@
 #define MARIO_ANI_KICK_RIGHT	22
 #define MARIO_ANI_KICK_LEFT		23
 
+// ani in world map
+#define MARIO_ANI_SMALL_WOLRDMAP	0
+#define MARIO_ANI_BIG_WOLRDMAP		1
+#define MARIO_ANI_FIRE_WORLDMAP		2
+#define MARIO_ANI_RACOON_WORLDMAP	3
+
 
 #define MARIO_ANI_DIE				8
 
@@ -232,6 +238,7 @@ class CMario : public CGameObject
 	float oldY;
 
 	bool isStanding;
+	bool madeItToNextScene = 0;
 
 	int aniBigToSmallIndex = -1;
 
@@ -261,6 +268,8 @@ class CMario : public CGameObject
 	bool isAttackingTail = 0;
 	bool moveABit = 0;
 	bool beingBouncedUp = 0;
+	bool isInWorldMap = 0;
+	bool switchScene = 0;
 
 	LPGAMEOBJECT beingHoldedObj = NULL;
 	LPGAMEOBJECT tail = NULL;
@@ -355,6 +364,7 @@ public:
 
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
+	pair<int, int> UpdateInWorldMap(DWORD dt);
 	virtual void Render();
 
 	void SetState(int state);
@@ -375,6 +385,9 @@ public:
 	DWORD GetUntouchableStart();
 
 	bool GetUntouchable();
+
+	bool GetMadeItToNextScene();
+	void SetMadeItToNextScene(bool val);
 
 	int GetBackupLevel();
 	void SetBackupLevel(int val);
@@ -427,6 +440,9 @@ public:
 	float GetOldX();
 	float GetOldY();
 
+	bool GetIsInWorldMap();
+	void SetIsInWorldMap(bool val);
+
 	int GetNx();
 
 	float GetVx();
@@ -438,6 +454,9 @@ public:
 
 	void BigToRacoon();
 	void RacoonToBig();
+
+	void SetSwitchScene(bool val);
+	bool GetSwitchScene();
 
 	void ToBig();
 	void ToSmall();

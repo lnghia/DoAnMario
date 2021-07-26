@@ -55,6 +55,9 @@
     <Filter Include="Header Files\Scenes\Intro">
       <UniqueIdentifier>{051ef7cd-d839-46af-84b3-5f93a31d6988}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scenes\WorldMap1">
+      <UniqueIdentifier>{86bd1ef6-01b2-4560-a25d-eaeea18aa3a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -234,6 +237,18 @@
     <ClCompile Include="IntroScene.cpp">
       <Filter>Header Files\Scenes\Intro</Filter>
     </ClCompile>
+    <ClCompile Include="WorldMapScene.cpp">
+      <Filter>Header Files\Scenes\WorldMap1</Filter>
+    </ClCompile>
+    <ClCompile Include="Barrier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CourseClearBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -412,6 +427,18 @@
     </ClInclude>
     <ClInclude Include="IntroScene.h">
       <Filter>Header Files\Scenes\Intro</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMapScene.h">
+      <Filter>Header Files\Scenes\WorldMap1</Filter>
+    </ClInclude>
+    <ClInclude Include="Barrier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CourseClearBoard.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -185,6 +185,15 @@ SpeedBar* Board::GetSpeedBar()
 	return speedBar;
 }
 
+int Board::GetLatestCardType()
+{
+	return latestCardType;
+}
+
+void Board::SetLatestCardType(int val) {
+	latestCardType = val;
+}
+
 void Board::AddLives(int val)
 {
 	lives->Add(val);
@@ -197,6 +206,14 @@ void Board::SubLives(int val) {
 void Board::SetLives(int val)
 {
 	lives->SetContent(val);
+}
+
+void Board::RefreshPos()
+{
+	CGame* game = CGame::GetInstance();
+
+	x = game->GetCamX();
+	y = game->GetCamY() + game->GetScreenHeight() - BOARD_BBOX_HEIGHT;
 }
 
 int Board::LivesCount()

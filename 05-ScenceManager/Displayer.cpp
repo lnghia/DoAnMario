@@ -55,7 +55,7 @@ void Displayer::Sub(int val)
 		temp = characters[i]->GetDigit();
 		temp -= (remainder + unit);
 		remainder = (temp < 0);
-		characters[i]->SetDigit(temp + 10);
+		characters[i]->SetDigit((temp < 0) ? temp + 10 : temp);
 	}
 }
 

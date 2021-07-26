@@ -267,7 +267,7 @@ void CIntroSceneKeyHandler::OnKeyDown(int KeyCode)
 		//board->GetTime()->SetTime(0);
 		//board->SetLives(3);
 		Map::getInstance()->unLoad();
-		CGame::GetInstance()->SwitchScene(3);
+		CGame::GetInstance()->SwitchScene(4);
 		
 		Board* board = Board::GetInstance();
 		board->SetLives(3);

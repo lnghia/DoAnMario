@@ -14,8 +14,10 @@
 
 class ItemBox : public JustForShow
 {
-	JustForShow* item = NULL;
 public:
+	JustForShow* item = NULL;
+	int itemType = OBJECT_TYPE_STAR_CARD;
+
 	ItemBox() {};
 	ItemBox(int itemTypeId, int itemTypeAni, float x, float y);
 
@@ -24,6 +26,8 @@ public:
 	virtual void Render();
 
 	void SetItem(int itemType);
+
+	void RefreshAniSet();
 
 	void UpdatePos(float x, float y);
 };

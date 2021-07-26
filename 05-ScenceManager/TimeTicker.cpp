@@ -16,8 +16,13 @@ void TimeTicker::Render()
 
 void TimeTicker::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
-	currMoment = (timer - ((DWORD)GetTickCount64() - start)/1000);
-	displayer->SetContent(currMoment);
+	if (isTicking) {
+		currMoment = (timer - ((DWORD)GetTickCount64() - start) / 1000);
+		displayer->SetContent(currMoment);
+	}
+	else {
+		displayer->SetContent(0);
+	}
 }
 
 void TimeTicker::GetBoundingBox(float& l, float& t, float& r, float& b)
@@ -41,7 +46,13 @@ void TimeTicker::UpdatePos(float x, float y)
 void TimeTicker::StartTicking()
 {
 	start = (DWORD)GetTickCount64();
+	currMoment = (timer - ((DWORD)GetTickCount64() - start) / 1000);
 	isTicking = 1;
+}
+
+void TimeTicker::StopTicking()
+{
+	isTicking = 0;
 }
 
 void TimeTicker::SetTime(int time)

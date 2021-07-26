@@ -24,6 +24,7 @@
 #include "Boomerang.h"
 #include "BoomerangGuy.h"
 #include "PiranhaFlower.h"
+#include "WorldMapScene.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -43,10 +44,6 @@ CMario::CMario(float x, float y) : CGameObject()
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (y > Map::getInstance()->getHeight()) {
-		Reset();
-	}
-
 	if (transforming && (DWORD)GetTickCount64() - startTransforming < transform_duration_time) {
 		return;
 	}
@@ -402,7 +399,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
+				Map::getInstance()->unLoad();
+				//Grid::GetInstance()->unload();
+				SetSpeed(0, 0);
+				Board::GetInstance()->GetTime()->StopTicking();
+				Board::GetInstance()->GetTime()->SetTime(0);
+				switchScene = 1;
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				Board::GetInstance()->GetCardStack()->RefreshItemAni();
+				WorldMapScene* scene = (WorldMapScene*)CGame::GetInstance()->GetCurrentScene();
+				scene->SetMarioLevel(level);
 			}
 			else if (dynamic_cast<FireBall*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
@@ -591,8 +597,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				EndGameBrick* _obj = dynamic_cast<EndGameBrick*>(e->obj);
 
+				int timeLeft = Board::GetInstance()->GetTime()->GetCurrMoment();
 				int chosenCard = _obj->PopUpChoosenItem();
 				Board::GetInstance()->GetCardStack()->push(chosenCard);
+				Board::GetInstance()->GetPoint()->Add(timeLeft * 50);
+				Board::GetInstance()->SetLatestCardType(chosenCard);
+
+				madeItToNextScene = 1;
 			}
 			else if (dynamic_cast<Boomerang*>(e->obj)) {
 				if (untouchable == 0)
@@ -692,6 +703,45 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+
+	if (y > Map::getInstance()->getHeight() && !madeItToNextScene) {
+		//Reset();
+		Map::getInstance()->unLoad();
+		//Grid::GetInstance()->unload();
+		SetSpeed(0, 0);
+		Board::GetInstance()->GetTime()->StopTicking();
+		Board::GetInstance()->GetTime()->SetTime(0);
+		Board::GetInstance()->GetLives()->Sub(1);
+		CGame::GetInstance()->SwitchScene(4);
+		Board::GetInstance()->GetCardStack()->RefreshItemAni();
+	}
+}
+
+pair<int, int> CMario::UpdateInWorldMap(DWORD dt)
+{
+	CGameObject::Update(dt);
+
+	x += dx;
+	y += dy;
+
+	float mt, mb, ml, mr;
+
+	GetBoundingBox(ml, mt, mr, mb);
+
+	if (vy < 0) {
+		return { (int)(x / 16), (int)(mb / 16) };
+	}
+	if (vy > 0) {
+		return { (int)(x / 16), (int)(mt / 16) };
+	}
+	if (vx < 0) {
+		return { (int)(mr / 16), (int)(y / 16) };
+	}
+	if (vx > 0) {
+		return { (int)(ml / 16), (int)(y / 16) };
+	}
+
+	return { (int)((x + (mr - ml) / 2) / 16), (int)((y + (mb - mt) / 2) / 16) };
 }
 
 void CMario::Render()
@@ -735,6 +785,19 @@ void CMario::Render()
 			ani = filterSomeCommonAniByLevel();
 		}
 	}
+
+	if (isInWorldMap) {
+		if (level == MARIO_LEVEL_SMALL) {
+			ani = MARIO_ANI_SMALL_WOLRDMAP;
+		}
+		else if (level == MARIO_LEVEL_BIG) {
+			ani = MARIO_ANI_BIG_WOLRDMAP;
+		}
+		else if (level == MARIO_LEVEL_RACOON) {
+			ani = MARIO_ANI_RACOON_WORLDMAP;
+		}
+	}
+
 	currAni = ani;
 
 	int alpha = 255;
@@ -1092,6 +1155,15 @@ bool CMario::GetUntouchable()
 	return untouchable;
 }
 
+bool CMario::GetMadeItToNextScene()
+{
+	return madeItToNextScene;
+}
+
+void CMario::SetMadeItToNextScene(bool val) {
+	madeItToNextScene = val;
+}
+
 int CMario::GetBackupLevel()
 {
 	return backupLevel;
@@ -1249,6 +1321,15 @@ float CMario::GetOldY() {
 	return oldY;
 }
 
+bool CMario::GetIsInWorldMap()
+{
+	return isInWorldMap;
+}
+
+void CMario::SetIsInWorldMap(bool val) {
+	isInWorldMap = val;
+}
+
 int CMario::GetNx()
 {
 	return nx;
@@ -1306,16 +1387,29 @@ void CMario::RacoonToBig() {
 	}
 }
 
+void CMario::SetSwitchScene(bool val)
+{
+	switchScene = val;
+}
+
+bool CMario::GetSwitchScene()
+{
+	return switchScene;
+}
+
 /*
 	Reset Mario status to the beginning state of a scene
 */
 void CMario::Reset()
 {
 	SetState(MARIO_STATE_IDLE);
-	SetLevel(MARIO_LEVEL_SMALL);
+	//SetLevel(MARIO_LEVEL_SMALL);
 	SetPosition(start_x, start_y);
 	SetSpeed(0, 0);
-	Board::GetInstance()->GetTime()->Reset();
+	Board::GetInstance()->GetTime()->SetTime(0);
+	Map::getInstance()->unLoad();
+	//Grid::GetInstance()->unload();
+	CGame::GetInstance()->SwitchScene(4);
 }
 
 void CMario::RenderSizeTransforming()

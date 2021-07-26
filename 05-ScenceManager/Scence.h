@@ -6,9 +6,9 @@
 class CScene
 {
 protected:
-	CKeyEventHandler * key_handler;
-	int id;
-	LPCWSTR sceneFilePath;
+	CKeyEventHandler * key_handler = NULL;
+	int id = 0;
+	LPCWSTR sceneFilePath = NULL;
 
 	UINT worldNum = 1;
 public: 

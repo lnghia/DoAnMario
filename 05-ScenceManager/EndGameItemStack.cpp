@@ -58,6 +58,13 @@ void EndGameItemStack::SetAniSet(int ani_set)
 	}
 }
 
+void EndGameItemStack::RefreshItemAni()
+{
+	for (auto& item : itemStack) {
+		if (item && item->item) item->RefreshAniSet();
+	}
+}
+
 void EndGameItemStack::push(int itemType)
 {
 	if (itemType >= 0) {

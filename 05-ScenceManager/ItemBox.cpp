@@ -41,7 +41,7 @@ void ItemBox::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 
 void ItemBox::Render()
 {
-	animation_set->at(0)->Render(x, y);
+	//animation_set->at(0)->Render(x, y);
 	if (item) {
 		item->Render();
 		return;
@@ -55,6 +55,26 @@ void ItemBox::SetItem(int itemType)
 
 	item->SetPosition(x, y);
 
+	this->itemType = itemType;
+
+	switch (itemType)
+	{
+	case OBJECT_TYPE_MUSHROOM_CARD:
+		item->SetAniSet(ITEMBOX_ANI_MUSHROOM);
+		break;
+	case OBJECT_TYPE_FLOWER_CARD:
+		item->SetAniSet(ITEMBOX_ANI_FLOWER);
+		break;
+	case OBJECT_TYPE_STAR_CARD:
+		item->SetAniSet(ITEMBOX_ANI_STAR);
+		break;
+	default:
+		break;
+	}
+}
+
+void ItemBox::RefreshAniSet()
+{
 	switch (itemType)
 	{
 	case OBJECT_TYPE_MUSHROOM_CARD:

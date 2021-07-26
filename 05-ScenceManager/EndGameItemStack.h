@@ -29,6 +29,7 @@ public:
 
 	void UpdatePos(float x, float y);
 	void SetAniSet(int ani_set);
+	void RefreshItemAni();
 
 	void push(int itemType);
 };

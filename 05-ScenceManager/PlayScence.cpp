@@ -338,6 +338,12 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		obj = new PiranhaFlower(pipeX, pipeY, pipeWidth, pipeHeight, player, level);
 		break;
 	}
+	case OBJECT_TYPE_COURSE_BOARD: {
+		obj = new CourseClearBoard();
+		courseBoard = (CourseClearBoard*)obj;
+
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -547,6 +553,7 @@ void CPlayScene::_ParseSection_GRID(const string& line)
 	if (tokens.size() < 2) return;
 
 	// 1: cellWidth, 2: cellHeight
+	Grid::GetInstance()->unload();
 	Grid::GetInstance()->load(stoi(tokens[0]), stoi(tokens[1]));
 }
 
@@ -572,12 +579,18 @@ void CPlayScene::_ParseSection_MAP(const string& line)
 
 void CPlayScene::_ParseSection_Board(const string& line)
 {
+	/*if (Board::GetInstance()) {
+		return;
+	}*/
+
 	vector<string> tokens = split(line);
 
 	if (tokens.size() < 2) return;
 
 	string obj = tokens[0];
 	Board* board = Board::GetInstance();
+
+	board->RefreshPos();
 
 	if (obj == "CARDSTACK") {
 		board->GetCardStack()->SetAniSet(atoi(tokens[1].c_str()));
@@ -725,7 +738,17 @@ void CPlayScene::Update(DWORD dt)
 
 	coObjects.clear();
 	coObjects = Grid::GetInstance()->GetPotentialCollidableObjects(player);
+
+	if (player->GetMadeItToNextScene()) {
+		courseBoard->SetInvisible(0);
+		courseBoard->SetCardType(Board::GetInstance()->GetLatestCardType());
+	}
+
 	player->Update(dt, &coObjects);
+
+	if (!player) {
+		return;
+	}
 
 	for (auto& obj : objectsInCamera) {
 		if (dynamic_cast<CMario*>(obj) || !obj) {
@@ -821,6 +844,10 @@ void CPlayScene::Update(DWORD dt)
 
 void CPlayScene::Render()
 {
+	if (!player) {
+		return;
+	}
+
 	Map::getInstance()->Draw();
 
 	/*for (int i = 0; i < objects.size(); i++)
@@ -887,6 +914,7 @@ void CPlayScene::Unload()
 
 	objects.clear();
 	player = NULL;
+	courseBoard = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
@@ -1137,6 +1165,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	}*/
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+
+	if (mario->GetMadeItToNextScene() && mario->GetIsStanding()) {
+		mario->SetVx(MARIO_WALKING_SPEED);
+		return;
+	}
+
 	switch (KeyCode)
 	{
 	case DIK_S:
@@ -1173,10 +1207,14 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			mario->turnIntoBig();
 		}
 		break;
+	case DIK_5:
+		mario->SetPosition(2560, 352);
+		break;
 	default:
 		if (mario->GetIsFlying()) {
 			//mario->SetState(MARIO_STATE_FALL);
 		}
+
 		break;
 	}
 
@@ -1268,6 +1306,13 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		//mario->SetState(MARIO_STATE_FALL);
 		mario->vx = 0;
 	}
-	else if (mario->GetIsStanding())
-		mario->SetState(MARIO_STATE_IDLE);
+	else if (mario->GetIsStanding()) {
+		if (mario->GetMadeItToNextScene()) {
+			mario->SetState(MARIO_STATE_WALKING_RIGHT);
+		}
+		else {
+			mario->SetState(MARIO_STATE_IDLE);
+		}
+	}
+		
 }
