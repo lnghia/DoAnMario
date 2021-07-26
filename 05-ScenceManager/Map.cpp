@@ -108,6 +108,11 @@ void Map::RenderBoundingBox(int x, int y)
 	CGame::GetInstance()->Draw(x, y, bbox, rect.left, rect.top, rect.right, rect.bottom, 100);
 }
 
+void Map::SetSpaceBetweenTiles(int val)
+{
+	spaceBetweenTiles = val;
+}
+
 void Map::Draw()
 {
 	vector<int> tilesOnCam = GetTilesOnCam();

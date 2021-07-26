@@ -352,7 +352,13 @@ vector<LPGAMEOBJECT> Grid::GetObjectsInCamera()
 	vector<int> overlapCells = getOverLapCells(camX, camY, camX + scrW, camY + scrH);
 
 	for (int r = overlapCells[TOP]; r <= overlapCells[BOTTOM]; ++r) {
+		if (r >= (int)grid.size()) {
+			continue;
+		}
 		for (int c = overlapCells[LEFT]; c <= overlapCells[RIGHT]; ++c) {
+			if (c >= (int)grid[r].size()) {
+				continue;
+			}
 			for (auto& _obj : grid[r][c]) {
 				if (uniqueChecker.find(_obj) == uniqueChecker.end()) {
 					result.push_back(_obj);

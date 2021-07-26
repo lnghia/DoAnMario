@@ -574,7 +574,14 @@ void CPlayScene::_ParseSection_MAP(const string& line)
 
 	CGame* game = CGame::GetInstance();
 
-	game->SetCamPos(0.0f, (float)(Map::getInstance()->getHeight() - game->GetScreenHeight() - 1));
+	if (Map::getInstance()->getHeight() < game->GetScreenHeight()) {
+		game->SetCamPos(0.0f, 0.0f);
+	}
+	else {
+		game->SetCamPos(0.0f, (float)(Map::getInstance()->getHeight() - game->GetScreenHeight() - 1));
+	}
+
+	DebugOut(L"[INFO] Done loading map resources\n");
 }
 
 void CPlayScene::_ParseSection_Board(const string& line)
@@ -629,6 +636,8 @@ void CPlayScene::_ParseSection_Board(const string& line)
 		board->GetSpeedBar()->SetAniSet(atoi(tokens[1].c_str()));
 		board->GetSpeedBar()->SetPlayer(player);
 	}
+
+	DebugOut(L"[INFO] Done loading board resources \n");
 }
 
 void CPlayScene::Load()
