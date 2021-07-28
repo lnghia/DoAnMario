@@ -27,7 +27,7 @@ void FireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (x > camx + scrw || x + PLANTFIREBALL_BBOX_WIDTH < camx ||
 		y>camy + scrh || y + PLANTFIREBALL_BBOX_HEIGHT < camy) {
 		isActive = 0;
-		//Grid::GetInstance()->ObjIntoTrash(this);
+		Grid::GetInstance()->ObjIntoTrash(this);
 		return;
 	}
 

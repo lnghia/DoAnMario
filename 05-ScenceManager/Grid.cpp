@@ -8,6 +8,8 @@ Grid* Grid::instance = NULL;
 
 Grid::Grid()
 {
+	colNum = 0;
+	rowNum = 0;
 }
 
 Grid::Grid(int cellWidth, int cellHeight)
@@ -58,9 +60,9 @@ void Grid::clearObjFromGrid(LPGAMEOBJECT obj) {
 
 	//DebugOut(L"a\n");
 
-	for (unsigned int r = overlapseCells[TOP]-1; r <= overlapseCells[BOTTOM]+1; ++r) {
+	for (int r = overlapseCells[TOP]-1; r <= overlapseCells[BOTTOM]+1; ++r) {
 		if (r < 0 || r >= rowNum) continue;
-		for (unsigned int c = overlapseCells[LEFT]-1; c <= overlapseCells[RIGHT]+1; ++c) {
+		for (int c = overlapseCells[LEFT]-1; c <= overlapseCells[RIGHT]+1; ++c) {
 			if (c < 0 || c >= colNum) continue;
 			if (grid[r][c].find(obj) != grid[r][c].end()) {
 				grid[r][c].erase(obj);
@@ -89,6 +91,7 @@ void Grid::ObjIntoTrash(LPGAMEOBJECT obj)
 void Grid::cleanObjTrashBin()
 {
 	for (auto& obj : noMoreNeeded) {
+		clearObjFromGrid(obj);
 		delete obj;
 	}
 
@@ -104,22 +107,38 @@ void Grid::load(int cellWidth, int cellHeight)
 	rowNum = (int)ceil((float)Map::getInstance()->getHeight() / cellHeight);
 
 	grid.resize(rowNum, vector<unordered_set<LPGAMEOBJECT>>(colNum, unordered_set<LPGAMEOBJECT>()));
+	/*grid.resize(rowNum);
+	for (auto& tmp : grid) {
+		tmp.resize(colNum);
+	}*/
+}
+
+void Grid::loadFromFile(string& filePath, unordered_map<int, LPGAMEOBJECT>& objs_with_id)
+{
+	ifstream f;
+	f.open(filePath);
+
+	char str[MAX_GRID_LINE];
+
+	while (f.getline(str, MAX_GRID_LINE)) {
+		string line(str);
+
+		putObjectIntoGrid(line, objs_with_id);
+	}
+
+	f.close();
 }
 
 vector<int> Grid::getOverLapCells(LPGAMEOBJECT obj)
 {
-	if (dynamic_cast<FireBall*>(obj)) {
-		int tmp = 1;
-	}
-
 	float left, top, right, bottom;
 
 	obj->GetBoundingBox(left, top, right, bottom);
 
-	int col1 = left / cellWidth;
-	int col2 = right / cellWidth;
-	int row1 = top / cellHeight;
-	int row2 = bottom / cellHeight;
+	int col1 = (int)(left / cellWidth);
+	int col2 = (int)(right / cellWidth);
+	int row1 = (int)(top / cellHeight);
+	int row2 = (int)(bottom / cellHeight);
 
 	if (row1 >= rowNum || row2 >= rowNum) {
 		int t = 1;
@@ -139,27 +158,31 @@ vector<int> Grid::getOverLapCells(RECT boundingBox)
 }
 
 vector<int> Grid::getOverLapCells(const float& left, const float& top, const float& right, const float& bottom) {
-	int col1 = floor(left / cellWidth);
-	int col2 = floor(right / cellWidth);
-	int row1 = floor(top / cellHeight);
-	int row2 = floor(bottom / cellHeight);
+	int col1 = (int)floor(left / cellWidth);
+	int col2 = (int)floor(right / cellWidth);
+	int row1 = (int)floor(top / cellHeight);
+	int row2 = (int)floor(bottom / cellHeight);
 
 	return { col1, col2, row1, row2 };
 }
 
 void Grid::unload()
 {
-	for (int r = 0; r < grid.size(); ++r) {
-		for (int c = 0; c < grid[r].size(); ++c) {
-			for (auto& obj : grid[r][c]) {
-				delete obj;
-			}
-			grid[r][c].clear();
+	for (int r = 0; r < (int)grid.size(); ++r) {
+		for (int c = 0; c < (int)grid[r].size(); ++c) {
+			//for (auto& obj : grid[r][c]) {
+			//	/*if (!dynamic_cast<CMario*>(obj)) {
+			//		delete obj;
+			//	}*/
+			//	delete obj;
+			//}
+			if(grid[r][c].size()) grid[r][c].clear();
 		}
-		grid[r].clear();
+		if(grid[r].size()) grid[r].clear();
 	}
+	grid.clear();
 
-	grid.resize(rowNum, vector<unordered_set<LPGAMEOBJECT>>(colNum, unordered_set<LPGAMEOBJECT>()));
+	//grid.resize(rowNum, vector<unordered_set<LPGAMEOBJECT>>(colNum, unordered_set<LPGAMEOBJECT>()));
 
 	DebugOut(L"[INFO] Grid unloaded!\n");
 }
@@ -190,6 +213,30 @@ void Grid::putObjectIntoGrid(LPGAMEOBJECT obj)
 		}
 	}
 	//DebugOut(L"d\n");
+}
+
+void Grid::putObjectIntoGrid(string& line, unordered_map<int, LPGAMEOBJECT>& objs_with_id)
+{
+	vector<string> tokens = split(line);
+
+	int id = (int)atoi(tokens[0].c_str());
+	int left = (int)atoi(tokens[LEFT + 1].c_str());
+	int right = (int)atoi(tokens[RIGHT + 1].c_str());
+	int top = (int)atoi(tokens[TOP + 1].c_str());
+	int bottom = (int)atoi(tokens[BOTTOM + 1].c_str());
+
+	for (int row = top; row <= bottom; ++row) {
+		if (row < 0 || row >= rowNum) break;
+		for (int col = left; col <= right; ++col) {
+			if (col < 0 || col >= colNum) break;
+			if (objs_with_id.find(id) != objs_with_id.end()) {
+				grid[row][col].insert(objs_with_id[id]);
+			}
+			else {
+				DebugOut(L"[DEBUG] Can not find obj id: %d\n", id);
+			}
+		}
+	}
 }
 
 //pair<int, int> Grid::getObjectCell(LPGAMEOBJECT object)
@@ -291,9 +338,9 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 
 	obj->GetSpeed(vx, vy);
 
-	if (!vx && !vy) {
+	/*if (!vx && !vy) {
 		return {};
-	}
+	}*/
 
 	overLapCells[TOP] -= (overLapCells[TOP] > 0);
 	overLapCells[BOTTOM] += (overLapCells[BOTTOM] + 1 < rowNum);
@@ -306,17 +353,17 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 	}
 
 	for (int r = overLapCells[TOP]; r <= overLapCells[BOTTOM]; ++r) {
-		if (r < 0 || r >= grid.size()) {
+		if (r < 0 || r >= (int)grid.size()) {
 			break;
 		}
 		for (int c = overLapCells[LEFT]; c <= overLapCells[RIGHT]; ++c) {
-			if (c < 0 || c >= grid[r].size()) {
+			if (c < 0 || c >= (int)grid[r].size()) {
 				break;
 			}
 			for (auto& _obj : grid[r][c]) {
 				float x, y;
 
-				if (obj != _obj && _obj->GetInteractivable() && _obj->GetIsActive() && uniqueChecker.find(_obj)==uniqueChecker.end()) {
+				if (obj != _obj && _obj->GetInteractivable() && _obj->GetIsActive() && uniqueChecker.find(_obj)==uniqueChecker.end() && !dynamic_cast<CMario*>(_obj)) {
 					result.push_back(_obj);
 					uniqueChecker.insert(_obj);
 				}
@@ -345,7 +392,13 @@ vector<LPGAMEOBJECT> Grid::GetObjectsInCamera()
 	vector<int> overlapCells = getOverLapCells(camX, camY, camX + scrW, camY + scrH);
 
 	for (int r = overlapCells[TOP]; r <= overlapCells[BOTTOM]; ++r) {
+		if (r >= (int)grid.size()) {
+			continue;
+		}
 		for (int c = overlapCells[LEFT]; c <= overlapCells[RIGHT]; ++c) {
+			if (c >= (int)grid[r].size()) {
+				continue;
+			}
 			for (auto& _obj : grid[r][c]) {
 				if (uniqueChecker.find(_obj) == uniqueChecker.end()) {
 					result.push_back(_obj);

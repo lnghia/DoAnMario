@@ -14,6 +14,8 @@ CGameObject::CGameObject()
 	x = y = 0;
 	vx = vy = 0;
 	nx = 1;
+	currAni = 0;
+	animation_set = NULL;
 }
 
 void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -147,6 +149,16 @@ bool CGameObject::GetCanBeStandOn() {
 DWORD CGameObject::GetDeltaTime()
 {
 	return dt;
+}
+
+void CGameObject::SetVx(const float& vx)
+{
+	this->vx = vx;
+}
+
+void CGameObject::SetVy(float vy)
+{
+	this->vy = vy;
 }
 
 void CGameObject::SetRenderPriority(unsigned int p)

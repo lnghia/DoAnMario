@@ -25,18 +25,28 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 
 	grid->clearObjFromGrid(this);
 
-	if (GetTickCount() - rise_start > LEAF_RISING_TIME)
+	/*if ((DWORD)GetTickCount64() - rise_start > LEAF_RISING_TIME)
 	{
+		rise_start = 0;
+		rising = 0;
+	}*/
+
+	if (y <= yMax) {
 		rise_start = 0;
 		rising = 0;
 	}
 
 	if (rising)
-		y -= LEAF_RISING_SPEED_VY;
+		y -= LEAF_RISING_SPEED_VY * dt;
 	else {
 		state = LEAF_STATE_FALLING;
 		renderPriority = 102;
+		if (!topYFirstTimeUpdated) {
+			topY = y;
+			topYFirstTimeUpdated = 1;
+		}
 	}
+
 
 	if (state == LEAF_STATE_FALLING)
 	{
@@ -54,8 +64,29 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 
 		if (coEvents.size() == 0)
 		{
-			x += _dx;
-			y += _dy;
+			x += dx;
+
+			if (nx > 0) {
+				y = topY + FallingForward(xOrbit++);
+
+				if (xOrbit > 32) {
+					topY = y;
+					vx = -vx;
+					nx = -1;
+					xOrbit = 32;
+				}
+			}
+			else {
+				y = topY + FallingBackward(xOrbit--);
+
+				if (xOrbit < 0) {
+					topY = y;
+					vx = -vx;
+					nx = 1;
+					xOrbit = 0;
+				}
+
+			}
 
 			Grid::GetInstance()->putObjectIntoGrid(this);
 		}
@@ -67,16 +98,16 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 			// TODO: This is a very ugly designed function!!!!
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-			x += min_tx * dx + nx * 0.4f;
-			y += min_ty * dy + ny * 0.4f;
+			/*x += min_tx * dx + nx * 0.4f;
+			y += min_ty * dy + ny * 0.4f;*/
 
 			for (UINT i = 0; i < coEventsResult.size(); i++)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
 
 				if (dynamic_cast<CMario*>(e->obj)) {
-					x -= min_tx * dx + nx * 0.4f;
-					y -= min_ty * dy + ny * 0.4f;
+					/*x -= min_tx * dx + nx * 0.4f;
+					y -= min_ty * dy + ny * 0.4f;*/
 
 					CMario* mario = dynamic_cast<CMario*>(e->obj);
 
@@ -85,24 +116,44 @@ void Leaf::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 					grid->putObjectIntoGrid(point);
 
 					if (mario->GetLevel() != MARIO_LEVEL_RACOON && mario->GetLevel() != MARIO_LEVEL_SMALL) {
-						mario->SetStartTransforming(GetTickCount());
+						mario->SetStartTransforming((DWORD)GetTickCount64());
 						mario->BigToRacoon();
 					}
 				}
 				else {
-					/*x -= min_tx * dx + nx * 0.4f;
-					y -= min_ty * dy + ny * 0.4f;*/
+					//x -= min_tx * dx + nx * 0.4f;
+					//y -= min_ty * dy + ny * 0.4f;
 
-					x += _dx;
-					y += _dy;
+					x += dx;
+
+					if (nx > 0) {
+						y = topY + FallingForward(xOrbit++);
+
+						if (xOrbit > 32) {
+							topY = y;
+							vx = -vx;
+							nx = -1;
+							xOrbit = 32;
+						}
+					}
+					else {
+						y = topY + FallingBackward(xOrbit--);
+
+						if (xOrbit < 0) {
+							topY = y;
+							vx = -vx;
+							nx = 1;
+							xOrbit = 0;
+						}
+					}
 				}
 			}
 		}
 
 		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 	}
-	if (x > xMax || x < xMin)
-		vx = -vx;
+	/*if (x > xMax || x < xMin)
+		vx = -vx;*/
 
 	if (isActive) grid->putObjectIntoGrid(this);
 }
@@ -118,4 +169,14 @@ void Leaf::Render()
 void Leaf::SetState(int state)
 {
 	CGameObject::SetState(state);
+}
+
+float Leaf::FallingForward(int tmp)
+{
+	return -(pow((float)tmp - 24.0f, 2) / 36.0f - 16.0f);
+}
+
+float Leaf::FallingBackward(int tmp)
+{
+	return -(pow((float)tmp - 8.0f, 2) / 36.0f - 16.0f);
 }

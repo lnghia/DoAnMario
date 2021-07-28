@@ -6,10 +6,13 @@
 class CScene
 {
 protected:
-	CKeyEventHandler * key_handler;
-	int id;
-	LPCWSTR sceneFilePath;
+	CKeyEventHandler * key_handler = NULL;
+	int id = 0;
+	LPCWSTR sceneFilePath = NULL;
+
+	UINT worldNum = 1;
 public: 
+	CScene() {};
 	CScene(int id, LPCWSTR filePath);
 
 	CKeyEventHandler * GetKeyEventHandler() { return key_handler; }
@@ -17,6 +20,8 @@ public:
 	virtual void Unload() = 0;
 	virtual void Update(DWORD dt) = 0;
 	virtual void Render() = 0; 
+
+	void SetWorldNum(UINT worldNum);
 };
 typedef CScene * LPSCENE;
 

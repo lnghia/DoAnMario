@@ -1,0 +1,16 @@
+X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X
+X X X X X X 1 - O - 2 - 3 - O X X X X X
+X X X X X X - X X X - X X X - X X X X X
+X X X X O - O X X X O - 4 - O X X X X X
+X X X X X X X X X X - X X X X X X X X X
+X X X X X X O - O - O X X X X X X X X X
+X X X X X X - X X X X X X X X X X X X X
+X X X X X X O X O - O - O - O X X X X X
+X X X X X X - X X X - X X X X X X X X X
+X X X X X X 5 - O - 6 X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X

@@ -35,6 +35,8 @@ public:
 
 	void RenderCurrFrame(float x, float y, int alpha = 255);
 
+	int GetCurrFrame();
+
 	void _Render(float x, float y, int alpha = 255);
 };
 

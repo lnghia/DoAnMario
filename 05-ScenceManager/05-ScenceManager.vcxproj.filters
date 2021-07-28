@@ -37,6 +37,27 @@
     <Filter Include="Source Files\Items">
       <UniqueIdentifier>{057baeb2-2bf2-4ffa-961f-88803ba65304}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Player">
+      <UniqueIdentifier>{eb2615fd-a614-4e97-b5e5-58574c257f6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Player">
+      <UniqueIdentifier>{367f453f-ecd7-4190-a7e7-5da16f454cf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameBoard">
+      <UniqueIdentifier>{741bd886-1f3b-4fb1-a460-2607b1e21d42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameBoard">
+      <UniqueIdentifier>{67b906f2-91f9-49b3-aefa-cc849b7ab312}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{c9b27b1d-26f4-45b0-bbf7-818818d890b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes\Intro">
+      <UniqueIdentifier>{051ef7cd-d839-46af-84b3-5f93a31d6988}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes\WorldMap1">
+      <UniqueIdentifier>{86bd1ef6-01b2-4560-a25d-eaeea18aa3a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -46,9 +67,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mario.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sprites.cpp">
@@ -126,15 +144,120 @@
     <ClCompile Include="HiddenItem.cpp">
       <Filter>Source Files\Items</Filter>
     </ClCompile>
+    <ClCompile Include="Leaf.cpp">
+      <Filter>Source Files\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Wood.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatingCoin.cpp">
+      <Filter>Source Files\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Mario.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Digit.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="SpeedBar.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="LivesCounter.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCounter.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="MoneyCounter.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeTicker.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Alphabet.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="Displayer.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameItemStack.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemBox.cpp">
+      <Filter>Source Files\GameBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnBox.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="RedKoopas.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Tail.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Fragment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NoteBrick.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="BrokenBrick.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="BrokenQuestionBrick.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="PSwitch.cpp">
+      <Filter>Source Files\BackGroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Boomerang.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="BoomerangGuy.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameBrick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChoosenEndGameItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BangEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PiranhaFlower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroScene.cpp">
+      <Filter>Header Files\Scenes\Intro</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMapScene.cpp">
+      <Filter>Header Files\Scenes\WorldMap1</Filter>
+    </ClCompile>
+    <ClCompile Include="Barrier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CourseClearBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PortalPipe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mario.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sprites.h">
@@ -217,6 +340,111 @@
     </ClInclude>
     <ClInclude Include="HiddenItem.h">
       <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Leaf.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Wood.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatingCoin.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Mario.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Digit.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="SpeedBar.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="LivesCounter.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCounter.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="MoneyCounter.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeTicker.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldName.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Alphabet.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="Displayer.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="Board.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameItemStack.h">
+      <Filter>Header Files\GameBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnBox.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="RedKoopas.h">
+      <Filter>Header Files\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Tail.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Fragment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteBrick.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="BrokenBrick.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="BrokenQuestionBrick.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="PSwitch.h">
+      <Filter>Header Files\BackGroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Boomerang.h">
+      <Filter>Header Files\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="BoomerangGuy.h">
+      <Filter>Header Files\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameBrick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChoosenEndGameItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BangEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PiranhaFlower.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroScene.h">
+      <Filter>Header Files\Scenes\Intro</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMapScene.h">
+      <Filter>Header Files\Scenes\WorldMap1</Filter>
+    </ClInclude>
+    <ClInclude Include="Barrier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CourseClearBoard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PortalPipe.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -22,7 +22,7 @@ void CAnimation::Add(int spriteId, DWORD time)
 // NOTE: sometimes Animation object is NULL ??? HOW ??? 
 void CAnimation::Render(float x, float y, int alpha)
 {
-	DWORD now = GetTickCount();
+	DWORD now = (DWORD)GetTickCount64();
 	if (currentFrame == -1)
 	{
 		currentFrame = 0;
@@ -49,6 +49,11 @@ void CAnimation::RenderCurrFrame(float x, float y, int alpha)
 		currentFrame = 0;
 	}
 	frames[currentFrame]->GetSprite()->Draw(x, y, alpha);
+}
+
+int CAnimation::GetCurrFrame()
+{
+	return currentFrame;
 }
 
 void CAnimation::_Render(float x, float y, int alpha)

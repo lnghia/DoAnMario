@@ -31,7 +31,7 @@ Point::Point(unsigned short int point, float x, float y)
 
 			break;
 		}
-		/*case 400: {
+		case 400: {
 			this->point = POINT_ANI_400;
 
 			break;
@@ -61,8 +61,13 @@ Point::Point(unsigned short int point, float x, float y)
 
 			break;
 		}
+		case 1: {
+			this->point = POINT_ANI_1UP; 
+
+			break;
+		}
 		default:
-			break;*/
+			break;
 	}
 	currAni = this->point;
 }
@@ -75,10 +80,10 @@ void Point::Render()
 void Point::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
 	if (!fly_start) {
-		fly_start = GetTickCount();
+		fly_start = GetTickCount64();
 	}
 
-	if (GetTickCount() - fly_start < POINT_FLY_TIME) {
+	if (GetTickCount64() - fly_start < POINT_FLY_TIME) {
 		vy += POINT_GRAVITY * dt;
 
 		CGameObject::Update(dt);
@@ -90,7 +95,9 @@ void Point::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 	}
 	
 	isActive = 0;
-	Grid::GetInstance()->ObjIntoTrash(this);
+	invisible = 1;
+	Grid::GetInstance()->clearObjFromGrid(this);
+	//Grid::GetInstance()->ObjIntoTrash(this);
 }
 
 void Point::GetBoundingBox(float& l, float& t, float& r, float& b)

@@ -24,6 +24,7 @@ wstring ToWSTR(string st);
 LPCWSTR ToLPCWSTR(string st);
 
 vector<int> stringToVectorOfInt(string& str, string delimeters = "\t");
+vector<char> StringToVectorOfChar(string& str, string delimeters = " ");
 
 bool cmp(LPGAMEOBJECT a, LPGAMEOBJECT b);
 

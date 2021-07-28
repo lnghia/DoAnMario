@@ -1,0 +1,42 @@
+# id	file_path	transparent_color_r	g	b
+[TEXTURES]
+0	textures\title.png	255	255	255
+1	textures\intro.png	255	255	255
+
+# id	left	top	right	bottom	texture_id
+[SPRITES]
+# start game option
+0	30	307	142	331	0
+# game version
+1	194	363	236	404	0
+2	240	363	282	404	0
+3	287	363	329	404	0
+4	333	363	375	404	0
+#background
+5	1	1	321	271	1
+
+# ani_id	sprite1_id	time1	sprite2_id	time2	...
+[ANIMATIONS]
+# start game option
+0	0	100
+# game version
+1	1	100	2	100	3	100	4	100
+# background
+5	5	100
+
+[ANIMATION_SETS]
+# start game option
+0	0
+# game version
+1	1
+# background
+5	5
+
+#[MAP]
+# matrixFilePath	mapHeight	mapWidth	tileHeight	tileWidth	textureId	tilesPerRow	tilesPerColumn
+#maps\title_screen.txt	262	305	224	256	0	3	2
+
+[OBJECTS]
+8	0	0	5
+8	150	130	1
+#8	72	144	0

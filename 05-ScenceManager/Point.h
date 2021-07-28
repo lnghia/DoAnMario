@@ -10,6 +10,9 @@
 #define POINT_ANI_2000	5
 #define POINT_ANI_4000	6
 #define POINT_ANI_8000	7
+#define POINT_ANI_1UP	8
+
+#define POINT_1UP	1
 
 #define POINT_ANI_SET	911
 
@@ -32,7 +35,7 @@ class Point : public CGameObject
 	unsigned short int point;
 	DWORD fly_start = 0;
 public:
-	Point(){}
+	Point() { point = 100; }
 	Point(unsigned short int point, float x, float y);
 
 	virtual void Render();

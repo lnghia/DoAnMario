@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-PiranhaPlant::PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player)
+PiranhaPlant::PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player, int level)
 {
 	this->player = player;
 
@@ -13,9 +13,11 @@ PiranhaPlant::PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipe
 	this->pipeHeight = pipeHeight;
 
 	SetState(PIRANHAPLAN_STATE_AWAKE);
-	climax = pipeY - PIRANHAPLANT_BBOX_HEIGHT;
+	climax = pipeY - ((level == PIRANHAPLANT_LEVEL_BIG) ? PIRANHAPLANT_BBOX_HEIGHT : PIRANHAPLANT_BBOX_HEIGHT_SMALL);
 
 	y = pipeY;
+
+	this->level = level;
 
 	vx = 0;
 	vy = -0.065f;
@@ -72,6 +74,7 @@ void PiranhaPlant::Render()
 			ani = (this->y == climax) ? PIRANHAPLANT_ANI_BOTRIGHT_STILL : PIRANHAPLANT_ANI_BOTRIGHT;
 		}
 	}
+	ani += level * PIRANHAPLANT_ANI_NUM;
 	currAni = ani;
 
 	animation_set->at(ani)->Render(x, y);
@@ -112,6 +115,9 @@ void PiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if ((abs(playerRight - pipeX) <= 1 || abs(playerLeft - pipeX - pipeWidth) <= 1) && y >= pipeY) {
 		return;
 	}
+	if (level == PIRANHAPLANT_LEVEL_SMALL && y >= pipeY && playerLeft >= pipeX && playerRight <= pipeY + pipeWidth) {
+		return;
+	}
 
 	CGameObject::Update(dt);
 
@@ -138,11 +144,11 @@ void PiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		throwFlame();
 	}
 
-	if (startAttacking && GetTickCount64() - startAttacking >= PIRANHAPLANT_AWAKE_TIME) {
+	if (startAttacking && (DWORD)GetTickCount64() - startAttacking >= PIRANHAPLANT_AWAKE_TIME) {
 		vy = PIRANHAPLANT_SLEEP_SPEED;
 		startAttacking = 0;
 	}
-	else if (startResting && GetTickCount64() - startResting >= PIRANHAPLANT_REST_TIME) {
+	else if (startResting && (DWORD)GetTickCount64() - startResting >= PIRANHAPLANT_REST_TIME) {
 		vy = PIRANHAPLANT_AWAKE_SPEED;
 		startResting = 0;
 		fired = 0;
@@ -158,7 +164,7 @@ void PiranhaPlant::GetBoundingBox(float& l, float& t, float& r, float& b)
 	l = x;
 	t = y;
 	r = x + PIRANHAPLANT_BBOX_WIDTH;
-	b = y + PIRANHAPLANT_BBOX_HEIGHT;
+	b = y + ((level == PIRANHAPLANT_LEVEL_BIG) ? PIRANHAPLANT_BBOX_HEIGHT : PIRANHAPLANT_BBOX_HEIGHT_SMALL);
 }
 
 void PiranhaPlant::SetState(int state)

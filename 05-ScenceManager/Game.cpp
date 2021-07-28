@@ -6,6 +6,8 @@
 
 #include "PlayScence.h"
 #include "Grid.h"
+#include "IntroScene.h"
+#include "WorldMapScene.h"
 
 CGame * CGame::__instance = NULL;
 
@@ -356,11 +358,22 @@ void CGame::_ParseSection_SCENES(string line)
 {
 	vector<string> tokens = split(line);
 
-	if (tokens.size() < 2) return;
+	if (tokens.size() < 3) return;
 	int id = atoi(tokens[0].c_str());
 	LPCWSTR path = ToLPCWSTR(tokens[1]);
+	LPSCENE scene;
 
-	LPSCENE scene = new CPlayScene(id, path);
+	if (id == 0) {
+		scene = new IntroScene(id, path);
+	}
+	else if (id == 4) {
+		scene = new WorldMapScene(id, path);
+	}
+	else {
+		scene = new CPlayScene(id, path);
+		scene->SetWorldNum((UINT)atoi(tokens[2].c_str()));
+
+	}
 	scenes[id] = scene;
 }
 
@@ -407,7 +420,7 @@ void CGame::SwitchScene(int scene_id)
 {
 	DebugOut(L"[INFO] Switching to scene %d\n", scene_id);
 
-	scenes[current_scene]->Unload();;
+	scenes[current_scene]->Unload();
 
 	CTextures::GetInstance()->Clear();
 	CSprites::GetInstance()->Clear();

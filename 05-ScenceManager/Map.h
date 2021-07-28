@@ -38,6 +38,8 @@ public:
 
 	void RenderBoundingBox(int x, int y);
 
+	void SetSpaceBetweenTiles(int val);
+
 	static Map* getInstance();
 };
 

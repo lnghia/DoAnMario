@@ -7,6 +7,12 @@
 
 #define PIRANHAPLANT_BBOX_WIDTH  16
 #define PIRANHAPLANT_BBOX_HEIGHT 32
+#define PIRANHAPLANT_BBOX_HEIGHT_SMALL	24
+
+#define PIRANHAPLANT_ANI_NUM	8
+
+#define PIRANHAPLANT_LEVEL_BIG		0
+#define PIRANHAPLANT_LEVEL_SMALL	1
 
 #define PIRANHAPLANT_ANI_BOTLEFT_STILL		0
 #define PIRANHAPLANT_ANI_BOTLEFT			1
@@ -19,7 +25,7 @@
 #define PIRANHAPLANT_ANI_SLEEP				8
 
 #define PIRANHAPLANT_AWAKE_TIME 2000
-#define PIRANHAPLANT_REST_TIME 850
+#define PIRANHAPLANT_REST_TIME 900
 #define LOCKING_TARGET_TIME 1000
 
 #define PIRANHAPLANT_STATE_NORMAL			0
@@ -34,23 +40,27 @@
 
 class PiranhaPlant : public CGameObject
 {
-	LPGAMEOBJECT player;
+protected:
+	LPGAMEOBJECT player = NULL;
 
-	float pipeX, pipeY;
-	float pipeWidth, pipeHeight;
+	float pipeX = 0.0f, pipeY = 0.0f;
+	float pipeWidth = 0.0f, pipeHeight = 0.0f;
 
-	int climax;
+	int climax = 0;
 
 	bool isSleeping = 1;
 	bool fired = 0;
 
-	DWORD startAttacking;
-	DWORD startResting;
+	DWORD startAttacking = 0;
+	DWORD startResting = 0;
 
-	unsigned int dirX, dirY;
+	unsigned int dirX = 0, dirY = 0;
+
+	int level = 0;
 
 public:
-	PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player);
+	PiranhaPlant() {};
+	PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player, int level = 0);
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);

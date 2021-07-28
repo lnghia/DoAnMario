@@ -1,10 +1,12 @@
 #include "QBrick.h"
 #include "ObjectCheatSheet.h"
 #include "Grid.h"
+#include "Board.h"
+#include "PlayScence.h"
 
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
-	if (hopUp && GetTickCount() - start_hopUp >= 150) {
+	if (hopUp && (DWORD)GetTickCount64() - start_hopUp >= 150) {
 		y = oldY;
 	}
 }
@@ -23,6 +25,9 @@ void QBrick::PopUpHiddenItem()
 	unsigned short int ani = state;
 	Grid* grid = Grid::GetInstance();
 	LPGAMEOBJECT obj = NULL;
+	CGame* game = CGame::GetInstance();
+
+	bool _backupItem = 0;
 
 	switch (hiddenItem)
 	{
@@ -30,6 +35,8 @@ void QBrick::PopUpHiddenItem()
 		obj = new Coin(x, y);
 		obj->SetInteractivable(0);
 		obj->SetCanBeStandOn(0);
+		Board::GetInstance()->GetPoint()->Add(COIN_POINT);
+		Board::GetInstance()->GetMoney()->Add(COIN_MONEY);
 
 		break;
 	}
@@ -39,7 +46,18 @@ void QBrick::PopUpHiddenItem()
 		break;
 	}
 	case OBJECT_TYPE_LEAF:
-		obj = new Leaf(x, y);
+		CPlayScene* playScene = dynamic_cast<CPlayScene*>(game->GetCurrentScene());
+
+		if (playScene->GetPlayer()->GetLevel() == MARIO_LEVEL_BIG) {
+			obj = new Leaf(x, y);
+		}
+		else if (playScene->GetPlayer()->GetLevel() == MARIO_LEVEL_RACOON) {
+			// flower turn to fire mario
+		}
+		else {
+			obj = new Mushroom(x, y);
+			_backupItem = 1;
+		}
 
 		break;
 	}
@@ -51,8 +69,13 @@ void QBrick::PopUpHiddenItem()
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 
 	if (obj) {
-
-		obj->SetAnimationSet(animation_sets->Get(hiddenItemAni));
+		if (_backupItem) {
+			//obj->SetAnimationSet(animation_sets->Get(backupItemAni));
+		}
+		else {
+			obj->SetAnimationSet(animation_sets->Get(hiddenItemAni));
+		}
+		
 		grid->putObjectIntoGrid(obj);
 	}
 
@@ -67,11 +90,16 @@ void QBrick::HopUpABit()
 	if (state == QBRICK_STATE_MYSTERIOUS) {
 		oldY = y;
 		//vx = -0.5f;
-		y -= 1.0f;
+		y -= 3.0f;
 		state = QBRICK_STATE_NO_MORE_MYSTERIOUS;
-		start_hopUp = GetTickCount();
+		start_hopUp = (DWORD)GetTickCount64();
 		hopUp = 1;
 	}
+}
+
+void QBrick::PushHiddenItem(int itemType, int ani)
+{
+	backUpItem.push({ itemType, ani });
 }
 
 void QBrick::Render()

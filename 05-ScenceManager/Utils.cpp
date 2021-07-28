@@ -75,6 +75,19 @@ vector<int> stringToVectorOfInt(string& str, string delimeters)
 	return ans;
 }
 
+vector<char> StringToVectorOfChar(string& str, string delimeters)
+{
+	vector<char> ans;
+
+	vector<string> tokens = split(str, delimeters);
+
+	for (auto& token : tokens) {
+		ans.push_back(token[0]);
+	}
+
+	return ans;
+}
+
 bool cmp(LPGAMEOBJECT a, LPGAMEOBJECT b)
 {
 	return a->GetRenderPriority() < b->GetRenderPriority();
