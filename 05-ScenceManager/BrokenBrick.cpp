@@ -12,6 +12,7 @@ BrokenBrick::BrokenBrick(int hiddenItemType)
 	SetState(BROKENBRICK_STATE_BRICK);
 	this->hiddenItemType = hiddenItemType;
 	renderPriority = 10000;
+	canBeStandOn = 1;
 }
 
 void BrokenBrick::Render()
@@ -24,7 +25,7 @@ void BrokenBrick::Render()
 		return;
 	}
 	else {
-		int ani = BROKENBRICK_ANI_BRICK;
+		int ani = 0;
 		animation_set->at(ani)->Render(x, y);
 	}
 	

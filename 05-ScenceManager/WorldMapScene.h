@@ -44,8 +44,10 @@ public:
 
 	vector<vector<char>> path;
 
-	int currCellX;
-	int currCellY;
+	int currCellX = 0;
+	int currCellY = 0;
+	int startX = 0;
+	int startY = 0;
 	int scene;
 };
 

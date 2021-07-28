@@ -67,8 +67,10 @@ void RedKoopas::GetBoundingBox(float& left, float& top, float& right, float& bot
 	top = y;
 	right = x + KOOPAS_BBOX_WIDTH;
 
-	if (state == KOOPAS_STATE_DIE || state == KOOPAS_STATE_IN_SHELL || state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_OUT_A_SHELL)
-		bottom = y + KOOPAS_BBOX_HEIGHT_DIE;
+	if (state == KOOPAS_STATE_DIE || state == KOOPAS_STATE_IN_SHELL || state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_OUT_A_SHELL) {
+		top = y + 2.0f;
+		bottom = top + KOOPAS_BBOX_HEIGHT_DIE - 2.0f;
+	}
 	else
 		bottom = y + KOOPAS_BBOX_HEIGHT;
 }

@@ -5,7 +5,7 @@ Ground::Ground()
 	interactivable = 1;
 	canBeStandOn = 1;
 	isActive = 1;
-	invisible = 0;
+	invisible = 1;
 }
 
 Ground::Ground(int width, int height)
@@ -16,7 +16,7 @@ Ground::Ground(int width, int height)
 	interactivable = 1;
 	canBeStandOn = 1;
 	isActive = 1;
-	invisible = 0;
+	invisible = 1;
 }
 
 void Ground::Render()

@@ -12,6 +12,8 @@
 
 #define MARIO_RUNNING_SPEED		0.19f
 
+#define MARIO_GET_INTO_PIPE_SPEED	0.065f
+
 #define MARIO_RACOON_GLIDE_VY		0.035f
 #define MARIO_RACOON_FALL_VY		0.05f
 #define MARIO_RACOON_FLY_VY			 -0.06f
@@ -209,6 +211,14 @@
 #define MARIO_SMALL_BBOX_WIDTH  13
 #define MARIO_SMALL_BBOX_HEIGHT 15
 
+#define MARIO_SMALL_BBOX_WIDTH_WORLDMAP	14
+#define MARIO_SMALL_BBOX_HEIGHT_WORLMAP	16
+#define MARIO_BIG_BBOX_WIDTH_WORLDMAP	16
+#define MARIO_BIG_BBOX_WIDTH_WORLDMAP	16
+#define MARIO_BIG_BBOX_HEIGHT_WORLDMAP	21
+#define MARIO_RACCON_BBOX_WIDTH_WORLDMAP	16
+#define MARIO_RACCON_BBOX_HEIGHT_WORLDMAP	21
+
 #define MARIO_UNTOUCHABLE_TIME 3000
 #define MARIO_TRANSFORM_SIZE_TIME 800
 #define MARIO_TRANSFORM_RACOON_TIME 450
@@ -356,9 +366,24 @@ class CMario : public CGameObject
 	};
 
 public:
+	float pipeX = 0.0f, pipeY = 0.0f;
+	float pipeWidth = 0.0f, pipeHeight = 0.0f;
+	float exitX = 0.0f, exitY = 0.0f;
+	int exitWidth = 0, exitHeight = 0;
+	int exitDirect = -1;
+	bool toExtraScene = 0;
+
+	int climax = 0;
+	int extraSceneId = 0;
+
 	bool flyUp = 0;
 	bool hasJustKicked = 0;
 	bool tailAttacked = 0;
+	bool touchPortalPipe = 0;
+	bool gettingOutPipe = 0;
+
+	float xInWorldMap = 0;
+	float yInWorldMap = 0;
 
 	int transform_duration_time = 0;
 
@@ -368,7 +393,7 @@ public:
 	virtual void Render();
 
 	void SetState(int state);
-	void SetLevel(int l) { level = l; }
+	void SetLevel(int l);
 	int GetLevel();
 	void StartUntouchable() { untouchable = 1; untouchable_start = (DWORD)GetTickCount64(); }
 

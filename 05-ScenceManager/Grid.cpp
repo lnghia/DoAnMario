@@ -113,6 +113,22 @@ void Grid::load(int cellWidth, int cellHeight)
 	}*/
 }
 
+void Grid::loadFromFile(string& filePath, unordered_map<int, LPGAMEOBJECT>& objs_with_id)
+{
+	ifstream f;
+	f.open(filePath);
+
+	char str[MAX_GRID_LINE];
+
+	while (f.getline(str, MAX_GRID_LINE)) {
+		string line(str);
+
+		putObjectIntoGrid(line, objs_with_id);
+	}
+
+	f.close();
+}
+
 vector<int> Grid::getOverLapCells(LPGAMEOBJECT obj)
 {
 	float left, top, right, bottom;
@@ -197,6 +213,30 @@ void Grid::putObjectIntoGrid(LPGAMEOBJECT obj)
 		}
 	}
 	//DebugOut(L"d\n");
+}
+
+void Grid::putObjectIntoGrid(string& line, unordered_map<int, LPGAMEOBJECT>& objs_with_id)
+{
+	vector<string> tokens = split(line);
+
+	int id = (int)atoi(tokens[0].c_str());
+	int left = (int)atoi(tokens[LEFT + 1].c_str());
+	int right = (int)atoi(tokens[RIGHT + 1].c_str());
+	int top = (int)atoi(tokens[TOP + 1].c_str());
+	int bottom = (int)atoi(tokens[BOTTOM + 1].c_str());
+
+	for (int row = top; row <= bottom; ++row) {
+		if (row < 0 || row >= rowNum) break;
+		for (int col = left; col <= right; ++col) {
+			if (col < 0 || col >= colNum) break;
+			if (objs_with_id.find(id) != objs_with_id.end()) {
+				grid[row][col].insert(objs_with_id[id]);
+			}
+			else {
+				DebugOut(L"[DEBUG] Can not find obj id: %d\n", id);
+			}
+		}
+	}
 }
 
 //pair<int, int> Grid::getObjectCell(LPGAMEOBJECT object)

@@ -17,6 +17,7 @@
 
 class QBrick : public CGameObject
 {
+protected:
 	int hiddenItem = 0;
 	int hiddenItemAni = 0;
 

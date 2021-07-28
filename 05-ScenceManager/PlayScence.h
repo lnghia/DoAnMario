@@ -29,6 +29,7 @@ protected:
 	CourseClearBoard* courseBoard = NULL;
 
 	vector<LPGAMEOBJECT> objects;
+	
 
 	UINT objId;
 
@@ -43,6 +44,8 @@ protected:
 	void _ParseSection_Board(const string& line);
 
 public:
+	unordered_map<int, LPGAMEOBJECT> objs_with_id;
+
 	CPlayScene(int id, LPCWSTR filePath);
 
 	virtual void Load();

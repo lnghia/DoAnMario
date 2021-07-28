@@ -8,6 +8,8 @@
 #include "GameObject.h"
 #include "Game.h"
 
+#include <fstream>
+
 using namespace std;
 
 #define ROW second
@@ -17,6 +19,8 @@ using namespace std;
 #define RIGHT 1
 #define TOP 2
 #define BOTTOM 3
+
+#define MAX_GRID_LINE	1024
 
 class Grid
 {
@@ -45,6 +49,7 @@ public:
 	void moveObj(LPGAMEOBJECT obj, RECT oldBoundingBox);
 
 	void load(int cellWidth, int cellHeight);
+	void loadFromFile(string& filePath, unordered_map<int, LPGAMEOBJECT>& objs_with_id);
 
 	// returned result will be a vector of 4 integers
 	// 0: from column
@@ -72,6 +77,8 @@ public:
 	void putObjectsInToGrid(vector<LPGAMEOBJECT>& objects);
 
 	void putObjectIntoGrid(LPGAMEOBJECT obj);
+
+	void putObjectIntoGrid(string& line, unordered_map<int, LPGAMEOBJECT>& objs_with_id);
 
 	vector<LPGAMEOBJECT> getObjectsInCell(int x, int y);
 

@@ -17,8 +17,8 @@ class BrokenQuestionBrick : public QBrick
 	int backupItem = 0;
 	int backupItemAni = 0;
 
-	float oldX = 0;
-	float oldY = 0;
+	/*float oldX = 0;
+	float oldY = 0;*/
 
 	DWORD start_hopUp = NULL;
 	bool hopUp = 0;
@@ -35,7 +35,7 @@ public:
 	BrokenQuestionBrick(float x, float y) {
 		this->x = x;
 		this->y = y;
-		oldY = y;
+		oldY = this->y;
 
 		renderPriority = 101;
 

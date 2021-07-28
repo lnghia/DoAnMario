@@ -19,12 +19,14 @@
 #include "RedKoopas.h"
 #include "Koopas.h"
 #include "BrokenQuestionBrick.h"
+#include "BrokenBrick.h"
 #include "NoteBrick.h"
 #include "EndGameBrick.h"
 #include "Boomerang.h"
 #include "BoomerangGuy.h"
 #include "PiranhaFlower.h"
 #include "WorldMapScene.h"
+#include "PortalPipe.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -59,8 +61,64 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isFallingTail = 0;
 	}
 
+	if (toExtraScene) {
+		CGameObject::Update(dt);
+		x += dx;
+		y += dy;
+
+		float ml, mt, mr, mb;
+
+		GetBoundingBox(ml, mt, mr, mb);
+
+		if ((vy < 0 && mb <= pipeY) || (vy > 0 && mt >= pipeY + pipeHeight)) {
+			SetSpeed(0, 0);
+			Board::GetInstance()->GetTime()->StopTicking();
+			Board::GetInstance()->GetTime()->SetTime(0);
+			//Map::getInstance()->unLoad();
+			CGame::GetInstance()->SwitchScene(extraSceneId);
+			Board::GetInstance()->GetCardStack()->RefreshItemAni();
+			WorldMapScene* scene = (WorldMapScene*)CGame::GetInstance()->GetCurrentScene();
+			scene->SetMarioLevel(level);
+
+			float appearX = exitX + (exitWidth - (mr - ml)) / 2;
+
+			if (exitDirect < 0) {
+				scene->GetPlayer()->SetPosition(appearX, exitY);
+				scene->GetPlayer()->gettingOutPipe = 1;
+			}
+			else {
+				scene->GetPlayer()->SetPosition(appearX, exitY - (mb - mt));
+				scene->GetPlayer()->gettingOutPipe = 1;
+			}
+			scene->GetPlayer()->exitDirect = this->exitDirect;
+			scene->GetPlayer()->exitX = this->exitX;
+			scene->GetPlayer()->exitY = this->exitY;
+			scene->GetPlayer()->exitWidth = this->exitWidth;
+			scene->GetPlayer()->exitHeight = this->exitHeight;
+		}
+
+		return;
+	}
+	else if (gettingOutPipe) {
+		CGameObject::Update(dt);
+		x += dx;
+		y += dy;
+
+		float ml, mt, mr, mb;
+
+		GetBoundingBox(ml, mt, mr, mb);
+
+		if ((vy < 0 && mb < exitY) || (vy > 0 && mt > exitY + exitHeight)) {
+			gettingOutPipe = 0;
+		}
+
+		return;
+	}
+
 	oldX = x;
 	oldY = y;
+	//touchPortalPipe = 0;
+	toExtraScene = 0;
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -124,6 +182,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		y += min_ty * dy + ny * 0.4f;
 
 		float temp = vy;
+		bool standingOnPortalPipe = 0;
 
 		//
 		// Collision logic with other objects
@@ -396,6 +455,29 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			else if (dynamic_cast<PortalPipe*>(e->obj)) {
+				if (e->nx != 0) {
+					vx = 0;
+					isRunning = 0;
+					isSliding = 0;
+				}
+				else if (e->ny != 0) {
+					PortalPipe* tempObj = dynamic_cast<PortalPipe*>(e->obj);
+
+					vy = 0;
+					standingOnPortalPipe = 1;
+					touchPortalPipe = 1;
+					tempObj->GetPosition(pipeX, pipeY);
+					pipeWidth = tempObj->GetWidth();
+					pipeHeight = tempObj->GetHeight();
+					extraSceneId = tempObj->sceneId;
+					exitX = tempObj->exitX;
+					exitY = tempObj->exitY;
+					exitWidth = tempObj->exitWidth;
+					exitHeight = tempObj->exitHeight;
+					exitDirect = tempObj->getOutPipeDirection;
+				}
+			}
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
@@ -501,6 +583,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					BrokenQuestionBrick* qBrick = dynamic_cast<BrokenQuestionBrick*>(e->obj);
 
 					qBrick->PopUpHiddenItem();
+				}
+			}
+			else if (dynamic_cast<BrokenBrick*>(e->obj)) {
+				if (e->nx) {
+					vx = 0;
+					isRunning = 0;
+					isSliding = 0;
+				}
+				else if (e->ny) {
+					vy = 0;
 				}
 			}
 			else if (dynamic_cast<NoteBrick*>(e->obj)) {
@@ -659,6 +751,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(MARIO_STATE_DIE);
 				}
 			}
+
+			touchPortalPipe = standingOnPortalPipe;
 		}
 	}
 
@@ -723,25 +817,27 @@ pair<int, int> CMario::UpdateInWorldMap(DWORD dt)
 
 	x += dx;
 	y += dy;
+	xInWorldMap += dx;
+	yInWorldMap += dy;
 
 	float mt, mb, ml, mr;
 
 	GetBoundingBox(ml, mt, mr, mb);
 
 	if (vy < 0) {
-		return { (int)(x / 16), (int)(mb / 16) };
+		return { (int)(ml / 16), (int)(mb / 16) };
 	}
 	if (vy > 0) {
-		return { (int)(x / 16), (int)(mt / 16) };
+		return { (int)(ml / 16), (int)(mt / 16) };
 	}
 	if (vx < 0) {
-		return { (int)(mr / 16), (int)(y / 16) };
+		return { (int)(mr / 16), (int)(yInWorldMap / 16) };
 	}
 	if (vx > 0) {
-		return { (int)(ml / 16), (int)(y / 16) };
+		return { (int)(ml / 16), (int)(yInWorldMap / 16) };
 	}
 
-	return { (int)((x + (mr - ml) / 2) / 16), (int)((y + (mb - mt) / 2) / 16) };
+	return { (int)((xInWorldMap + (mr - ml) / 2) / 16), (int)((yInWorldMap + (mb - mt) / 2) / 16) };
 }
 
 void CMario::Render()
@@ -949,6 +1045,20 @@ void CMario::SetState(int state)
 	CGameObject::SetState(state);
 }
 
+void CMario::SetLevel(int l)
+{
+	level = l;
+
+	if (isInWorldMap) {
+		if (l == MARIO_LEVEL_BIG) {
+			y -= (MARIO_BIG_BBOX_HEIGHT_WORLDMAP - MARIO_SMALL_BBOX_HEIGHT - 3);
+		}
+		else if (l == MARIO_LEVEL_RACOON) {
+			y -= (MARIO_RACCON_BBOX_HEIGHT_WORLDMAP - MARIO_SMALL_BBOX_HEIGHT + 3);
+		}
+	}
+}
+
 int CMario::GetLevel()
 {
 	return level;
@@ -976,6 +1086,27 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 		right = left + MARIO_RACOON_BBOX_WIDTH;
 		bottom = y + MARIO_RACOON_BBOX_HEIGHT;
+	}
+
+	if (isInWorldMap) {
+		/*if (level == MARIO_LEVEL_BIG)
+		{
+			right = xInWorldMap + MARIO_BIG_BBOX_WIDTH_WORLDMAP;
+			bottom = yInWorldMap + MARIO_BIG_BBOX_HEIGHT_WORLDMAP;
+		}
+		else if (level == MARIO_LEVEL_SMALL)
+		{
+			right = xInWorldMap + MARIO_SMALL_BBOX_WIDTH_WORLDMAP;
+			bottom = yInWorldMap + MARIO_SMALL_BBOX_HEIGHT_WORLMAP;
+		}
+		else if (level == MARIO_LEVEL_RACOON) {
+			right = xInWorldMap + MARIO_RACCON_BBOX_WIDTH_WORLDMAP;
+			bottom = yInWorldMap + MARIO_RACCON_BBOX_HEIGHT_WORLDMAP;
+		}*/
+		left = xInWorldMap;
+		top = yInWorldMap;
+		right = xInWorldMap + MARIO_SMALL_BBOX_WIDTH_WORLDMAP;
+		bottom = yInWorldMap + MARIO_SMALL_BBOX_HEIGHT_WORLMAP;
 	}
 }
 

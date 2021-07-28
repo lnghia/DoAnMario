@@ -14,9 +14,9 @@ void BrokenQuestionBrick::Render()
 void BrokenQuestionBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x;
-	t = oldY;
+	t = this->oldY;
 	r = x + BRICK_BBOX_WIDTH;
-	b = oldY + BRICK_BBOX_HEIGHT;
+	b = t + BRICK_BBOX_HEIGHT;
 }
 
 void BrokenQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)

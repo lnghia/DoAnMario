@@ -129,6 +129,10 @@ void WorldMapScene::_ParseSection_OBJECTS(string line)
 
 		currCellX = (int)(x / 16);
 		currCellY = (int)(y / 16);
+		startX = currCellX;
+		startY = currCellY;
+		player->xInWorldMap = x;
+		player->yInWorldMap = y;
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
@@ -321,11 +325,21 @@ void WorldMapScene::Update(DWORD dt)
 
 	pair<int, int> tmp = player->UpdateInWorldMap(dt);
 
-	if (path[tmp.second][tmp.first] != '-' && (tmp.first != currCellX || tmp.second != currCellY)) {
+	currCellY = tmp.second;
+	currCellX = tmp.first;
+
+	if (path[tmp.second][tmp.first] != '-' && (tmp.first != startX || tmp.second != startY)) {
+		if (player->vy > 0) player->yInWorldMap = currCellY * 16;
+		else if (player->vy < 0) player->yInWorldMap = currCellY * 16;
+		else if (player->vx > 0) player->xInWorldMap = currCellX * 16;
+		else if (player->vx < 0) player->xInWorldMap = currCellX * 16;
+
+		player->x = player->xInWorldMap;
+
 		player->SetVx(0);
 		player->SetVy(0);
-		currCellX = tmp.first;
-		currCellY = tmp.second;
+		startX = currCellX;
+		startY = currCellY;
 
 		if (path[tmp.second][tmp.first] != 'O' && path[tmp.second][tmp.first] != 'X') {
 			scene = path[tmp.second][tmp.first] - '0';
@@ -389,10 +403,11 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 
 		float mx, my;
 
-		mario->GetPosition(mx, my);
+		mx = mario->xInWorldMap;
+		my = mario->yInWorldMap;
 
-		int cellX = (int)floor(mx / 16);
-		int cellY = (int)floor(my / 16) + 1;
+		int cellX = ((WorldMapScene*)scence)->currCellX;
+		int cellY = ((WorldMapScene*)scence)->currCellY + 1;
 
 		if (cellY < (int)((WorldMapScene*)scence)->path.size() && cellX < (int)((WorldMapScene*)scence)->path[0].size() && ((WorldMapScene*)scence)->path[cellY][cellX] != 'X') {
 			mario->SetVy(MARIO_WALKING_SPEED);
@@ -416,10 +431,11 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 
 		float mx, my;
 
-		mario->GetPosition(mx, my);
+		mx = mario->xInWorldMap;
+		my = mario->yInWorldMap;
 
-		int cellX = (int)floor(mx / 16);
-		int cellY = (int)floor(my / 16) - 1;
+		int cellX = ((WorldMapScene*)scence)->currCellX;
+		int cellY = ((WorldMapScene*)scence)->currCellY - 1;
 
 		if (cellY < (int)((WorldMapScene*)scence)->path.size() && cellX < (int)((WorldMapScene*)scence)->path[0].size() && ((WorldMapScene*)scence)->path[cellY][cellX] != 'X') {
 			mario->SetVy(-MARIO_WALKING_SPEED);
@@ -435,10 +451,11 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_LEFT: {
 		float mx, my;
 
-		mario->GetPosition(mx, my);
+		mx = mario->xInWorldMap;
+		my = mario->yInWorldMap;
 
-		int cellX = (int)floor(mx / 16) - 1;
-		int cellY = (int)floor(my / 16);
+		int cellX = ((WorldMapScene*)scence)->currCellX - 1;
+		int cellY = ((WorldMapScene*)scence)->currCellY;
 
 		if (cellY < (int)((WorldMapScene*)scence)->path.size() && cellX < (int)((WorldMapScene*)scence)->path[0].size() && ((WorldMapScene*)scence)->path[cellY][cellX] != 'X') {
 			mario->SetVy(0);
@@ -454,10 +471,12 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_RIGHT: {
 		float mx, my;
 
-		mario->GetPosition(mx, my);
+		//mario->GetPosition(mx, my);
+		mx = mario->xInWorldMap;
+		my = mario->yInWorldMap;
 
-		int cellX = (int)floor(mx / 16) + 1;
-		int cellY = (int)floor(my / 16);
+		int cellX = ((WorldMapScene*)scence)->currCellX + 1;
+		int cellY = ((WorldMapScene*)scence)->currCellY;
 
 		if (cellY < (int)((WorldMapScene*)scence)->path.size() && cellX < (int)((WorldMapScene*)scence)->path[0].size() && ((WorldMapScene*)scence)->path[cellY][cellX] != 'X') {
 			mario->SetVy(0);

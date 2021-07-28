@@ -76,6 +76,8 @@ public:
 	UINT currAni;
 
 public: 
+	int id = 0;
+
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(const float& vx, const float& vy) { this->vx = vx, this->vy = vy; }
 	void GetPosition(float &x, float &y) { x = this->x; y = this->y; }
@@ -126,6 +128,9 @@ public:
 	virtual void RenderCurrFrame();
 	virtual void SetState(int state) { this->state = state; }
 	virtual void GetHit(bool byTail, int nx) {};
+	virtual void SetSceneId(int val) {};
+	virtual void SetGetOutPipeDirection(int val) {};
+	virtual void SetExitPoint(float ex, float ey, int width, int height) {};
 
 	bool checkAABB(LPGAMEOBJECT obj);
 
