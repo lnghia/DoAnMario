@@ -26,6 +26,7 @@ CGoomba::CGoomba(int level)
 	interactivable = 1;
 	renderPriority = 101;
 	this->level = level;
+	isRed = level;
 }
 
 void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -265,6 +266,8 @@ void CGoomba::Render()
 {
 	int ani = GOOMBA_ANI_WALKING;
 
+	if (isRed) ani = GOOMBA_ANI_RED_WALKING;
+
 	if (level != GOOMBA_LEVEL_WALK) {
 		if (isStanding) {
 			ani = GOOMBA_ANI_FLY_WALKING;
@@ -276,9 +279,11 @@ void CGoomba::Render()
 
 	if (state == GOOMBA_STATE_DIE) {
 		ani = GOOMBA_ANI_DIE;
+		if (isRed) ani = GOOMBA_ANI_RED_DIE;
 	}
 	else if (state == GOOMBA_STATE_GET_HIT) {
 		ani = GOOMBA_ANI_GET_HIT;
+		if (isRed) ani = GOOMBA_ANI_RED_GET_HIT;
 	}
 
 	currAni = ani;
