@@ -17,6 +17,7 @@
 #include "BoomerangGuy.h"
 #include "PiranhaFlower.h"
 #include "PortalPipe.h"
+#include "GreenMushroom.h"
 
 
 #include "ObjectCheatSheet.h"
@@ -1291,7 +1292,17 @@ void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_
 					player->turnIntoBig();
 				}
 			}
-			if (dynamic_cast<Leaf*>(obj)) {
+			else if (dynamic_cast<GreenMushroom*>(obj)) {
+				GreenMushroom* mushroom = dynamic_cast<GreenMushroom*>(obj);
+				float x, y;
+
+				mushroom->GetPosition(x, y);
+
+				LPGAMEOBJECT point = new Point(GREEN_MUSHROOM_POINT, x, y);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(MUSHROOM_POINT);
+			}
+			else if (dynamic_cast<Leaf*>(obj)) {
 				Leaf* leaf = dynamic_cast<Leaf*>(obj);
 
 				float pX, pY;

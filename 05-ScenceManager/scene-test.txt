@@ -29,6 +29,9 @@
 # id	left	top	right	bottom	texture_id
 [SPRITES]
 
+# green mushroom
+999995	286	121	302	137	50
+
 # Course clear board
 #star
 90	0	0	248	73	180
@@ -2283,6 +2286,7 @@ maps\map_indexes_man1.txt	481	2816	16	16	400	16	8
 15	656	384	22	19	94	17	93
 15	704	352	22	16	90
 15	1472	368	22	19	94	17	93
+15	1440	128	22	62	999995
 
 # GOOMBA
 # type	x	y	animation_set	initial_moving_direction	level

@@ -3,6 +3,7 @@
 #include "Grid.h"
 #include "Board.h"
 #include "PlayScence.h"
+#include "GreenMushroom.h"
 
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
@@ -37,6 +38,11 @@ void QBrick::PopUpHiddenItem()
 		obj->SetCanBeStandOn(0);
 		Board::GetInstance()->GetPoint()->Add(COIN_POINT);
 		Board::GetInstance()->GetMoney()->Add(COIN_MONEY);
+
+		break;
+	}
+	case OBJECT_TYPE_GREEN_MUSHROOM: {
+		obj = new GreenMushroom(x, y);
 
 		break;
 	}

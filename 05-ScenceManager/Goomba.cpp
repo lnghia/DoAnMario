@@ -149,7 +149,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				state = GOOMBA_STATE_JUMP;
 			}
 
-			if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj) || dynamic_cast<CGoomba*>(e->obj)) {
+			if (dynamic_cast<CBrick*>(e->obj) || dynamic_cast<QBrick*>(e->obj) || dynamic_cast<PipeHitBox*>(e->obj) || dynamic_cast<Ground*>(e->obj)) {
 
 				if (e->nx) {
 					float l, t, r, b;
@@ -177,11 +177,44 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			else if (dynamic_cast<CGoomba*>(e->obj)) {
+				if (e->nx) {
+					e->obj->SetVx(e->obj->vx * -1);
+					vx *= -1;
+				}
+
+				if (ny) {
+					//vy = (state == GOOMBA_STATE_PREPARE_TO_JUMP) ? -GOOMBA_PREPARE_TO_JUMP_SPEED : (state == GOOMBA_STATE_JUMP) ? -GOOMBA_JUMP_SPEED : 0;
+					//subIsStanding = isStanding;
+					y -= min_ty * dy + ny * 0.4f;
+					if (isStanding && state == GOOMBA_STATE_PREPARE_TO_JUMP && level != GOOMBA_LEVEL_WALK) {
+						vy = -GOOMBA_PREPARE_TO_JUMP_SPEED;
+						isStanding = 0;
+					}
+					else if (state == GOOMBA_STATE_JUMP && level != GOOMBA_LEVEL_WALK) {
+						vy = -GOOMBA_JUMP_SPEED;
+						isStanding = 0;
+					}
+					else {
+						vy = 0;
+					}
+				}
+			}
 			else if (dynamic_cast<RedKoopas*>(e->obj)) {
+				if (e->nx) {
+					vx *= -1;
+				}
+
 				if (e->ny) {
 					y -= min_ty * dy + ny * 0.4f;
 					//GetHit();
 				}
+			}
+			else if (dynamic_cast<Mushroom*>(e->obj)) {
+				x -= min_tx * dx + nx * 0.4f;
+
+				x += _dx;
+				//y += _dy;
 			}
 			/*else if (dynamic_cast<RedKoopas*>(e->obj)) {
 				RedKoopas* koopas = dynamic_cast<RedKoopas*>(e->obj);

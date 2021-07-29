@@ -27,6 +27,7 @@
 #include "PiranhaFlower.h"
 #include "WorldMapScene.h"
 #include "PortalPipe.h"
+#include "GreenMushroom.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -658,6 +659,27 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					SetStartTransforming((DWORD)GetTickCount64());
 					turnIntoBig();
 				}
+			}
+			else if (dynamic_cast<GreenMushroom*>(e->obj)) {
+				x -= min_tx * dx + nx * 0.4f;
+				y -= min_ty * dy + ny * 0.4f;
+
+				GreenMushroom* mushroom = dynamic_cast<GreenMushroom*>(e->obj);
+				float mX, mY;
+
+				mushroom->GetPosition(mX, mY);
+				mushroom->GotObsorbed(this);
+
+				LPGAMEOBJECT point = new Point(GREEN_MUSHROOM_POINT, mX, mY);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(MUSHROOM_POINT);
+
+				/*if (GetLevel() != MARIO_LEVEL_BIG) {
+					SetBackupLevel(MARIO_LEVEL_BIG);
+					SetBackupState(GetState());
+					SetStartTransforming((DWORD)GetTickCount64());
+					turnIntoBig();
+				}*/
 			}
 			else if (dynamic_cast<FloatingCoin*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;

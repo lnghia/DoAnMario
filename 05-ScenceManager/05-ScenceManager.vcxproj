@@ -147,6 +147,7 @@
     <ClCompile Include="FloatingCoin.cpp" />
     <ClCompile Include="Fragment.cpp" />
     <ClCompile Include="GameOverMenu.cpp" />
+    <ClCompile Include="GreenMushroom.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="InteractivableTransObject.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="FloatingCoin.h" />
     <ClInclude Include="Fragment.h" />
     <ClInclude Include="GameOverMenu.h" />
+    <ClInclude Include="GreenMushroom.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="InteractivableTransObject.h" />
