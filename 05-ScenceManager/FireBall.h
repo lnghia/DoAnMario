@@ -12,9 +12,12 @@
 
 #define PLANTFIREBALL_STATE_SPIN	100
 
+#define FIREBALL_ANI_SET	610
+
 class FireBall : public CGameObject
 {
 public:
+
 	FireBall(int nx, int ny);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);

@@ -9,6 +9,7 @@
 #include "FireBall.h"
 #include "PiranhaPlant.h"
 #include "RedKoopas.h"
+#include "MarioBullet.h"
 
 CGoomba::CGoomba()
 {
@@ -215,6 +216,10 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				x += _dx;
 				//y += _dy;
+			}
+			else if (dynamic_cast<MarioBullet*>(e->obj)) {
+				x -= min_tx * dx + nx * 0.4f;
+				y -= min_ty * dy + ny * 0.4f;
 			}
 			/*else if (dynamic_cast<RedKoopas*>(e->obj)) {
 				RedKoopas* koopas = dynamic_cast<RedKoopas*>(e->obj);

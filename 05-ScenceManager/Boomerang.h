@@ -33,8 +33,8 @@ class Boomerang : public CGameObject
 
 	DWORD start_flying = 0;
 public:
-	int nx;
-	int	ny;
+	int nx = 0;
+	int	ny = 0;
 	Boomerang() {};
 	Boomerang(float y, int nx);
 

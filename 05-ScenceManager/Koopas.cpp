@@ -330,6 +330,10 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				k->GetPosition(tmpX, tmpY);
 
+				if (e->ny) {
+					y -= min_ty * dy + ny * 0.4f;
+				}
+
 				if (k->GetState() != KOOPAS_STATE_DIE) {
 					if (state == KOOPAS_STATE_SPIN && k->GetState() == KOOPAS_STATE_SPIN) {
 						SetState(KOOPAS_STATE_DIE);
@@ -365,6 +369,13 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
 					}
 					else if (state != KOOPAS_STATE_IN_SHELL) {
+						if (vx < 0) {
+							x += 0.05f;
+						}
+						else {
+							x -= 0.05f;
+						}
+
 						vx *= -1;
 						nx *= -1;
 						state = (vx > 0) ? KOOPAS_STATE_WALKING_RIGHT : KOOPAS_STATE_WALKING_LEFT;
@@ -393,10 +404,11 @@ void CKoopas::Render()
 		ani = (upward) ? KOOPAS_ANI_SPIN_UPWARD_GREEN : KOOPAS_ANI_SHELL_SPIN;
 	}
 	else if (state == KOOPAS_STATE_WALKING_RIGHT) {
-		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_RIGHT : (isStanding) ? KOOPAS_ANI_WALKING_RIGHT_GREEN_FLYING : KOOPAS_ANI_FLYING_RIGHT_GREEN_FLYING;
+		DebugOut(L"%d\n", isStanding);
+		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_RIGHT : ((isStanding) ? KOOPAS_ANI_WALKING_RIGHT_GREEN_FLYING : KOOPAS_ANI_FLYING_RIGHT_GREEN_FLYING);
 	}
 	else if (state == KOOPAS_STATE_WALKING_LEFT) {
-		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_LEFT : (isStanding) ? KOOPAS_ANI_WALKING_LEFT_GREEN_FLYING : KOOPAS_ANI_FLYING_LEFT_GREEN_FLYING;
+		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_LEFT : ((isStanding) ? KOOPAS_ANI_WALKING_LEFT_GREEN_FLYING : KOOPAS_ANI_FLYING_LEFT_GREEN_FLYING);
 	}
 	else if (state == KOOPAS_STATE_DIE) {
 		ani = KOOPAS_ANI_SHELL_UPWARD_GREEN;
@@ -478,6 +490,11 @@ void CKoopas::GetHit(bool byTail, int nx)
 	BangEffect* bangEffect = new BangEffect();
 	bangEffect->SetPosition(x, y);
 	Grid::GetInstance()->putObjectIntoGrid(bangEffect);
+}
+
+void CKoopas::GetHit(int nx)
+{
+	SetState(KOOPAS_STATE_DIE);
 }
 
 void CKoopas::GetKicked(int nx)

@@ -118,10 +118,10 @@ void Coin::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 		GetBoundingBox(l, t, r, b);
 
 		RECT rect;
-		rect.left = l;
-		rect.right = r;
-		rect.top = t;
-		rect.bottom = b;
+		rect.left = (long)l;
+		rect.right = (long)r;
+		rect.top = (long)t;
+		rect.bottom = (long)b;
 
 		CGameObject::Update(dt);
 

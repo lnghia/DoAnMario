@@ -47,10 +47,10 @@ CMario::CMario(float x, float y) : CGameObject()
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (transforming && (DWORD)GetTickCount64() - startTransforming < transform_duration_time) {
+	if (transforming && (int)((DWORD)GetTickCount64() - startTransforming) < transform_duration_time) {
 		return;
 	}
-	if (isFlying && (DWORD)GetTickCount64() - startFlying > 200 && state != MARIO_STATE_DIE) {
+	if (isFlying && (int)((DWORD)GetTickCount64() - startFlying) > 200 && state != MARIO_STATE_DIE) {
 		if (GetTickCount64() - startFlying > 2000) {
 			SetState(MARIO_STATE_FALL);
 		}
@@ -248,6 +248,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								RacoonToBig();
 								StartUntouchable();
 							}
+							else if (level == MARIO_LEVEL_FIRE) {
+								SetStartTransforming((DWORD)GetTickCount64());
+								FireToBig();
+								StartUntouchable();
+							}
 							else
 								SetState(MARIO_STATE_DIE);
 						}
@@ -342,10 +347,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								RacoonToBig();
 								StartUntouchable();
 							}
-							else {
-								SetState(MARIO_STATE_DIE);
-								x -= min_tx * dx + nx * 0.4f;
+							else if (level == MARIO_LEVEL_FIRE) {
+								SetStartTransforming((DWORD)GetTickCount64());
+								FireToBig();
+								StartUntouchable();
 							}
+							else
+								SetState(MARIO_STATE_DIE);
 						}
 						else {
 							//kick
@@ -446,10 +454,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								RacoonToBig();
 								StartUntouchable();
 							}
-							else {
-								SetState(MARIO_STATE_DIE);
-								x -= min_tx * dx + nx * 0.4f;
+							else if (level == MARIO_LEVEL_FIRE) {
+								SetStartTransforming((DWORD)GetTickCount64());
+								FireToBig();
+								StartUntouchable();
 							}
+							else
+								SetState(MARIO_STATE_DIE);
 						}
 						else {
 							//kick
@@ -506,16 +517,21 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 					if (level == MARIO_LEVEL_BIG)
 					{
-						//mario->SetLevel(MARIO_LEVEL_SMALL);
-						SetBackupLevel(MARIO_LEVEL_SMALL);
-						SetBackupState(GetState());
-						SetStartTransforming((DWORD)GetTickCount64());
+						//level = MARIO_LEVEL_SMALL;
+						backupLevel = MARIO_LEVEL_SMALL;
+						backupState = state;
+						startTransforming = (DWORD)GetTickCount64();
 						turnIntoSmall();
 						StartUntouchable();
 					}
-					else if (GetLevel() == MARIO_LEVEL_RACOON) {
+					else if (level == MARIO_LEVEL_RACOON) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						RacoonToBig();
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_FIRE) {
+						SetStartTransforming((DWORD)GetTickCount64());
+						FireToBig();
 						StartUntouchable();
 					}
 					else
@@ -538,8 +554,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						StartUntouchable();
 					}
 					else if (level == MARIO_LEVEL_RACOON) {
-						startTransforming = (DWORD)GetTickCount64();
+						SetStartTransforming((DWORD)GetTickCount64());
 						RacoonToBig();
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_FIRE) {
+						SetStartTransforming((DWORD)GetTickCount64());
+						FireToBig();
 						StartUntouchable();
 					}
 					else
@@ -740,6 +761,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						RacoonToBig();
 						StartUntouchable();
 					}
+					else if (level == MARIO_LEVEL_FIRE) {
+						SetStartTransforming((DWORD)GetTickCount64());
+						FireToBig();
+						StartUntouchable();
+					}
 					else
 						SetState(MARIO_STATE_DIE);
 				}
@@ -771,6 +797,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					else if (level == MARIO_LEVEL_RACOON) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						RacoonToBig();
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_FIRE) {
+						SetStartTransforming((DWORD)GetTickCount64());
+						FireToBig();
 						StartUntouchable();
 					}
 					else
@@ -903,6 +934,15 @@ void CMario::Render()
 				ani = filterSomeCommonAniByLevel();
 			}
 		}
+		else if (level == MARIO_LEVEL_FIRE && isAttackingFire) {
+			if ((DWORD)GetTickCount64() - start_attacking_fire < 200) {
+				ani = (nx > 0) ? MARIO_ANI_FIRE_THROW_RIGHT : MARIO_ANI_FIRE_THROW_LEFT;
+			}
+			else {
+				FinishAttackingFire();
+				ani = filterSomeCommonAniByLevel();
+			}
+		}
 		else {
 			ani = filterSomeCommonAniByLevel();
 		}
@@ -917,6 +957,23 @@ void CMario::Render()
 		}
 		else if (level == MARIO_LEVEL_RACOON) {
 			ani = MARIO_ANI_RACOON_WORLDMAP;
+		}
+		else if (level == MARIO_LEVEL_FIRE) {
+			ani = MARIO_ANI_FIRE_WORLDMAP;
+		}
+	}
+	else if (toExtraScene || gettingOutPipe) {
+		if (level == MARIO_LEVEL_SMALL) {
+			ani = MARIO_ANI_GET_IN_PIPE_SMALL;
+		}
+		else if (level == MARIO_LEVEL_BIG) {
+			ani = MARIO_ANI_GET_IN_PIPE_BIG;
+		}
+		else if (level == MARIO_LEVEL_RACOON) {
+			ani = MARIO_ANI_GET_IN_PIPE_RACOON;
+		}
+		else if (level == MARIO_LEVEL_FIRE) {
+			ani = MARIO_ANI_GET_IN_PIPE_FIRE;
 		}
 	}
 
@@ -1095,7 +1152,7 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	left = x;
 	top = y;
 
-	if (level == MARIO_LEVEL_BIG)
+	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE)
 	{
 		right = x + MARIO_BIG_BBOX_WIDTH;
 		bottom = y + MARIO_BIG_BBOX_HEIGHT;
@@ -1145,9 +1202,17 @@ void CMario::ToSmall() {
 	y += (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
 }
 
+void CMario::ToFire()
+{
+	y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
+}
+
 void CMario::ToRacoon()
 {
-	y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
+	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE) {
+		y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT);
+	}
+	else y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
 }
 
 void CMario::finishSizeTransforming()
@@ -1544,6 +1609,24 @@ void CMario::RacoonToBig() {
 	}
 }
 
+void CMario::BigToFire()
+{
+	transforming = MARIO_FIRE_TRANSFORMING;
+	transform_duration_time = MARIO_TRANSFORM_SIZE_TIME;
+	level = MARIO_LEVEL_FIRE;
+	//y -= abs(MARIO_RACOON_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT);
+	/*if (nx > 0) {
+		x -= MARIO_RACOON_TAIL_LENGTH;
+	}*/
+}
+
+void CMario::FireToBig()
+{
+	transforming = MARIO_FIRE_TRANSFORMING;
+	transform_duration_time = MARIO_TRANSFORM_SIZE_TIME;
+	level = MARIO_LEVEL_BIG;
+}
+
 void CMario::SetSwitchScene(bool val)
 {
 	switchScene = val;
@@ -1591,5 +1674,19 @@ void CMario::RenderSizeTransforming()
 
 void CMario::RenderBigToRacoonTransforming() {
 	animation_set->at(MARIO_ANI_BIG_TO_RACOON)->Render(x, y);
+}
+
+void CMario::RenderBigToFireTransforming()
+{
+	int ani = (nx > 0) ? MARIO_ANI_FIRE_TURN_RIGHT : MARIO_ANI_FIRE_TURN_LEFT;
+
+	animation_set->at(ani)->Render(x, y);
+}
+
+void CMario::FinishBigToFireTransforming()
+{
+	if (transforming && (DWORD)GetTickCount64() - startTransforming >= MARIO_TRANSFORM_SIZE_TIME) {
+		transforming = 0;
+	}
 }
 

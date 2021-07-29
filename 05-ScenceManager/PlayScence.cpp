@@ -871,8 +871,8 @@ void CPlayScene::Update(DWORD dt)
 		return;
 	}
 
-	if ((player->GetUntouchable() && ((DWORD)GetTickCount64() - player->GetUntouchableStart()) < player->transform_duration_time) ||
-		(player->GetTransforming() && ((DWORD)GetTickCount64() - player->GetStartTransforming()) < player->transform_duration_time)) {
+	if ((player->GetUntouchable() && (int)(((DWORD)GetTickCount64() - player->GetUntouchableStart())) < player->transform_duration_time) ||
+		(player->GetTransforming() && (int)(((DWORD)GetTickCount64() - player->GetStartTransforming())) < player->transform_duration_time)) {
 
 		return;
 	}
@@ -1007,8 +1007,8 @@ void CPlayScene::Render()
 
 	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
 
-	bool renderPause = ((player->GetUntouchable() && (DWORD)GetTickCount64() - player->GetUntouchableStart() < (DWORD)player->transform_duration_time) ||
-		(player->GetTransforming() && (DWORD)GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time) ||
+	bool renderPause = ((player->GetUntouchable() && (int)((DWORD)GetTickCount64() - player->GetUntouchableStart()) < player->transform_duration_time) ||
+		(player->GetTransforming() && (int)((DWORD)GetTickCount64() - player->GetStartTransforming()) < player->transform_duration_time) ||
 		player->GetState() == MARIO_STATE_DIE || player->toExtraScene || player->gettingOutPipe);
 
 	/*if (!renderPause) {
@@ -1111,6 +1111,11 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
 						player->SetState(MARIO_STATE_DIE);
 					}
+					else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->FireToBig();
+						player->StartUntouchable();
+					}
 					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->RacoonToBig();
@@ -1129,6 +1134,11 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
 						player->SetState(MARIO_STATE_DIE);
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->FireToBig();
+						player->StartUntouchable();
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
 						player->SetStartTransforming((DWORD)GetTickCount64());
@@ -1166,13 +1176,19 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 
 					if (!koopas->GetHarmless() && mb > tmpy)
 					{
-						if (player->GetLevel() == MARIO_LEVEL_BIG)
-						{
-							//level = MARIO_LEVEL_SMALL;
+						if (player->GetLevel() == MARIO_LEVEL_BIG) {
 							player->SetBackupLevel(MARIO_LEVEL_SMALL);
 							player->SetBackupState(player->GetState());
 							player->SetStartTransforming((DWORD)GetTickCount64());
 							player->turnIntoSmall();
+							player->StartUntouchable();
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+							player->SetState(MARIO_STATE_DIE);
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->FireToBig();
 							player->StartUntouchable();
 						}
 						else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
@@ -1180,8 +1196,6 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 							player->RacoonToBig();
 							player->StartUntouchable();
 						}
-						else
-							player->SetState(MARIO_STATE_DIE);
 					}
 					else {
 						//kick
@@ -1220,13 +1234,19 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 
 					if (!koopas->GetHarmless() && mb > tmpy)
 					{
-						if (player->GetLevel() == MARIO_LEVEL_BIG)
-						{
-							//level = MARIO_LEVEL_SMALL;
+						if (player->GetLevel() == MARIO_LEVEL_BIG) {
 							player->SetBackupLevel(MARIO_LEVEL_SMALL);
 							player->SetBackupState(player->GetState());
 							player->SetStartTransforming((DWORD)GetTickCount64());
 							player->turnIntoSmall();
+							player->StartUntouchable();
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+							player->SetState(MARIO_STATE_DIE);
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->FireToBig();
 							player->StartUntouchable();
 						}
 						else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
@@ -1234,8 +1254,6 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 							player->RacoonToBig();
 							player->StartUntouchable();
 						}
-						else
-							player->SetState(MARIO_STATE_DIE);
 					}
 					else {
 						//kick
@@ -1247,23 +1265,26 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 			else if (dynamic_cast<Boomerang*>(obj)) {
 				if (!player->GetUntouchable())
 				{
-					if (player->GetLevel() == MARIO_LEVEL_BIG)
-					{
-						//level = MARIO_LEVEL_SMALL;
+					if (player->GetLevel() == MARIO_LEVEL_BIG) {
 						player->SetBackupLevel(MARIO_LEVEL_SMALL);
-						player->SetBackupLevel(player->GetState());
-						player->StartTransforming();
+						player->SetBackupState(player->GetState());
+						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->turnIntoSmall();
 						player->StartUntouchable();
-						player->StartTransforming();
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+						player->SetState(MARIO_STATE_DIE);
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->FireToBig();
+						player->StartUntouchable();
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->RacoonToBig();
 						player->StartUntouchable();
 					}
-					else
-						player->SetState(MARIO_STATE_DIE);
 				}
 			}
 		}
@@ -1376,9 +1397,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_1:
 		if (mario->GetLevel() == MARIO_LEVEL_SMALL) {
-			mario->ToRacoon();
+			mario->ToBig();
 		}
-		mario->SetLevel(MARIO_LEVEL_RACOON);
+		mario->SetStartTransforming((DWORD)GetTickCount64());
+		mario->BigToRacoon();
+		//mario->SetLevel(MARIO_LEVEL_RACOON);
 		break;
 	case DIK_2:
 		if (mario->GetLevel() != MARIO_LEVEL_BIG) {
@@ -1387,6 +1410,14 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			mario->SetStartTransforming((DWORD)GetTickCount64());
 			mario->turnIntoBig();
 		}
+		break;
+	case DIK_3:
+		if (mario->GetLevel() == MARIO_LEVEL_SMALL) {
+			mario->ToBig();
+		}
+		mario->SetStartTransforming((DWORD)GetTickCount64());
+		mario->BigToFire();
+
 		break;
 	case DIK_5:
 		mario->SetPosition(2560, 352);
@@ -1439,6 +1470,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			// start attack tail
 			mario->tailAttacked = 1;
 			mario->StartAttackingWithTail();
+		}
+		if (!mario->isAttackingFire && mario->GetLevel() == MARIO_LEVEL_FIRE) {
+			mario->StartAttackingWithFire();
 		}
 		mario->SetIsRunning(1);
 		mario->SetCanHold(1);

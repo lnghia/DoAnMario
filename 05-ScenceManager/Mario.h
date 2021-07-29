@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Tail.h"
 #include "Grid.h"
+#include "MarioBullet.h"
 
 #define MARIO_WALKING_SPEED		0.1f 
 #define MARIO_WALKING_MAX_SPEED	0.1f
@@ -163,6 +164,38 @@
 #define MARIO_ANI_RACOON_ATTACK_TAIL_RIGHT	78
 #define MARIO_ANI_RACOON_ATTACK_TAIL_LEFT	79
 
+#define MARIO_ANI_FIRE_IDLE_RIGHT	80
+#define MARIO_ANI_FIRE_WALK_RIGHT	81
+#define MARIO_ANI_FIRE_IDLE_LEFT	82
+#define MARIO_ANI_FIRE_WALK_LEFT	83
+#define MARIO_ANI_FIRE_JUMP_RIGHT	84
+#define MARIO_ANI_FIRE_JUMP_LEFT	85
+#define MARIO_ANI_FIRE_DUCK_RIGHT	86
+#define MARIO_ANI_FIRE_DUCK_LEFT	87
+#define MARIO_ANI_FIRE_SKID_RIGHT	88
+#define MARIO_ANI_FIRE_SKID_LEFT	89
+#define MARIO_ANI_FIRE_LIFT_RIGHT	90
+#define MARIO_ANI_FIRE_LIFT_LEFT	91
+#define MARIO_ANI_FIRE_KICK_LEFT	92
+#define MARIO_ANI_FIRE_KICK_RIGHT	93
+#define MARIO_ANI_FIRE_SLIDE_RIGHT	94
+#define MARIO_ANI_FIRE_SLIDE_LEFT	95
+#define MARIO_ANI_FIRE_THROW_RIGHT	96
+#define MARIO_ANI_FIRE_THROW_LEFT	97
+#define MARIO_ANI_FIRE_TURN_RIGHT	98
+#define MARIO_ANI_FIRE_TURN_LEFT	99
+#define MARIO_ANI_FIRE_RUN_RIGHT	100
+#define MARIO_ANI_FIRE_RUN_LEFT		101
+#define MARIO_ANI_FIRE_LIFT_IDLE_RIGHT	102
+#define MARIO_ANI_FIRE_LIFT_IDLE_LEFT	103
+#define MARIO_ANI_FIRE_LIFT_JUMP_RIGHT	104
+#define MARIO_ANI_FIRE_LIFT_JUMP_LEFT	105
+
+#define MARIO_ANI_GET_IN_PIPE_SMALL		106
+#define MARIO_ANI_GET_IN_PIPE_BIG		107
+#define MARIO_ANI_GET_IN_PIPE_RACOON	108
+#define MARIO_ANI_GET_IN_PIPE_FIRE		109
+
 // Indexes are defined for filtering some common animations by level
 #define MARIO_ANI_IDLE_RIGHT	0
 #define MARIO_ANI_IDLE_LEFT		1
@@ -201,6 +234,7 @@
 #define	MARIO_LEVEL_SMALL	0
 #define	MARIO_LEVEL_BIG		1
 #define MARIO_LEVEL_RACOON	2
+#define MARIO_LEVEL_FIRE	3
 
 #define MARIO_BIG_BBOX_WIDTH  15
 #define MARIO_BIG_BBOX_HEIGHT 27
@@ -225,12 +259,15 @@
 #define MARIO_KICKING_TIME	200
 #define MARIO_ATTACKING_TAIL_TIME	200
 
-#define MARIO_SIZE_TRANSFORMING	1
+#define MARIO_SIZE_TRANSFORMING		1
 #define MARIO_RACOOON_TRANSFORMING	2
+#define MARIO_FIRE_TRANSFORMING		3
 
 #define MARIO_RACOON_TAIL_LENGTH	7
 
 #define MARIO_RACOON_HEAD_TO_TAIL_DIS	20
+
+#define MARIO_FIRE_HEAD_TO_HAND		7
 
 
 class CMario : public CGameObject
@@ -362,6 +399,32 @@ class CMario : public CGameObject
 			MARIO_ANI_RACOON_IDLE_LIFT_LEFT,
 			MARIO_ANI_RACOON_KICK_RIGHT,
 			MARIO_ANI_RACOON_KICK_LEFT
+		},
+		{
+			MARIO_ANI_FIRE_IDLE_RIGHT,
+			MARIO_ANI_FIRE_IDLE_LEFT,
+			MARIO_ANI_FIRE_WALK_RIGHT,
+			MARIO_ANI_FIRE_WALK_LEFT,
+			MARIO_ANI_FIRE_JUMP_RIGHT,
+			MARIO_ANI_FIRE_JUMP_LEFT,
+			MARIO_ANI_FIRE_DUCK_RIGHT,
+			MARIO_ANI_FIRE_DUCK_LEFT,
+			MARIO_ANI_FIRE_RUN_RIGHT,
+			MARIO_ANI_FIRE_RUN_LEFT,
+			MARIO_ANI_FIRE_SLIDE_RIGHT,
+			MARIO_ANI_FIRE_SLIDE_LEFT,
+			MARIO_ANI_FIRE_SKID_RIGHT,
+			MARIO_ANI_FIRE_SKID_LEFT,
+			MARIO_ANI_FIRE_KICK_RIGHT,
+			MARIO_ANI_FIRE_KICK_LEFT,
+			MARIO_ANI_FIRE_LIFT_RIGHT,
+			MARIO_ANI_FIRE_LIFT_LEFT,
+			MARIO_ANI_FIRE_LIFT_JUMP_RIGHT,
+			MARIO_ANI_FIRE_LIFT_JUMP_LEFT,
+			MARIO_ANI_FIRE_LIFT_IDLE_RIGHT,
+			MARIO_ANI_FIRE_LIFT_IDLE_LEFT,
+			MARIO_ANI_FIRE_KICK_RIGHT,
+			MARIO_ANI_FIRE_KICK_LEFT
 		}
 	};
 
@@ -381,6 +444,9 @@ public:
 	bool tailAttacked = 0;
 	bool touchPortalPipe = 0;
 	bool gettingOutPipe = 0;
+	bool isAttackingFire = 0;
+
+	DWORD start_attacking_fire = NULL;
 
 	float xInWorldMap = 0;
 	float yInWorldMap = 0;
@@ -479,24 +545,30 @@ public:
 
 	void BigToRacoon();
 	void RacoonToBig();
+	void BigToFire();
+	void FireToBig();
 
 	void SetSwitchScene(bool val);
 	bool GetSwitchScene();
 
 	void ToBig();
 	void ToSmall();
-
+	void ToFire();
 	void ToRacoon();
 
 	void Reset();
 
 	void RenderSizeTransforming();
 	void RenderBigToRacoonTransforming();
+	void RenderBigToFireTransforming();
+
+	
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
 	void finishSizeTransforming();
 	void finishRacoonTransforming();
+	void FinishBigToFireTransforming();
 
 	int filterSomeCommonAniByLevel();
 
@@ -507,6 +579,9 @@ public:
 		else if (transforming == MARIO_RACOOON_TRANSFORMING) {
 			RenderBigToRacoonTransforming();
 		}
+		else if (transforming == MARIO_FIRE_TRANSFORMING) {
+			RenderBigToFireTransforming();
+		}
 	}
 
 	void FinishTransforming() {
@@ -515,6 +590,9 @@ public:
 		}
 		else if (transforming == MARIO_RACOOON_TRANSFORMING) {
 			finishRacoonTransforming();
+		}
+		else if (transforming == MARIO_FIRE_TRANSFORMING) {
+			FinishBigToFireTransforming();
 		}
 	}
 
@@ -545,6 +623,30 @@ public:
 		}
 
 		Grid::GetInstance()->putObjectIntoGrid(tail);
+	}
+
+	void StartAttackingWithFire() {
+		isAttackingFire = 1;
+		start_attacking_fire = (DWORD)GetTickCount64();
+
+		float ml, mt, mr, mb;
+
+		GetBoundingBox(ml, mt, mr, mb);
+
+		MarioBullet* fire = new MarioBullet(nx);
+
+		if (nx > 0) {
+			fire->SetPosition(mr, mt + MARIO_FIRE_HEAD_TO_HAND);
+		}
+		else {
+			fire->SetPosition(ml, mt + MARIO_FIRE_HEAD_TO_HAND);
+		}
+
+		Grid::GetInstance()->putObjectIntoGrid(fire);
+	}
+
+	void FinishAttackingFire() {
+		isAttackingFire = 0;
 	}
 
 	void FinishAttackingWithTail() {

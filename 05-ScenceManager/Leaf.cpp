@@ -173,10 +173,10 @@ void Leaf::SetState(int state)
 
 float Leaf::FallingForward(int tmp)
 {
-	return -(pow((float)tmp - 24.0f, 2) / 36.0f - 16.0f);
+	return -(float)(pow((float)tmp - 24.0f, 2) / 36.0f - 16.0f);
 }
 
 float Leaf::FallingBackward(int tmp)
 {
-	return -(pow((float)tmp - 8.0f, 2) / 36.0f - 16.0f);
+	return -(float)(pow((float)tmp - 8.0f, 2) / 36.0f - 16.0f);
 }

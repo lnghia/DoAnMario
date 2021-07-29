@@ -10,6 +10,8 @@ Grid::Grid()
 {
 	colNum = 0;
 	rowNum = 0;
+	cellHeight = 1;
+	cellWidth = 1;
 }
 
 Grid::Grid(int cellWidth, int cellHeight)
@@ -27,10 +29,18 @@ Grid::Grid(int cellWidth, int cellHeight)
 
 Grid::Grid(int cellWidth, int cellHeight, vector<LPGAMEOBJECT>& objects)
 {
+	this->cellHeight = 1;
+	this->cellWidth = 1;
+	rowNum = 1;
+	colNum = 1;
 }
 
 Grid::Grid(vector<LPGAMEOBJECT>& objects)
 {
+	this->cellHeight = 1;
+	this->cellWidth = 1;
+	rowNum = 1;
+	colNum = 1;
 }
 
 void Grid::moveObj(LPGAMEOBJECT obj, RECT oldBoundingBox)
@@ -60,9 +70,9 @@ void Grid::clearObjFromGrid(LPGAMEOBJECT obj) {
 
 	//DebugOut(L"a\n");
 
-	for (int r = overlapseCells[TOP]-1; r <= overlapseCells[BOTTOM]+1; ++r) {
+	for (int r = overlapseCells[TOP] - 1; r <= overlapseCells[BOTTOM] + 1; ++r) {
 		if (r < 0 || r >= rowNum) continue;
-		for (int c = overlapseCells[LEFT]-1; c <= overlapseCells[RIGHT]+1; ++c) {
+		for (int c = overlapseCells[LEFT] - 1; c <= overlapseCells[RIGHT] + 1; ++c) {
 			if (c < 0 || c >= colNum) continue;
 			if (grid[r][c].find(obj) != grid[r][c].end()) {
 				grid[r][c].erase(obj);
@@ -176,9 +186,9 @@ void Grid::unload()
 			//	}*/
 			//	delete obj;
 			//}
-			if(grid[r][c].size()) grid[r][c].clear();
+			if (grid[r][c].size()) grid[r][c].clear();
 		}
-		if(grid[r].size()) grid[r].clear();
+		if (grid[r].size()) grid[r].clear();
 	}
 	grid.clear();
 
@@ -321,7 +331,7 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 {
 	float bpLeft, bpTop, bpRight, bpBottom;
 	vector<LPGAMEOBJECT> result;
-	unordered_set<LPGAMEOBJECT> uniqueChecker; 
+	unordered_set<LPGAMEOBJECT> uniqueChecker;
 
 	GetBroadPhaseBox(obj, bpLeft, bpTop, bpRight, bpBottom);
 
@@ -361,9 +371,9 @@ vector<LPGAMEOBJECT> Grid::GetPotentialCollidableObjects(LPGAMEOBJECT obj)
 				break;
 			}
 			for (auto& _obj : grid[r][c]) {
-				float x, y;
+				//float x, y;
 
-				if (obj != _obj && _obj->GetInteractivable() && _obj->GetIsActive() && uniqueChecker.find(_obj)==uniqueChecker.end() && !dynamic_cast<CMario*>(_obj)) {
+				if (obj != _obj && _obj->GetInteractivable() && _obj->GetIsActive() && uniqueChecker.find(_obj) == uniqueChecker.end() && !dynamic_cast<CMario*>(_obj)) {
 					result.push_back(_obj);
 					uniqueChecker.insert(_obj);
 				}
