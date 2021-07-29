@@ -45,6 +45,7 @@ protected:
 
 public:
 	unordered_map<int, LPGAMEOBJECT> objs_with_id;
+	vector<LPGAMEOBJECT> portalPipeImages;
 
 	CPlayScene(int id, LPCWSTR filePath);
 

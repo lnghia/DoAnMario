@@ -218,7 +218,7 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
 		}
 
-		obj = new PortalPipe(pipeWidth, pipeHeight);
+		obj = new PortalPipe((int)pipeWidth, (int)pipeHeight);
 		obj->SetSceneId(sceneId);
 		obj->SetGetOutPipeDirection(movingDir);
 		obj->SetExitPoint(exitX, exitY, exitWidth, exitHeight);
@@ -234,8 +234,17 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	}
 	break;
 	case OBJECT_TYPE_JUST_FOR_SHOW: {
+		int renderPriority;
+
+		if (tokens.size() > 5) {
+			renderPriority = (int)atoi(tokens[5].c_str());
+		}
+		else {
+			renderPriority = 30;
+		}
+
 		obj = new JustForShow();
-		obj->SetRenderPriority(30);
+		obj->SetRenderPriority(renderPriority);
 		break;
 	}
 
@@ -363,6 +372,13 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		break;
 	}
+	case OBJECT_TYPE_PORTAL_PIPE_IMAGE: {
+		obj = new JustForShow();
+
+		portalPipeImages.push_back(obj);
+		
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -472,7 +488,7 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line, ofstream& writer, ofs
 			DebugOut(L"[Error] Player is not ready for initiating Piranha Plant");
 		}
 
-		obj = new PortalPipe(pipeWidth, pipeHeight);
+		obj = new PortalPipe((int)pipeWidth, (int)pipeHeight);
 		obj->SetSceneId(sceneId);
 		obj->SetGetOutPipeDirection(movingDir);
 		obj->SetExitPoint(exitX, exitY, exitWidth, exitHeight);
@@ -849,8 +865,8 @@ void CPlayScene::Update(DWORD dt)
 		return;
 	}
 
-	if ((player->GetUntouchable() && (DWORD)GetTickCount64() - player->GetUntouchableStart() < player->transform_duration_time) ||
-		(player->GetTransforming() && (DWORD)GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time)) {
+	if ((player->GetUntouchable() && ((DWORD)GetTickCount64() - player->GetUntouchableStart()) < player->transform_duration_time) ||
+		(player->GetTransforming() && ((DWORD)GetTickCount64() - player->GetStartTransforming()) < player->transform_duration_time)) {
 
 		return;
 	}
@@ -1030,6 +1046,10 @@ void CPlayScene::Render()
 
 	player->FinishTransforming();
 
+	for (auto& item : portalPipeImages) {
+		item->Render();
+	}
+
 	Board::GetInstance()->Render();
 }
 
@@ -1043,6 +1063,7 @@ void CPlayScene::Unload()
 
 	objects.clear();
 	objs_with_id.clear();
+	portalPipeImages.clear();
 	player = NULL;
 	courseBoard = NULL;
 
