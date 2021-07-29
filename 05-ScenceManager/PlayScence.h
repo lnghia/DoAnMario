@@ -47,6 +47,8 @@ public:
 	unordered_map<int, LPGAMEOBJECT> objs_with_id;
 	vector<LPGAMEOBJECT> portalPipeImages;
 
+	int timeLeft = 0;
+
 	CPlayScene(int id, LPCWSTR filePath);
 
 	virtual void Load();

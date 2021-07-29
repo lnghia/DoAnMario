@@ -73,10 +73,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if ((vy < 0 && mb <= pipeY) || (vy > 0 && mt >= pipeY + pipeHeight)) {
 			SetSpeed(0, 0);
 			Board::GetInstance()->GetTime()->StopTicking();
-			Board::GetInstance()->GetTime()->SetTime(0);
+			//Board::GetInstance()->GetTime()->SetTime(0);
 			//Map::getInstance()->unLoad();
+			int timeLeft = Board::GetInstance()->GetTime()->GetCurrMoment();
+			DWORD start_time = Board::GetInstance()->GetTime()->GetStart();
 			CGame::GetInstance()->SwitchScene(extraSceneId);
 			Board::GetInstance()->GetCardStack()->RefreshItemAni();
+			Board::GetInstance()->GetTime()->SetStart(start_time);
+			Board::GetInstance()->GetTime()->SetTime(timeLeft);
 			WorldMapScene* scene = (WorldMapScene*)CGame::GetInstance()->GetCurrentScene();
 			scene->SetMarioLevel(level);
 

@@ -523,6 +523,7 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 
 		CGame::GetInstance()->SwitchScene(sceneId);
 		Board::GetInstance()->GetCardStack()->RefreshItemAni();
+		Board::GetInstance()->GetTime()->SetStart(NULL);
 
 		/*Board* board = Board::GetInstance();
 		board->SetLives(3);*/

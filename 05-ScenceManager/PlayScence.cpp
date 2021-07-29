@@ -26,6 +26,7 @@ using namespace std;
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	CScene(id, filePath)
 {
+	player = NULL;
 	key_handler = new CPlayScenceKeyHandler(this);
 	objId = 0;
 }
@@ -755,6 +756,10 @@ void CPlayScene::_ParseSection_Board(const string& line)
 	else if (obj == "SPEEDBAR") {
 		board->GetSpeedBar()->SetAniSet(atoi(tokens[1].c_str()));
 		board->GetSpeedBar()->SetPlayer(player);
+	}
+
+	if (timeLeft) {
+		board->GetTime()->SetTime(timeLeft);
 	}
 
 	DebugOut(L"[INFO] Done loading board resources \n");

@@ -2,6 +2,7 @@
 
 TimeTicker::TimeTicker(float x, float y)
 {
+	currMoment = 0;
 	timer = 300;
 	displayer = new Displayer(3, x, y);
 	displayer->SetContent(timer);
@@ -45,8 +46,11 @@ void TimeTicker::UpdatePos(float x, float y)
 
 void TimeTicker::StartTicking()
 {
-	start = (DWORD)GetTickCount64();
-	currMoment = (timer - ((DWORD)GetTickCount64() - start) / 1000);
+	if (start == NULL) {
+		start = (DWORD)GetTickCount64();
+		currMoment = (timer - ((DWORD)GetTickCount64() - start) / 1000);
+		isTicking = 1;
+	}
 	isTicking = 1;
 }
 
@@ -58,11 +62,17 @@ void TimeTicker::StopTicking()
 void TimeTicker::SetTime(int time)
 {
 	displayer->SetContent(time);
+	currMoment = time;
 }
 
 void TimeTicker::SetAniSet(int ani_set)
 {
 	displayer->SetAniSet(ani_set);
+}
+
+void TimeTicker::SetStart(DWORD val)
+{
+	start = val;
 }
 
 bool TimeTicker::GetIsTicking()
@@ -73,6 +83,11 @@ bool TimeTicker::GetIsTicking()
 int TimeTicker::GetCurrMoment()
 {
 	return currMoment;
+}
+
+DWORD TimeTicker::GetStart()
+{
+	return start;
 }
 
 void TimeTicker::Reset()
