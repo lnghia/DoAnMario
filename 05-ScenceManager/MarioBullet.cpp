@@ -135,8 +135,8 @@ void MarioBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				Grid::GetInstance()->putObjectIntoGrid(point);
 				Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
 			}
-			else if (dynamic_cast<CKoopas*>(e->obj)) {
-				CKoopas* _obj = dynamic_cast<CKoopas*>(e->obj);
+			else if (dynamic_cast<RedKoopas*>(e->obj)) {
+				RedKoopas* _obj = dynamic_cast<RedKoopas*>(e->obj);
 
 				vx = 0;
 				vy = 0;
@@ -149,8 +149,8 @@ void MarioBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				Grid::GetInstance()->putObjectIntoGrid(point);
 				Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
 			}
-			else if (dynamic_cast<RedKoopas*>(e->obj)) {
-				RedKoopas* _obj = dynamic_cast<RedKoopas*>(e->obj);
+			else if (dynamic_cast<CKoopas*>(e->obj)) {
+				CKoopas* _obj = dynamic_cast<CKoopas*>(e->obj);
 
 				vx = 0;
 				vy = 0;

@@ -40,6 +40,7 @@ RedKoopas::RedKoopas(short int nx, const int& x, const int& y, const int& w, con
 	interactivable = 1;
 	renderPriority = 101;
 	canBeStandOn = 1;
+	//outShell = 0;
 
 	this->nx = nx;
 	initNx = nx;
@@ -455,7 +456,7 @@ void RedKoopas::Render()
 {
 	int ani = KOOPAS_ANI_WALKING_LEFT;
 	if (state == KOOPAS_STATE_DIE) {
-		ani = KOOPAS_ANI_DIE;
+		ani = REDKOOPAS_ANI_IN_SHELL_UPWARD;
 	}
 	else if (state == KOOPAS_STATE_IN_SHELL) {
 		ani = (upward) ? REDKOOPAS_ANI_IN_SHELL_UPWARD : KOOPAS_ANI_SHELL_IDLE;
