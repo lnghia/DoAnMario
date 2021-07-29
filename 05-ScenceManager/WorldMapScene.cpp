@@ -307,6 +307,8 @@ void WorldMapScene::Load()
 
 	f.close();
 
+	scene = -1;
+
 	//CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(237, 28, 36));
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
@@ -343,6 +345,9 @@ void WorldMapScene::Update(DWORD dt)
 
 		if (path[tmp.second][tmp.first] != 'O' && path[tmp.second][tmp.first] != 'X') {
 			scene = path[tmp.second][tmp.first] - '0';
+		}
+		else {
+			scene = -1;
 		}
 	}
 }
@@ -518,6 +523,10 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 		}
 
 		int sceneId = ((WorldMapScene*)scence)->scene;
+
+		if (sceneId != 1 && sceneId != 3) {
+			break;
+		}
 
 		Map::getInstance()->unLoad();
 
