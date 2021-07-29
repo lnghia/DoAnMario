@@ -3,6 +3,7 @@
 #include "ObjectCheatSheet.h"
 #include "Board.h"
 #include <stack>
+#include "PSwitch.h"
 
 #define ItemType first
 #define ItemAni	second
@@ -25,6 +26,8 @@ class BrokenQuestionBrick : public QBrick
 
 	stack<pair<int, int>> hiddenItemTypes;
 public:
+	PSwitch* psw = NULL;
+
 	BrokenQuestionBrick() {
 		renderPriority = 101;
 

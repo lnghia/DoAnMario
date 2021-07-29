@@ -39,7 +39,10 @@ void BrokenQuestionBrick::PopUpHiddenItem()
 		return;
 	}
 
-	if (!hiddenItemTypes.empty()) {
+	if (psw) {
+		psw->appear();
+	}
+	else if (!hiddenItemTypes.empty()) {
 		int item = hiddenItemTypes.top().ItemType;
 		int ani = hiddenItemTypes.top().ItemAni;
 

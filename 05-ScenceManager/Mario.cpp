@@ -28,6 +28,7 @@
 #include "WorldMapScene.h"
 #include "PortalPipe.h"
 #include "GreenMushroom.h"
+#include "PSwitch.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -242,16 +243,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								startTransforming = (DWORD)GetTickCount64();
 								turnIntoSmall();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 							}
 							else if (level == MARIO_LEVEL_RACOON) {
 								SetStartTransforming((DWORD)GetTickCount64());
 								RacoonToBig();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
 							}
 							else if (level == MARIO_LEVEL_FIRE) {
 								SetStartTransforming((DWORD)GetTickCount64());
 								FireToBig();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 							}
 							else
 								SetState(MARIO_STATE_DIE);
@@ -341,16 +345,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								startTransforming = (DWORD)GetTickCount64();
 								turnIntoSmall();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 							}
 							else if (level == MARIO_LEVEL_RACOON) {
 								SetStartTransforming((DWORD)GetTickCount64());
 								RacoonToBig();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
 							}
 							else if (level == MARIO_LEVEL_FIRE) {
 								SetStartTransforming((DWORD)GetTickCount64());
 								FireToBig();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 							}
 							else
 								SetState(MARIO_STATE_DIE);
@@ -448,16 +455,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								startTransforming = (DWORD)GetTickCount64();
 								turnIntoSmall();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 							}
 							else if (level == MARIO_LEVEL_RACOON) {
 								SetStartTransforming((DWORD)GetTickCount64());
 								RacoonToBig();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
 							}
 							else if (level == MARIO_LEVEL_FIRE) {
 								SetStartTransforming((DWORD)GetTickCount64());
 								FireToBig();
 								StartUntouchable();
+								if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 							}
 							else
 								SetState(MARIO_STATE_DIE);
@@ -469,6 +479,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							StartKicking();
 						}
 					}
+				}
+			}
+			else if (dynamic_cast<PSwitch*>(e->obj)) {
+				PSwitch* psw = dynamic_cast<PSwitch*>(e->obj);
+				
+				if (e->nx) {
+					vx = 0;
+					isRunning = 0;
+					isSliding = 0;
+				}
+				else if (e->ny < 0) {
+					vy = -MARIO_JUMP_DEFLECT_SPEED;
+					psw->trigger();
 				}
 			}
 			else if (dynamic_cast<PortalPipe*>(e->obj)) {
@@ -523,16 +546,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						startTransforming = (DWORD)GetTickCount64();
 						turnIntoSmall();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_RACOON) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						RacoonToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_FIRE) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						FireToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else
 						SetState(MARIO_STATE_DIE);
@@ -552,16 +578,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						startTransforming = (DWORD)GetTickCount64();
 						turnIntoSmall();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_RACOON) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						RacoonToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_FIRE) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						FireToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else
 						SetState(MARIO_STATE_DIE);
@@ -755,16 +784,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						startTransforming = (DWORD)GetTickCount64();
 						turnIntoSmall();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_RACOON) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						RacoonToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_FIRE) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						FireToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else
 						SetState(MARIO_STATE_DIE);
@@ -793,16 +825,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						startTransforming = (DWORD)GetTickCount64();
 						turnIntoSmall();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_RACOON) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						RacoonToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
 					}
 					else if (level == MARIO_LEVEL_FIRE) {
 						SetStartTransforming((DWORD)GetTickCount64());
 						FireToBig();
 						StartUntouchable();
+						if (isDucking) y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else
 						SetState(MARIO_STATE_DIE);
@@ -997,6 +1032,16 @@ void CMario::SetState(int state)
 	switch (state)
 	{
 	case MARIO_STATE_WALKING_RIGHT: {
+		if (isDucking) {
+			isDucking = 0;
+			if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE) {
+				y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
+			}
+			else {
+				y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
+			}
+		}
+
 		if (!isRunning) {
 			//vx = MARIO_WALKING_SPEED;
 			if (vx > MARIO_WALKING_SPEED) {
@@ -1026,6 +1071,16 @@ void CMario::SetState(int state)
 		break;
 	}
 	case MARIO_STATE_WALKING_LEFT: {
+		if (isDucking) {
+			isDucking = 0;
+			if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE) {
+				y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
+			}
+			else {
+				y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
+			}
+		}
+
 		if (!isRunning) {
 			if (vx < -MARIO_WALKING_SPEED) {
 				vx += MARIO_RUNNINGSLOWINGDOWN_ACCELERATION;
@@ -1083,6 +1138,16 @@ void CMario::SetState(int state)
 	}
 	case MARIO_STATE_IDLE: {
 
+		if (isDucking) {
+			isDucking = 0;
+			if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE) {
+				y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
+			}
+			else {
+				y -= (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
+			}
+		}
+
 		if (nx > 0) {
 			if (vx > MARIO_WALKING_SPEED) {
 				vx -= MARIO_RUNNINGSLOWINGDOWN_ACCELERATION;
@@ -1122,6 +1187,30 @@ void CMario::SetState(int state)
 		vy = MARIO_RACOON_GLIDE_VY;
 		isFallingTail = 1;
 		break;
+	case MARIO_STATE_DUCK_LEFT:
+		vx = 0;
+		if (!isDucking) {
+			if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE) {
+				y += (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
+			}
+			else {
+				y += (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
+			}
+			isDucking = 1;
+		}
+		break;
+	case MARIO_STATE_DUCK_RIGHT:
+		vx = 0;
+		if (!isDucking) {
+			if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE) {
+				y += (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
+			}
+			else {
+				y += (MARIO_RACOON_BBOX_HEIGHT - MARIO_RACOON_DUCK_BBOX_HEIGHT);
+			}
+			isDucking = 1;
+		}
+		break;
 	}
 
 
@@ -1154,8 +1243,14 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_FIRE)
 	{
-		right = x + MARIO_BIG_BBOX_WIDTH;
-		bottom = y + MARIO_BIG_BBOX_HEIGHT;
+		if (isDucking) {
+			right = x + MARIO_BIG_DUCK_BBOX_WIDTH;
+			bottom = y + MARIO_BIG_DUCK_BBOX_HEIGHT;
+		}
+		else {
+			right = x + MARIO_BIG_BBOX_WIDTH;
+			bottom = y + MARIO_BIG_BBOX_HEIGHT;
+		}
 	}
 	else if (level == MARIO_LEVEL_SMALL)
 	{
@@ -1164,11 +1259,17 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 	else if (level == MARIO_LEVEL_RACOON) {
 		if (nx == 1) {
-			left += MARIO_RACOON_TAIL_LENGTH;
+			if (isDucking) left += MARIO_RACOON_DUCK_TAIL_LENGTH;
+			else left += MARIO_RACOON_TAIL_LENGTH;
 		}
-
-		right = left + MARIO_RACOON_BBOX_WIDTH;
-		bottom = y + MARIO_RACOON_BBOX_HEIGHT;
+		if (isDucking) {
+			right = left + MARIO_RACOON_DUCK_BBOX_WIDTH;
+			bottom = top + MARIO_RACOON_DUCK_BBOX_HEIGHT;
+		}
+		else {
+			right = left + MARIO_RACOON_BBOX_WIDTH;
+			bottom = y + MARIO_RACOON_BBOX_HEIGHT;
+		}
 	}
 
 	if (isInWorldMap) {
@@ -1250,6 +1351,9 @@ int CMario::filterSomeCommonAniByLevel()
 
 	if (isKicking && (DWORD)GetTickCount64() - start_kicking < MARIO_KICKING_TIME) {
 		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_KICK_RIGHT] : animationsByLevel[level][MARIO_ANI_KICK_LEFT];
+	}
+	else if (isDucking) {
+		ani = (state == MARIO_STATE_DUCK_LEFT) ? animationsByLevel[level][MARIO_ANI_DUCK_LEFT] : animationsByLevel[level][MARIO_ANI_DUCK_RIGHT];
 	}
 	else if (isJumping) {
 		if (beingHoldedObj) {

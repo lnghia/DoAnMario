@@ -47,6 +47,8 @@
 #define MARIO_STATE_KICK_LEFT		1400
 #define MARIO_STATE_LIFT_RIGHT		1500
 #define MARIO_STATE_LIFT_LEFT		1600
+#define MARIO_STATE_DUCK_RIGHT		1700
+#define MARIO_STATE_DUCK_LEFT		1800
 
 #define MARIO_ANI_BIG_IDLE_RIGHT		0
 #define MARIO_ANI_BIG_IDLE_LEFT			1
@@ -241,6 +243,12 @@
 
 #define MARIO_RACOON_BBOX_HEIGHT 28
 #define MARIO_RACOON_BBOX_WIDTH	 15
+
+#define MARIO_BIG_DUCK_BBOX_HEIGHT	18
+#define MARIO_BIG_DUCK_BBOX_WIDTH	14
+#define MARIO_RACOON_DUCK_BBOX_HEIGHT	18
+#define MARIO_RACOON_DUCK_BBOX_WIDTH	22
+#define MARIO_RACOON_DUCK_TAIL_LENGTH	9
 
 #define MARIO_SMALL_BBOX_WIDTH  13
 #define MARIO_SMALL_BBOX_HEIGHT 15
@@ -445,6 +453,7 @@ public:
 	bool touchPortalPipe = 0;
 	bool gettingOutPipe = 0;
 	bool isAttackingFire = 0;
+	bool isDucking = 0;
 
 	DWORD start_attacking_fire = NULL;
 

@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "HiddenItem.h"
 #include "Point.h"
+#include "PlayScence.h"
 
 #define COIN_SPEED_X	0.0f
 #define COIN_SPEED_Y	-0.5f
@@ -27,6 +28,8 @@ protected:
 
 	bool passedDestrucPoint = 0;
 public:
+	int brokenBrickId = -1;
+
 	FloatingCoin() {};
 	FloatingCoin(float x, float y);
 

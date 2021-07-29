@@ -18,6 +18,7 @@
 #include "PiranhaFlower.h"
 #include "PortalPipe.h"
 #include "GreenMushroom.h"
+#include "PSwitch.h"
 
 
 #include "ObjectCheatSheet.h"
@@ -379,6 +380,24 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		portalPipeImages.push_back(obj);
 		
+		break;
+	}
+	case OBJECT_TYPE_BRICK_WITH_PSWITCH: {
+		obj = new BrokenQuestionBrick(x, y);
+
+		int itemId;
+
+		((BrokenQuestionBrick*)obj)->psw = new PSwitch(x, y);
+
+		for (UINT i = 5; i < tokens.size(); ++i) {
+			itemId = (int)atoi(tokens[i].c_str());
+			if (objs_with_id.find(itemId) != objs_with_id.end()) {
+				((BrokenQuestionBrick*)obj)->psw->affectedBricks.push_back((BrokenBrick*)objs_with_id[itemId]);
+			}
+			
+			//obj->AddHiddenItem(item, ani);
+		}
+
 		break;
 	}
 	default:
@@ -1107,6 +1126,7 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->turnIntoSmall();
 						player->StartUntouchable();
+						//if (player->isDucking) player->y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
 						player->SetState(MARIO_STATE_DIE);
@@ -1115,11 +1135,13 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->FireToBig();
 						player->StartUntouchable();
+						//if (player->isDucking) player->y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->RacoonToBig();
 						player->StartUntouchable();
+						//if(player->isDucking) player->y -= (MARIO_)
 					}
 				}
 			}
@@ -1517,10 +1539,19 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	// disable control key when Mario die 
 
-	if (game->IsKeyDown(DIK_RIGHT))
+	if (game->IsKeyDown(DIK_RIGHT) && (mario->GetState() != MARIO_STATE_DUCK_LEFT && mario->GetState() != MARIO_STATE_DUCK_RIGHT)) {
 		mario->SetState(MARIO_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT)) {
+	}
+	else if (game->IsKeyDown(DIK_LEFT) && (mario->GetState() != MARIO_STATE_DUCK_LEFT && mario->GetState() != MARIO_STATE_DUCK_RIGHT)) {
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
+	}
+	else if (game->IsKeyDown(DIK_DOWN) && !mario->touchPortalPipe && (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_FIRE || mario->GetLevel() == MARIO_LEVEL_RACOON) && !mario->GetBeingHoldedObj()) {
+		if (mario->nx > 0) {
+			mario->SetState(MARIO_STATE_DUCK_RIGHT);
+		}
+		else {
+			mario->SetState(MARIO_STATE_DUCK_LEFT);
+		}
 	}
 	/*else if (game->IsKeyDown(DIK_S)) {
 		mario->SetState(MARIO_STATE_JUMP);

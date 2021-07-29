@@ -161,7 +161,7 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	for (UINT i = 0; i < coObjects->size(); ++i) {
 		LPGAMEOBJECT tmp = coObjects->at(i);
 
-		if (dynamic_cast<FireBall*>(coObjects->at(i)) || dynamic_cast<PiranhaPlant*>(coObjects->at(i)) || dynamic_cast<CBrick*>(coObjects->at(i)) || dynamic_cast<CMario*>(coObjects->at(i))) {
+		if (dynamic_cast<FireBall*>(coObjects->at(i)) || dynamic_cast<PiranhaPlant*>(coObjects->at(i)) || dynamic_cast<CBrick*>(coObjects->at(i)) || dynamic_cast<CMario*>(coObjects->at(i)) || dynamic_cast<FloatingCoin*>(coObjects->at(i))) {
 			coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), tmp), coObjects->end());
 		}
 	}
@@ -239,6 +239,13 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			//else if (dynamic_cast<FloatingCoin*>(e->obj)) {
+			//	x -= min_tx * dx + nx * 0.4f;
+			//	//y -= min_ty * dy + ny * 0.4f;
+
+			//	x += _dx;
+			//	y += _dy;
+			//}
 			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
 				if (e->ny < 0) {
 					vy = 0;

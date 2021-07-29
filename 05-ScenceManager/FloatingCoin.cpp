@@ -40,4 +40,14 @@ void FloatingCoin::GetObsorbed()
 	interactivable = 0;
 	invisible = 1;
 	isActive = 0;
+
+	if (brokenBrickId != -1) {
+		CPlayScene* sc = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene());
+
+		if (sc->objs_with_id.find(brokenBrickId) != sc->objs_with_id.end() && sc->objs_with_id[brokenBrickId]) {
+			sc->objs_with_id[brokenBrickId]->isActive = 0;
+			sc->objs_with_id[brokenBrickId]->SetInteractivable(0);
+			sc->objs_with_id[brokenBrickId]->SetInvisible(1);
+		}
+	}
 }
