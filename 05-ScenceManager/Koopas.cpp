@@ -16,6 +16,7 @@ CKoopas::CKoopas(short int nx, int level)
 {
 	interactivable = 1;
 	renderPriority = 101;
+	isStanding = 0;
 
 	this->nx = (int)nx;
 	initNx = (int)nx;
@@ -164,6 +165,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (ny) {
 					if (isStanding && level != KOOPAS_LEVEL_GREEN_WALKING) {
 						vy = -KOOPAS_JUMP_SPEED;
+						//isStanding = 0;
 					}
 					else {
 						vy = 0;
@@ -178,6 +180,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (e->ny < 0) {
 					if (isStanding && level != KOOPAS_LEVEL_GREEN_WALKING) {
 						vy = -KOOPAS_JUMP_SPEED;
+						//isStanding = 0;
 					}
 					else {
 						vy = 0;
@@ -404,11 +407,34 @@ void CKoopas::Render()
 		ani = (upward) ? KOOPAS_ANI_SPIN_UPWARD_GREEN : KOOPAS_ANI_SHELL_SPIN;
 	}
 	else if (state == KOOPAS_STATE_WALKING_RIGHT) {
-		DebugOut(L"%d\n", isStanding);
-		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_RIGHT : ((isStanding) ? KOOPAS_ANI_WALKING_RIGHT_GREEN_FLYING : KOOPAS_ANI_FLYING_RIGHT_GREEN_FLYING);
+		if (level == KOOPAS_LEVEL_GREEN_WALKING) {
+			ani = KOOPAS_ANI_WALKING_RIGHT;
+		}
+		else {
+			if (isStanding) {
+				ani = KOOPAS_ANI_WALKING_RIGHT_GREEN_FLYING;
+				isStanding = 0;
+			}
+			else {
+				ani = KOOPAS_ANI_FLYING_RIGHT_GREEN_FLYING;
+			}
+		}
+		//ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_RIGHT : ((isStanding) ? KOOPAS_ANI_WALKING_RIGHT_GREEN_FLYING : KOOPAS_ANI_FLYING_RIGHT_GREEN_FLYING);
 	}
 	else if (state == KOOPAS_STATE_WALKING_LEFT) {
-		ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_LEFT : ((isStanding) ? KOOPAS_ANI_WALKING_LEFT_GREEN_FLYING : KOOPAS_ANI_FLYING_LEFT_GREEN_FLYING);
+		if (level == KOOPAS_LEVEL_GREEN_WALKING) {
+			ani = KOOPAS_ANI_WALKING_LEFT;
+		}
+		else {
+			if (isStanding) {
+				ani = KOOPAS_ANI_WALKING_LEFT_GREEN_FLYING;
+				isStanding = 0;
+			}
+			else {
+				ani = KOOPAS_ANI_FLYING_LEFT_GREEN_FLYING;
+			}
+		}
+		//ani = (level == KOOPAS_LEVEL_GREEN_WALKING) ? KOOPAS_ANI_WALKING_LEFT : ((isStanding) ? KOOPAS_ANI_WALKING_LEFT_GREEN_FLYING : KOOPAS_ANI_FLYING_LEFT_GREEN_FLYING);
 	}
 	else if (state == KOOPAS_STATE_DIE) {
 		ani = KOOPAS_ANI_SHELL_UPWARD_GREEN;
