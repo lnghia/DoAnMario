@@ -7,6 +7,7 @@
 #include "ColorBrickHitBox.h"
 #include "Mario.h"
 #include "HiddenItem.h"
+#include "Map.h"
 
 #define MUSHROOM_STATE_APPEAR	0
 #define MUSHROOM_STATE_RUN		1
@@ -20,16 +21,16 @@
 
 #define MUSHROOM_GRAVITY		0.002f
 
-#define MUSHROOM_POINT			1000
+#define GREEN_MUSHROOM_POINT			1
 
 #define MUSHROOM_ANI_SET	93
 
-class Mushroom : public HiddenItem
+class GreenMushroom : public HiddenItem
 {
 public:
 
-	Mushroom() {}
-	Mushroom(float x, float y) :HiddenItem(x, y) {
+	GreenMushroom() {}
+	GreenMushroom(float x, float y) :HiddenItem(x, y) {
 		containerX = x;
 		containerY = y;
 
@@ -46,4 +47,5 @@ public:
 	virtual void Render();
 
 };
+
 

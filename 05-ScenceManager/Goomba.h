@@ -31,6 +31,9 @@
 #define GOOMBA_ANI_FLY_WALKING	3
 #define GOOMBA_ANI_HOPPING		4
 #define GOOMBA_ANI_FLY_JUMPING	5
+#define GOOMBA_ANI_RED_WALKING	6
+#define GOOMBA_ANI_RED_DIE		7
+#define GOOMBA_ANI_RED_GET_HIT	8
 
 #define GOOMBA_GRAVITY		0.0008f
 #define GOOMBA_JUMP_GRAVITY	0.0008f
@@ -54,6 +57,7 @@ class CGoomba : public CGameObject
 	bool isStanding = 0;
 	bool subIsStanding = 0;
 	bool aboutToJump = 0;
+	bool isRed = 0;
 
 	DWORD start_die;
 	DWORD start_walking;

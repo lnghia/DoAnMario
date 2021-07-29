@@ -17,6 +17,8 @@
 #include "BoomerangGuy.h"
 #include "PiranhaFlower.h"
 #include "PortalPipe.h"
+#include "GreenMushroom.h"
+#include "PSwitch.h"
 
 
 #include "ObjectCheatSheet.h"
@@ -26,6 +28,7 @@ using namespace std;
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	CScene(id, filePath)
 {
+	player = NULL;
 	key_handler = new CPlayScenceKeyHandler(this);
 	objId = 0;
 }
@@ -377,6 +380,24 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 
 		portalPipeImages.push_back(obj);
 		
+		break;
+	}
+	case OBJECT_TYPE_BRICK_WITH_PSWITCH: {
+		obj = new BrokenQuestionBrick(x, y);
+
+		int itemId;
+
+		((BrokenQuestionBrick*)obj)->psw = new PSwitch(x, y);
+
+		for (UINT i = 5; i < tokens.size(); ++i) {
+			itemId = (int)atoi(tokens[i].c_str());
+			if (objs_with_id.find(itemId) != objs_with_id.end()) {
+				((BrokenQuestionBrick*)obj)->psw->affectedBricks.push_back((BrokenBrick*)objs_with_id[itemId]);
+			}
+			
+			//obj->AddHiddenItem(item, ani);
+		}
+
 		break;
 	}
 	default:
@@ -757,6 +778,10 @@ void CPlayScene::_ParseSection_Board(const string& line)
 		board->GetSpeedBar()->SetPlayer(player);
 	}
 
+	if (timeLeft) {
+		board->GetTime()->SetTime(timeLeft);
+	}
+
 	DebugOut(L"[INFO] Done loading board resources \n");
 }
 
@@ -865,8 +890,8 @@ void CPlayScene::Update(DWORD dt)
 		return;
 	}
 
-	if ((player->GetUntouchable() && ((DWORD)GetTickCount64() - player->GetUntouchableStart()) < player->transform_duration_time) ||
-		(player->GetTransforming() && ((DWORD)GetTickCount64() - player->GetStartTransforming()) < player->transform_duration_time)) {
+	if ((player->GetUntouchable() && (int)(((DWORD)GetTickCount64() - player->GetUntouchableStart())) < player->transform_duration_time) ||
+		(player->GetTransforming() && (int)(((DWORD)GetTickCount64() - player->GetStartTransforming())) < player->transform_duration_time)) {
 
 		return;
 	}
@@ -1001,8 +1026,8 @@ void CPlayScene::Render()
 
 	sort(objectsInCamera.begin(), objectsInCamera.end(), cmp);
 
-	bool renderPause = ((player->GetUntouchable() && (DWORD)GetTickCount64() - player->GetUntouchableStart() < (DWORD)player->transform_duration_time) ||
-		(player->GetTransforming() && (DWORD)GetTickCount64() - player->GetStartTransforming() < player->transform_duration_time) ||
+	bool renderPause = ((player->GetUntouchable() && (int)((DWORD)GetTickCount64() - player->GetUntouchableStart()) < player->transform_duration_time) ||
+		(player->GetTransforming() && (int)((DWORD)GetTickCount64() - player->GetStartTransforming()) < player->transform_duration_time) ||
 		player->GetState() == MARIO_STATE_DIE || player->toExtraScene || player->gettingOutPipe);
 
 	/*if (!renderPause) {
@@ -1101,14 +1126,22 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->turnIntoSmall();
 						player->StartUntouchable();
+						//if (player->isDucking) player->y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
 						player->SetState(MARIO_STATE_DIE);
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->FireToBig();
+						player->StartUntouchable();
+						//if (player->isDucking) player->y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_DUCK_BBOX_HEIGHT);
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->RacoonToBig();
 						player->StartUntouchable();
+						//if(player->isDucking) player->y -= (MARIO_)
 					}
 				}
 			}
@@ -1123,6 +1156,11 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
 						player->SetState(MARIO_STATE_DIE);
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->FireToBig();
+						player->StartUntouchable();
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
 						player->SetStartTransforming((DWORD)GetTickCount64());
@@ -1160,13 +1198,19 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 
 					if (!koopas->GetHarmless() && mb > tmpy)
 					{
-						if (player->GetLevel() == MARIO_LEVEL_BIG)
-						{
-							//level = MARIO_LEVEL_SMALL;
+						if (player->GetLevel() == MARIO_LEVEL_BIG) {
 							player->SetBackupLevel(MARIO_LEVEL_SMALL);
 							player->SetBackupState(player->GetState());
 							player->SetStartTransforming((DWORD)GetTickCount64());
 							player->turnIntoSmall();
+							player->StartUntouchable();
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+							player->SetState(MARIO_STATE_DIE);
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->FireToBig();
 							player->StartUntouchable();
 						}
 						else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
@@ -1174,8 +1218,6 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 							player->RacoonToBig();
 							player->StartUntouchable();
 						}
-						else
-							player->SetState(MARIO_STATE_DIE);
 					}
 					else {
 						//kick
@@ -1214,13 +1256,19 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 
 					if (!koopas->GetHarmless() && mb > tmpy)
 					{
-						if (player->GetLevel() == MARIO_LEVEL_BIG)
-						{
-							//level = MARIO_LEVEL_SMALL;
+						if (player->GetLevel() == MARIO_LEVEL_BIG) {
 							player->SetBackupLevel(MARIO_LEVEL_SMALL);
 							player->SetBackupState(player->GetState());
 							player->SetStartTransforming((DWORD)GetTickCount64());
 							player->turnIntoSmall();
+							player->StartUntouchable();
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+							player->SetState(MARIO_STATE_DIE);
+						}
+						else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+							player->SetStartTransforming((DWORD)GetTickCount64());
+							player->FireToBig();
 							player->StartUntouchable();
 						}
 						else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
@@ -1228,8 +1276,6 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 							player->RacoonToBig();
 							player->StartUntouchable();
 						}
-						else
-							player->SetState(MARIO_STATE_DIE);
 					}
 					else {
 						//kick
@@ -1241,23 +1287,26 @@ void CPlayScene::handleCollisionsWithEnemiesAABB(vector<LPGAMEOBJECT>& collidabl
 			else if (dynamic_cast<Boomerang*>(obj)) {
 				if (!player->GetUntouchable())
 				{
-					if (player->GetLevel() == MARIO_LEVEL_BIG)
-					{
-						//level = MARIO_LEVEL_SMALL;
+					if (player->GetLevel() == MARIO_LEVEL_BIG) {
 						player->SetBackupLevel(MARIO_LEVEL_SMALL);
-						player->SetBackupLevel(player->GetState());
-						player->StartTransforming();
+						player->SetBackupState(player->GetState());
+						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->turnIntoSmall();
 						player->StartUntouchable();
-						player->StartTransforming();
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_SMALL) {
+						player->SetState(MARIO_STATE_DIE);
+					}
+					else if (player->GetLevel() == MARIO_LEVEL_FIRE) {
+						player->SetStartTransforming((DWORD)GetTickCount64());
+						player->FireToBig();
+						player->StartUntouchable();
 					}
 					else if (player->GetLevel() == MARIO_LEVEL_RACOON) {
 						player->SetStartTransforming((DWORD)GetTickCount64());
 						player->RacoonToBig();
 						player->StartUntouchable();
 					}
-					else
-						player->SetState(MARIO_STATE_DIE);
 				}
 			}
 		}
@@ -1286,7 +1335,17 @@ void CPlayScene::handleCollisionsWithItemsAABB(vector<LPGAMEOBJECT>& collidable_
 					player->turnIntoBig();
 				}
 			}
-			if (dynamic_cast<Leaf*>(obj)) {
+			else if (dynamic_cast<GreenMushroom*>(obj)) {
+				GreenMushroom* mushroom = dynamic_cast<GreenMushroom*>(obj);
+				float x, y;
+
+				mushroom->GetPosition(x, y);
+
+				LPGAMEOBJECT point = new Point(GREEN_MUSHROOM_POINT, x, y);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(MUSHROOM_POINT);
+			}
+			else if (dynamic_cast<Leaf*>(obj)) {
 				Leaf* leaf = dynamic_cast<Leaf*>(obj);
 
 				float pX, pY;
@@ -1360,9 +1419,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_1:
 		if (mario->GetLevel() == MARIO_LEVEL_SMALL) {
-			mario->ToRacoon();
+			mario->ToBig();
 		}
-		mario->SetLevel(MARIO_LEVEL_RACOON);
+		mario->SetStartTransforming((DWORD)GetTickCount64());
+		mario->BigToRacoon();
+		//mario->SetLevel(MARIO_LEVEL_RACOON);
 		break;
 	case DIK_2:
 		if (mario->GetLevel() != MARIO_LEVEL_BIG) {
@@ -1371,6 +1432,14 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			mario->SetStartTransforming((DWORD)GetTickCount64());
 			mario->turnIntoBig();
 		}
+		break;
+	case DIK_3:
+		if (mario->GetLevel() == MARIO_LEVEL_SMALL) {
+			mario->ToBig();
+		}
+		mario->SetStartTransforming((DWORD)GetTickCount64());
+		mario->BigToFire();
+
 		break;
 	case DIK_5:
 		mario->SetPosition(2560, 352);
@@ -1424,6 +1493,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->tailAttacked = 1;
 			mario->StartAttackingWithTail();
 		}
+		if (!mario->isAttackingFire && mario->GetLevel() == MARIO_LEVEL_FIRE) {
+			mario->StartAttackingWithFire();
+		}
 		mario->SetIsRunning(1);
 		mario->SetCanHold(1);
 		if (abs(mario->GetVx()) >= MARIO_RUNNING_SPEED)
@@ -1467,10 +1539,19 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	// disable control key when Mario die 
 
-	if (game->IsKeyDown(DIK_RIGHT))
+	if (game->IsKeyDown(DIK_RIGHT) && (mario->GetState() != MARIO_STATE_DUCK_LEFT && mario->GetState() != MARIO_STATE_DUCK_RIGHT)) {
 		mario->SetState(MARIO_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT)) {
+	}
+	else if (game->IsKeyDown(DIK_LEFT) && (mario->GetState() != MARIO_STATE_DUCK_LEFT && mario->GetState() != MARIO_STATE_DUCK_RIGHT)) {
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
+	}
+	else if (game->IsKeyDown(DIK_DOWN) && !mario->touchPortalPipe && (mario->GetLevel() == MARIO_LEVEL_BIG || mario->GetLevel() == MARIO_LEVEL_FIRE || mario->GetLevel() == MARIO_LEVEL_RACOON) && !mario->GetBeingHoldedObj()) {
+		if (mario->nx > 0) {
+			mario->SetState(MARIO_STATE_DUCK_RIGHT);
+		}
+		else {
+			mario->SetState(MARIO_STATE_DUCK_LEFT);
+		}
 	}
 	/*else if (game->IsKeyDown(DIK_S)) {
 		mario->SetState(MARIO_STATE_JUMP);

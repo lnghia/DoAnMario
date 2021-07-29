@@ -75,6 +75,11 @@ void PiranhaPlant::Render()
 		}
 	}
 	ani += level * PIRANHAPLANT_ANI_NUM;
+
+	if (state == PIRANHAPLANT_STATE_DIE) {
+		ani = PIRANHAPLANT_ANI_DIE;
+	}
+
 	currAni = ani;
 
 	animation_set->at(ani)->Render(x, y);
@@ -106,6 +111,11 @@ void PiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (x + PIRANHAPLANT_BBOX_WIDTH < camX || x > camX + screenWidth ||
 		y + PIRANHAPLANT_BBOX_HEIGHT < camY || y > camY + screenHeight) {
 		return;
+	}
+
+	if (state == PIRANHAPLANT_STATE_DIE && (int)((DWORD)GetTickCount64() - start_die > PIRANHAPLANT_DIE_TIME)) {
+		isActive = 0;
+		invisible = 1;
 	}
 
 	float playerLeft, playerTop, playerRight, playerBottom;
@@ -170,6 +180,11 @@ void PiranhaPlant::GetBoundingBox(float& l, float& t, float& r, float& b)
 void PiranhaPlant::SetState(int state)
 {
 	CGameObject::SetState(state);
+
+	if (state == PIRANHAPLANT_STATE_DIE) {
+		start_die = (DWORD)GetTickCount64();
+		interactivable = 0;
+	}
 }
 
 void PiranhaPlant::throwFlame()

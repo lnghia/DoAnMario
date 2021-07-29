@@ -40,6 +40,7 @@ RedKoopas::RedKoopas(short int nx, const int& x, const int& y, const int& w, con
 	interactivable = 1;
 	renderPriority = 101;
 	canBeStandOn = 1;
+	//outShell = 0;
 
 	this->nx = nx;
 	initNx = nx;
@@ -160,7 +161,7 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	for (UINT i = 0; i < coObjects->size(); ++i) {
 		LPGAMEOBJECT tmp = coObjects->at(i);
 
-		if (dynamic_cast<FireBall*>(coObjects->at(i)) || dynamic_cast<PiranhaPlant*>(coObjects->at(i)) || dynamic_cast<CBrick*>(coObjects->at(i)) || dynamic_cast<CMario*>(coObjects->at(i))) {
+		if (dynamic_cast<FireBall*>(coObjects->at(i)) || dynamic_cast<PiranhaPlant*>(coObjects->at(i)) || dynamic_cast<CBrick*>(coObjects->at(i)) || dynamic_cast<CMario*>(coObjects->at(i)) || dynamic_cast<FloatingCoin*>(coObjects->at(i))) {
 			coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), tmp), coObjects->end());
 		}
 	}
@@ -238,6 +239,13 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			//else if (dynamic_cast<FloatingCoin*>(e->obj)) {
+			//	x -= min_tx * dx + nx * 0.4f;
+			//	//y -= min_ty * dy + ny * 0.4f;
+
+			//	x += _dx;
+			//	y += _dy;
+			//}
 			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
 				if (e->ny < 0) {
 					vy = 0;
@@ -455,7 +463,7 @@ void RedKoopas::Render()
 {
 	int ani = KOOPAS_ANI_WALKING_LEFT;
 	if (state == KOOPAS_STATE_DIE) {
-		ani = KOOPAS_ANI_DIE;
+		ani = REDKOOPAS_ANI_IN_SHELL_UPWARD;
 	}
 	else if (state == KOOPAS_STATE_IN_SHELL) {
 		ani = (upward) ? REDKOOPAS_ANI_IN_SHELL_UPWARD : KOOPAS_ANI_SHELL_IDLE;

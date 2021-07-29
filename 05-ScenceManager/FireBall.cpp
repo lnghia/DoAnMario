@@ -83,12 +83,12 @@ void FireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						//mario->SetLevel(MARIO_LEVEL_SMALL);
 						mario->SetBackupLevel(MARIO_LEVEL_SMALL);
 						mario->SetBackupState(mario->GetState());
-						mario->SetStartTransforming(GetTickCount());
+						mario->SetStartTransforming((DWORD)GetTickCount64());
 						mario->turnIntoSmall();
 						mario->StartUntouchable();
 					}
 					else if (mario->GetLevel() == MARIO_LEVEL_RACOON) {
-						mario->SetStartTransforming(GetTickCount());
+						mario->SetStartTransforming((DWORD)GetTickCount64());
 						mario->RacoonToBig();
 						mario->StartUntouchable();
 					}
@@ -119,12 +119,17 @@ void FireBall::Render()
 	// ani = 2: fireball moves right
 	currAni = (vx <= 0);
 
-	animation_set->at(currAni)->Render(round(x), round(y));
+	
+
+	CAnimationSets::GetInstance()->Get(FIREBALL_ANI_SET)->at(currAni)->Render(x, y);
+
+	//animation_set->at(currAni)->Render(round(x), round(y));
 
 	//RenderBoundingBox();
 }
 
 void FireBall::RenderCurrFrame()
 {
-	animation_set->at(currAni)->RenderCurrFrame(x, y);
+	CAnimationSets::GetInstance()->Get(FIREBALL_ANI_SET)->at(currAni)->Render(x, y);
+
 }

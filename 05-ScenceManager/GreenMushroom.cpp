@@ -1,9 +1,7 @@
-#include "Mushroom.h"
+#include "GreenMushroom.h"
 #include "PlayScence.h"
-#include "Map.h"
 
-
-void Mushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
+void GreenMushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x;
 	r = x + MUSHROOM_BBOX_WIDTH;
@@ -11,7 +9,7 @@ void Mushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
 	b = y + MUSHROOM_BBOX_HEIGHT;
 }
 
-void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
+void GreenMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
 	if (y > Map::getInstance()->getHeight()) {
 		interactivable = 0;
@@ -37,7 +35,7 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 		else {
 			state = MUSHROOM_STATE_RUN;
 			y = containerY - 1 - MUSHROOM_BBOX_HEIGHT;
-			
+
 			if (dynamic_cast<CPlayScene*>(game->GetCurrentScene())) {
 				CPlayScene* playScene = dynamic_cast<CPlayScene*>(game->GetCurrentScene());
 
@@ -146,24 +144,16 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 					y += _dy;
 				}
 			}
-			else if (dynamic_cast<CGoomba*>(e->obj)) {
-				x -= min_tx * dx + nx * 0.4f;
-
-				x += _dx;
-				//y += _dy;
-			}
 		}
 	}
 
-	if(isActive) grid->putObjectIntoGrid(this);
+	if (isActive) grid->putObjectIntoGrid(this);
 
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
-void Mushroom::Render()
+void GreenMushroom::Render()
 {
 	animation_set->at(0)->Render(x, y);
 	//RenderBoundingBox();
 }
-
-

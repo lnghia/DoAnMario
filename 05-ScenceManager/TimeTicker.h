@@ -36,9 +36,11 @@ public:
 	void StopTicking();
 	void SetTime(int time);
 	void SetAniSet(int ani_set);
+	void SetStart(DWORD val);
 
 	bool GetIsTicking();
 	int GetCurrMoment();
+	DWORD GetStart();
 
 	void Reset();
 };

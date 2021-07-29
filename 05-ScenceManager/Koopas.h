@@ -87,6 +87,7 @@ public:
 
 	void Spawn();
 	virtual void GetHit(bool byTail, int nx);
+	virtual void GetHit(int nx);
 	void GetKicked(int nx);
 	bool GetBeingHolded();
 	void Die();

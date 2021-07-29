@@ -128,6 +128,7 @@ public:
 	virtual void RenderCurrFrame();
 	virtual void SetState(int state) { this->state = state; }
 	virtual void GetHit(bool byTail, int nx) {};
+	virtual void GetHit(int nx) {};
 	virtual void SetSceneId(int val) {};
 	virtual void SetGetOutPipeDirection(int val) {};
 	virtual void SetExitPoint(float ex, float ey, int width, int height) {};

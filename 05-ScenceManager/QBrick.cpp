@@ -3,6 +3,7 @@
 #include "Grid.h"
 #include "Board.h"
 #include "PlayScence.h"
+#include "GreenMushroom.h"
 
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
@@ -40,6 +41,11 @@ void QBrick::PopUpHiddenItem()
 
 		break;
 	}
+	case OBJECT_TYPE_GREEN_MUSHROOM: {
+		obj = new GreenMushroom(x, y);
+
+		break;
+	}
 	case OBJECT_TYPE_MUSHROOM: {
 		obj = new Mushroom(x, y);
 
@@ -48,7 +54,7 @@ void QBrick::PopUpHiddenItem()
 	case OBJECT_TYPE_LEAF:
 		CPlayScene* playScene = dynamic_cast<CPlayScene*>(game->GetCurrentScene());
 
-		if (playScene->GetPlayer()->GetLevel() == MARIO_LEVEL_BIG) {
+		if (playScene->GetPlayer()->GetLevel() > MARIO_LEVEL_SMALL) {
 			obj = new Leaf(x, y);
 		}
 		else if (playScene->GetPlayer()->GetLevel() == MARIO_LEVEL_RACOON) {

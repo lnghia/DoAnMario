@@ -245,7 +245,7 @@ void BoomerangGuy::FaceLeft()
 
 float BoomerangGuy::GetDirection()
 {
-	return nx;
+	return (float)nx;
 }
 
 CMario* BoomerangGuy::GetPlayer()

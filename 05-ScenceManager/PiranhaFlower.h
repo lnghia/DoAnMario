@@ -3,6 +3,10 @@
 
 #define SHORT_GREEN_FLOWER_BBOX_HEIGHT	24
 
+#define PIRANHAFLOWER_ANI_DIE	1
+
+#define PIRANHAFLOWER_STATE_DIE	8
+
 class PiranhaFlower : public PiranhaPlant
 {
 public:
@@ -11,5 +15,6 @@ public:
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
+	void SetState(int state);
 };
 
