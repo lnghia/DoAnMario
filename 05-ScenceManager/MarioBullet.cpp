@@ -7,7 +7,8 @@
 #include "Board.h"
 #include "BrokenBrick.h"
 #include "RedKoopas.h"
-
+#include "PiranhaPlant.h"
+#include "PiranhaFlower.h"
 
 
 MarioBullet::MarioBullet(int nx, int ny)
@@ -159,9 +160,36 @@ void MarioBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				interactivable = 0;
 
 				_obj->SetState(KOOPAS_STATE_DIE);
+
 				LPGAMEOBJECT point = new Point(GOOMBA_POINT, x, y);
 				Grid::GetInstance()->putObjectIntoGrid(point);
 				Board::GetInstance()->GetPoint()->Add(GOOMBA_POINT);
+			}
+			else if (dynamic_cast<PiranhaFlower*>(e->obj)) {
+				e->obj->SetState(PIRANHAFLOWER_STATE_DIE);
+
+				vx = 0;
+				vy = 0;
+				hitTarget = 1;
+				start_hit_target = (DWORD)GetTickCount64();
+				interactivable = 0;
+
+				LPGAMEOBJECT point = new Point(PIRANHAPLANT_POINT, x, y);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(PIRANHAPLANT_POINT);
+			}
+			else if (dynamic_cast<PiranhaPlant*>(e->obj)) {
+				e->obj->SetState(PIRANHAPLANT_STATE_DIE);
+
+				vx = 0;
+				vy = 0;
+				hitTarget = 1;
+				start_hit_target = (DWORD)GetTickCount64();
+				interactivable = 0;
+
+				LPGAMEOBJECT point = new Point(PIRANHAPLANT_POINT, x, y);
+				Grid::GetInstance()->putObjectIntoGrid(point);
+				Board::GetInstance()->GetPoint()->Add(PIRANHAPLANT_POINT);
 			}
 		}
 	}

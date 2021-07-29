@@ -23,6 +23,7 @@
 #define PIRANHAPLANT_ANI_TOPRIGHT_STILL		6
 #define PIRANHAPLANT_ANI_TOPRIGHT			7
 #define PIRANHAPLANT_ANI_SLEEP				8
+#define PIRANHAPLANT_ANI_DIE				16
 
 #define PIRANHAPLANT_AWAKE_TIME 2000
 #define PIRANHAPLANT_REST_TIME 900
@@ -31,12 +32,16 @@
 #define PIRANHAPLANT_STATE_NORMAL			0
 #define PIRANHAPLANT_STATE_SLEEP			1
 #define PIRANHAPLAN_STATE_AWAKE             2
+#define PIRANHAPLANT_STATE_DIE				3
 
 #define PIRANHAPLANT_AWAKE_SPEED -0.065f
 #define PIRANHAPLANT_SLEEP_SPEED 0.065f
 
 #define FLAME_ANI_SET_ID 610
 
+#define PIRANHAPLANT_DIE_TIME	400
+
+#define PIRANHAPLANT_POINT	100
 
 class PiranhaPlant : public CGameObject
 {
@@ -59,6 +64,8 @@ protected:
 	int level = 0;
 
 public:
+	DWORD start_die = NULL;
+
 	PiranhaPlant() {};
 	PiranhaPlant(float pipeX, float pipeY, float pipeWidth, float pipeHeight, LPGAMEOBJECT player, int level = 0);
 	void Render();

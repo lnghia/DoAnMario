@@ -27,7 +27,15 @@ PiranhaFlower::PiranhaFlower(float pipeX, float pipeY, float pipeWidth, float pi
 
 void PiranhaFlower::Render()
 {
-	animation_set->at(0)->Render(x, y);
+	int ani = 0;
+
+	if (state == PIRANHAFLOWER_STATE_DIE) {
+		ani = PIRANHAFLOWER_ANI_DIE;
+	}
+
+	currAni = ani;
+
+	animation_set->at(ani)->Render(x, y);
 	//RenderBoundingBox();
 }
 
@@ -55,6 +63,13 @@ void PiranhaFlower::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (x + PIRANHAPLANT_BBOX_WIDTH < camX || x > camX + screenWidth ||
 		y + PIRANHAPLANT_BBOX_HEIGHT < camY || y > camY + screenHeight) {
+		return;
+	}
+
+	if (state == PIRANHAFLOWER_STATE_DIE && (int)((DWORD)GetTickCount64() - start_die < PIRANHAPLANT_DIE_TIME)) {
+		isActive = 0;
+		invisible = 1;
+
 		return;
 	}
 
@@ -109,4 +124,14 @@ void PiranhaFlower::GetBoundingBox(float& l, float& t, float& r, float& b)
 	t = y;
 	r = x + PIRANHAPLANT_BBOX_WIDTH;
 	b = y + ((level == PIRANHAPLANT_LEVEL_BIG) ? PIRANHAPLANT_BBOX_HEIGHT : PIRANHAPLANT_BBOX_HEIGHT_SMALL);
+}
+
+void PiranhaFlower::SetState(int state)
+{
+	CGameObject::SetState(state);
+
+	if (state == PIRANHAFLOWER_STATE_DIE) {
+		start_die = (DWORD)GetTickCount64();
+		interactivable = 0;
+	}
 }
