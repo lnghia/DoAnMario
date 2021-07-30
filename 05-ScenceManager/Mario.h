@@ -462,6 +462,7 @@ public:
 	bool isDucking = 0;
 	bool touchMusicToHeavenBrick = 0;
 	bool fireAttacked = 0;
+	bool longJump = 0;
 
 	DWORD start_attacking_fire = NULL;
 	DWORD start_to_heaven = NULL;
@@ -580,7 +581,7 @@ public:
 	void RenderBigToRacoonTransforming();
 	void RenderBigToFireTransforming();
 
-	
+
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
@@ -684,8 +685,20 @@ public:
 
 	void StartFallingTail() {
 		if (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 150) {
-			state = MARIO_STATE_JUMP;
-			vy = -0.35f;
+			if (beingBouncedUp && (int)((DWORD)GetTickCount64() - start_prepare_bouncing_up) <= 150) {
+				vy = -0.35f;
+				if (touchMusicToHeavenBrick) {
+					toHeavenScene = 1;
+					vx = 0;
+					start_to_heaven = (DWORD)GetTickCount64();
+				}
+			}
+			else {
+				state = MARIO_STATE_JUMP;
+				vy = -0.35f;
+				return;
+			}
+
 			return;
 		}
 

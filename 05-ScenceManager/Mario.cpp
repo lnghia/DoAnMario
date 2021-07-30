@@ -235,6 +235,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				isGliding = 0;
 				isFallingTail = 0;
 				beingBouncedUp = 0;
+				longJump = 0;
 			}
 			//isJumping = isFlying = isFalling = !isStanding;
 
@@ -1247,6 +1248,17 @@ void CMario::SetState(int state)
 		break;
 	}
 	case MARIO_STATE_FLY:
+		/*if (beingBouncedUp && (int)((DWORD)GetTickCount64() - start_prepare_bouncing_up) <= 150) {
+			vy = -0.35f;
+			if (touchMusicToHeavenBrick) {
+				toHeavenScene = 1;
+				vx = 0;
+				start_to_heaven = (DWORD)GetTickCount64();
+			}
+		}
+		else if (!beingBouncedUp) {
+			StartFlying();
+		}*/
 		StartFlying();
 		break;
 	case MARIO_STATE_FALL:
