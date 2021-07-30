@@ -1406,7 +1406,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_S:
 		if ((mario->GetLevel() == MARIO_LEVEL_RACOON && mario->GetIsSliding() && mario->GetIsRunning()) || mario->GetIsFlying()) {
 			mario->SetState(MARIO_STATE_FLY);
-			mario->flyUp = 1;
 		}
 		else if (!mario->GetIsStanding() && mario->GetLevel() == MARIO_LEVEL_RACOON && !mario->GetIsFlying() && !mario->GetIsGliding() && !mario->GetIsFalling()) {
 			//mario->SetState(MARIO_STATE_FALL_TAIL);

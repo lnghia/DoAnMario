@@ -198,6 +198,13 @@
 #define MARIO_ANI_GET_IN_PIPE_RACOON	108
 #define MARIO_ANI_GET_IN_PIPE_FIRE		109
 
+#define MARIO_ANI_SMALL_DIVE_LEFT		110
+#define MARIO_ANI_SMALL_DIVE_RIGHT		111
+#define MARIO_ANI_BIG_DIVE_LEFT			112
+#define MARIO_ANI_BIG_DIVE_RIGHT		113
+#define MARIO_ANI_FIRE_DIVE_LEFT		114
+#define MARIO_ANI_FIRE_DIVE_RIGHT		115
+
 // Indexes are defined for filtering some common animations by level
 #define MARIO_ANI_IDLE_RIGHT	0
 #define MARIO_ANI_IDLE_LEFT		1
@@ -223,6 +230,8 @@
 #define MARIO_ANI_LIFT_IDLE_LEFT	21
 #define MARIO_ANI_KICK_RIGHT	22
 #define MARIO_ANI_KICK_LEFT		23
+#define MARIO_ANI_DIVE_LEFT		24
+#define MARIO_ANI_DIVE_RIGHT	25
 
 // ani in world map
 #define MARIO_ANI_SMALL_WOLRDMAP	0
@@ -358,7 +367,9 @@ class CMario : public CGameObject
 			MARIO_ANI_SMALL_IDLE_LIFT_RIGHT,
 			MARIO_ANI_SMALL_IDLE_LIFT_LEFT,
 			MARIO_ANI_SMALL_KICK_RIGHT,
-			MARIO_ANI_SMALL_KICK_LEFT
+			MARIO_ANI_SMALL_KICK_LEFT,
+			MARIO_ANI_SMALL_DIVE_LEFT,
+			MARIO_ANI_SMALL_DIVE_RIGHT
 		},
 		{
 			MARIO_ANI_BIG_IDLE_RIGHT,
@@ -384,7 +395,9 @@ class CMario : public CGameObject
 			MARIO_ANI_BIG_IDLE_LIFT_RIGHT,
 			MARIO_ANI_BIG_IDLE_LIFT_LEFT,
 			MARIO_ANI_BIG_KICK_RIGHT,
-			MARIO_ANI_BIG_KICK_LEFT
+			MARIO_ANI_BIG_KICK_LEFT,
+			MARIO_ANI_BIG_DIVE_LEFT,
+			MARIO_ANI_BIG_DIVE_RIGHT
 		},
 		{
 			MARIO_ANI_RACOON_IDLE_RIGHT,
@@ -410,7 +423,9 @@ class CMario : public CGameObject
 			MARIO_ANI_RACOON_IDLE_LIFT_RIGHT,
 			MARIO_ANI_RACOON_IDLE_LIFT_LEFT,
 			MARIO_ANI_RACOON_KICK_RIGHT,
-			MARIO_ANI_RACOON_KICK_LEFT
+			MARIO_ANI_RACOON_KICK_LEFT,
+			MARIO_ANI_RACOON_FLY_LEFT,
+			MARIO_ANI_RACOON_FLY_RIGHT
 		},
 		{
 			MARIO_ANI_FIRE_IDLE_RIGHT,
@@ -436,7 +451,9 @@ class CMario : public CGameObject
 			MARIO_ANI_FIRE_LIFT_IDLE_RIGHT,
 			MARIO_ANI_FIRE_LIFT_IDLE_LEFT,
 			MARIO_ANI_FIRE_KICK_RIGHT,
-			MARIO_ANI_FIRE_KICK_LEFT
+			MARIO_ANI_FIRE_KICK_LEFT,
+			MARIO_ANI_FIRE_DIVE_LEFT,
+			MARIO_ANI_FIRE_DIVE_RIGHT
 		}
 	};
 
@@ -482,7 +499,7 @@ public:
 	int GetLevel();
 	void StartUntouchable() { untouchable = 1; untouchable_start = (DWORD)GetTickCount64(); }
 
-	void StartFlying() { startFlying = (DWORD)GetTickCount64(); isFlying = 1; isFalling = 0; isStanding = 0; isGliding = 0; vy = MARIO_RACOON_FLY_VY; };
+	void StartFlying() { startFlying = (DWORD)GetTickCount64(); isFlying = 1; isFalling = 0; isStanding = 0; isGliding = 0; vy = MARIO_RACOON_FLY_VY; flyUp = 1; };
 	void StartGliding() {
 		isGliding = 1; isFalling = 0; isStanding = 0;
 		vy = MARIO_RACOON_GLIDE_VY;
@@ -684,7 +701,7 @@ public:
 	}
 
 	void StartFallingTail() {
-		if (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 150) {
+		if (beingBouncedUp && (int)((DWORD)GetTickCount64() - start_prepare_bouncing_up) <= 150) {
 			if (beingBouncedUp && (int)((DWORD)GetTickCount64() - start_prepare_bouncing_up) <= 150) {
 				vy = -0.35f;
 				if (touchMusicToHeavenBrick) {

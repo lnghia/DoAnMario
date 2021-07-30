@@ -1207,6 +1207,12 @@ void CMario::SetState(int state)
 		//vy = (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 180) ? -0.4f : -MARIO_JUMP_SPEED_Y;
 		isStanding = false;
 		isJumping = true;
+
+		if (isSliding && isRunning) {
+			longJump = 1;
+			vy = -0.36f;
+		}
+
 		break;
 	}
 	case MARIO_STATE_IDLE: {
@@ -1259,7 +1265,15 @@ void CMario::SetState(int state)
 		else if (!beingBouncedUp) {
 			StartFlying();
 		}*/
-		StartFlying();
+
+		if (!longJump && isSliding && isRunning) {
+			longJump = 1;
+			vy = -0.36f;
+		}
+		else {
+			StartFlying();
+		}
+
 		break;
 	case MARIO_STATE_FALL:
 		StartFalling();
@@ -1438,6 +1452,9 @@ int CMario::filterSomeCommonAniByLevel()
 	}
 	else if (isDucking) {
 		ani = (state == MARIO_STATE_DUCK_LEFT) ? animationsByLevel[level][MARIO_ANI_DUCK_LEFT] : animationsByLevel[level][MARIO_ANI_DUCK_RIGHT];
+	}
+	else if (longJump) {
+		ani = (nx > 0) ? animationsByLevel[level][MARIO_ANI_DIVE_RIGHT] : animationsByLevel[level][MARIO_ANI_DIVE_LEFT];
 	}
 	else if (isJumping) {
 		if (beingHoldedObj) {
