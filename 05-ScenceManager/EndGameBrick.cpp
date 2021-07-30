@@ -5,6 +5,7 @@ EndGameBrick::EndGameBrick()
 	isActive = 1;
 	interactivable = 1;
 	state = ENDGAME_BRICK_STATE_GATCHA;
+	renderPriority = 100;
 }
 
 void EndGameBrick::Render()
@@ -14,7 +15,7 @@ void EndGameBrick::Render()
 	currAni = ani;
 
 	animation_set->at(ani)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void EndGameBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
