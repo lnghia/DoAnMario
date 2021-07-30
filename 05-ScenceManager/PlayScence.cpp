@@ -1520,8 +1520,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->tailAttacked = 1;
 			mario->StartAttackingWithTail();
 		}
-		if (!mario->isAttackingFire && mario->GetLevel() == MARIO_LEVEL_FIRE) {
+		if (!mario->fireAttacked && mario->GetLevel() == MARIO_LEVEL_FIRE) {
 			mario->StartAttackingWithFire();
+			mario->fireAttacked = 1;
 		}
 		mario->SetIsRunning(1);
 		mario->SetCanHold(1);
@@ -1561,6 +1562,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		mario->SetIsRunning(0);
 		mario->SetIsSliding(0);
 		mario->tailAttacked = 0;
+		mario->fireAttacked = 0;
 	}
 	//DebugOut(L"%d\n", mario->GetNx());
 
