@@ -357,6 +357,12 @@ void WorldMapScene::Render()
 	Map::getInstance()->Draw();
 	Board::GetInstance()->Render();
 	player->Render();
+
+	for (auto& item : objects) {
+		if(!item->GetInvisible())
+			item->Render();
+	}
+
 	if (!gameOverMenu->GetInvisible()) {
 		gameOverMenu->Render();
 	}
