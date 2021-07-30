@@ -1,4 +1,5 @@
 #include "Displayer.h"
+#include "Utils.h"
 
 Displayer::Displayer()
 {
@@ -94,8 +95,10 @@ void Displayer::UpdatePos(float x, float y)
 	this->x = x;
 	this->y = y;
 
+	//DebugOut(L"%f\n", x);
+
 	for (auto& c : characters) {
-		c->SetPosition(x + i++ * DIGIT_BBOX_WIDTH, y);
+		c->SetPosition(x + (float)i++ * (float)DIGIT_BBOX_WIDTH, y);
 	}
 }
 

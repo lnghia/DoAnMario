@@ -16,6 +16,10 @@ CGameObject::CGameObject()
 	nx = 1;
 	currAni = 0;
 	animation_set = NULL;
+	dt = NULL;
+	dx = 0;
+	dy = 0;
+	state = 0;
 }
 
 void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

@@ -97,6 +97,8 @@ public:
 
 	void SetAniSet(int ani_set);
 
+	void RefreshPoint();
+
 	static Board* GetInstance();
 };
 

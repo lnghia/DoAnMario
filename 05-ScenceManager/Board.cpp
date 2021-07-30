@@ -16,6 +16,10 @@ Board::Board()
 	cardStack = new EndGameItemStack();
 	speedBar = new SpeedBar();
 
+	clock = NULL;
+	dollarSign = NULL;
+	worldField = NULL;
+
 	CGame* game = CGame::GetInstance();
 
 	x = game->GetCamX();
@@ -35,7 +39,7 @@ void Board::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 	CGame* game = CGame::GetInstance();
 
 	x = game->GetCamX();
-	y = game->GetCamY() + game->GetScreenHeight() - BOARD_BBOX_HEIGHT;
+	y = game->GetCamY() + game->GetScreenHeight() - (float)BOARD_BBOX_HEIGHT;
 
 	time->Update(dt);
 	speedBar->Update(dt);
@@ -224,6 +228,11 @@ int Board::LivesCount()
 void Board::SetAniSet(int ani_set)
 {
 	animation_set = CAnimationSets::GetInstance()->Get(ani_set);
+}
+
+void Board::RefreshPoint()
+{
+	point = new Displayer(7);
 }
 
 Board* Board::GetInstance()

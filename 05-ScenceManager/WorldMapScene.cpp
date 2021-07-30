@@ -326,7 +326,9 @@ void WorldMapScene::Load()
 
 void WorldMapScene::Update(DWORD dt)
 {
-	CGame::GetInstance()->SetCamPos(0.0f, 0.0f); // set Cam when game start
+	//CGame::GetInstance()->SetCamPos(0.0f, 0.0f); // set Cam when game start
+	//Board::GetInstance()->Update(dt);
+
 	Board::GetInstance()->Update(dt);
 
 	if (!Board::GetInstance()->GetLives()->GetContent()) {
@@ -525,11 +527,11 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 				Board::GetInstance()->SetLives(3);
 			}
 			else {
-				Map::getInstance()->unLoad();
+				//Map::getInstance()->unLoad();
 
 				((WorldMapScene*)scence)->gameOverMenu->SetInvisible(1);
 
-				CGame::GetInstance()->SwitchScene(4);
+				//CGame::GetInstance()->SwitchScene(4);
 				Board::GetInstance()->SetLives(3);
 				Board::GetInstance()->GetPoint()->SetContent(0);
 				Board::GetInstance()->GetMoney()->SetContent(0);

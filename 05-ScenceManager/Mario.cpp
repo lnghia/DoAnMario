@@ -554,9 +554,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				SetSpeed(0, 0);
 				Board::GetInstance()->GetTime()->StopTicking();
 				Board::GetInstance()->GetTime()->SetTime(0);
+				int point = Board::GetInstance()->GetPoint()->GetContent();
 				switchScene = 1;
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 				Board::GetInstance()->GetCardStack()->RefreshItemAni();
+				/*Board::GetInstance()->RefreshPoint();
+				Board::GetInstance()->GetPoint()->SetContent(point);*/
 				WorldMapScene* scene = (WorldMapScene*)CGame::GetInstance()->GetCurrentScene();
 				scene->SetMarioLevel(level);
 				scene->GetPlayer()->madeItToNextScene = 0;

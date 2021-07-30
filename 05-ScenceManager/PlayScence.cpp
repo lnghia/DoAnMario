@@ -1111,6 +1111,7 @@ void CPlayScene::Unload()
 	portalPipeImages.clear();
 	player = NULL;
 	courseBoard = NULL;
+	neaMusicBrickKoopas = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }

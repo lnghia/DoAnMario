@@ -108,7 +108,7 @@ void GreenMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 				if (mario->GetLevel() != MARIO_LEVEL_BIG) {
 					mario->SetBackupLevel(MARIO_LEVEL_BIG);
 					mario->SetBackupState(mario->GetState());
-					mario->SetStartTransforming(GetTickCount());
+					mario->SetStartTransforming((DWORD)GetTickCount64());
 					mario->turnIntoBig();
 				}
 			}
