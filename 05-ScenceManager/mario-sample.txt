@@ -9,3 +9,5 @@ start	0
 4	world_map_scene.txt	1
 5	sub_world_map_scene.txt	1
 6	extra_scene_1_1.txt	1
+7	scene_1_3.txt	1
+8	extra_scene_1_3.txt	1

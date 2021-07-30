@@ -39,7 +39,7 @@ Map::Map()
 
 Map::Map(LPCWSTR _tileSetPath, string _matrixIdsPath, string _mapInfoPath, char _seperatorOfMatrixIds, D3DCOLOR _transcolor)
 {
-
+	width = 0;
 	//CTextures::GetInstance()->Add()
 }
 
@@ -81,10 +81,10 @@ vector<int> Map::GetTilesOnCam()
 
 	int w = instance->GetScreenWidth();
 
-	int left = (instance->GetCamX() / (float)tileWidth);
-	int right = ((instance->GetCamX() + instance->GetScreenWidth()) / (float)tileWidth);
-	int top = (instance->GetCamY() / (float)tileHeight);
-	int bottom = ((instance->GetCamY() + instance->GetScreenHeight()) / (float)tileHeight);
+	int left = (int)(instance->GetCamX() / (float)tileWidth);
+	int right = (int)((instance->GetCamX() + instance->GetScreenWidth()) / (float)tileWidth);
+	int top = (int)(instance->GetCamY() / (float)tileHeight);
+	int bottom = (int)((instance->GetCamY() + instance->GetScreenHeight()) / (float)tileHeight);
 
 	return vector<int>{ left, right, top, bottom };
 	//return vector<int>{0, 175, 0, 26};
@@ -92,12 +92,12 @@ vector<int> Map::GetTilesOnCam()
 
 void Map::RenderBoundingBox(int x, int y)
 {
-	D3DXVECTOR3 p(x, y, 0);
+	D3DXVECTOR3 p((float)x, (float)y, 0);
 	RECT rect;
 
 	LPDIRECT3DTEXTURE9 bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
 
-	float l = x, t = y, r = l + tileWidth, b = t + tileHeight;
+	float l = (float)x, t = y, r = (float)(l + tileWidth), b = (float)(t + tileHeight);
 
 	//GetBoundingBox(l, t, r, b);
 	rect.left = 0;
@@ -105,7 +105,7 @@ void Map::RenderBoundingBox(int x, int y)
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(x, y, bbox, rect.left, rect.top, rect.right, rect.bottom, 100);
+	CGame::GetInstance()->Draw((float)x, (float)y, bbox, rect.left, rect.top, rect.right, rect.bottom, 100);
 }
 
 void Map::SetSpaceBetweenTiles(int val)
@@ -134,11 +134,11 @@ void Map::Draw()
 	//if(tilesOnCam[2]<0 || tilesOnCam[2]>=map.size())
 
 	for (int row = tilesOnCam[2]; row <= tilesOnCam[3]; ++row) {
-		if (row >= map.size()) {
+		if (row >= (int)map.size()) {
 			break;
 		}
 		for (int col = tilesOnCam[0]; col <= tilesOnCam[1]; ++col) {
-			if (col >= map[row].size()) {
+			if (col >= (int)map[row].size()) {
 				break;
 			}
 
@@ -152,7 +152,7 @@ void Map::Draw()
 			int top = _r * tileHeight + _r * spaceBetweenTiles;
 			int bottom = top + tileHeight;
 
-			CGame::GetInstance()->Draw(col * tileHeight, row * tileWidth, tileSetTexture, left, top, right, bottom);
+			CGame::GetInstance()->Draw((float)(col * tileHeight), (float)(row * tileWidth), tileSetTexture, left, top, right, bottom);
 
 			//RenderBoundingBox(col * tileHeight, row * tileWidth);
 		}

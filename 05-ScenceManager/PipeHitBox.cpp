@@ -18,3 +18,12 @@ void PipeHitBox::GetBoundingBox(float& l, float& t, float& r, float& b)
 	b = y + height;
 }
 
+int PipeHitBox::GetHeight()
+{
+	return height;
+}
+
+int PipeHitBox::GetWidth()
+{
+	return width;
+}

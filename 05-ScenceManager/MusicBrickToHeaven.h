@@ -9,9 +9,14 @@
 #define ItemType first
 #define ItemAni	second
 
+#define MUSICBRICKPORTAL_STATE_INVISIBLE	0
+#define MUSICBRICKPORTAL_STATE_APPEAR		1
+#define MUSICBRICKPORTAL_STATE_SINK			2
 
+#define MUSICBRICKPORTAL_ANI_APPEAR			0
+#define MUSICBRICKPORTAL_ANI_SINK			1
 
-class NoteBrick : public CGameObject
+class MusicBrickToHeaven : public CGameObject
 {
 	float oldX = 0;
 	float oldY = 0;
@@ -21,16 +26,19 @@ class NoteBrick : public CGameObject
 	bool hopUp = 0;
 	bool moveDown = 0;
 
-	stack<pair<int, int>> hiddenItemTypes;
 public:
-	NoteBrick() {
+	int heavenSceneId = 0;
+
+	MusicBrickToHeaven() {
 		renderPriority = 101;
 
 		canBeStandOn = 1;
 
 		currAni = 0;
+
+		invisible = 1;
 	};
-	NoteBrick(float x, float y) {
+	MusicBrickToHeaven(float x, float y) {
 		this->x = x;
 		this->y = y;
 		oldY = y;
@@ -40,6 +48,8 @@ public:
 		canBeStandOn = 1;
 
 		currAni = 0;
+
+		invisible = 1;
 	}
 	/*NoteBrick(const int& hiddenItem, const int& hiddenItemAni, const int& backupItem = -1, const int& backupItemAni = -1) {
 		this->hiddenItem = hiddenItem;
@@ -61,12 +71,6 @@ public:
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void RenderCurrFrame();
-	
-	void AddHiddenItem(int hiddenItem, int hiddenItemAni) {
-		hiddenItemTypes.push({ hiddenItem, hiddenItemAni });
-	}
-
-	virtual void DropHiddenItem();
 
 	virtual void HopUpABit();
 

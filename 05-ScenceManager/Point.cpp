@@ -80,10 +80,10 @@ void Point::Render()
 void Point::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
 	if (!fly_start) {
-		fly_start = GetTickCount64();
+		fly_start = (DWORD)GetTickCount64();
 	}
 
-	if (GetTickCount64() - fly_start < POINT_FLY_TIME) {
+	if ((int)((DWORD)GetTickCount64() - fly_start) < POINT_FLY_TIME) {
 		vy += POINT_GRAVITY * dt;
 
 		CGameObject::Update(dt);

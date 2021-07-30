@@ -19,7 +19,7 @@
 #include "PortalPipe.h"
 #include "GreenMushroom.h"
 #include "PSwitch.h"
-
+#include "MusicBrickToHeaven.h"
 
 #include "ObjectCheatSheet.h"
 
@@ -168,7 +168,7 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		break;
 	}
 	case OBJECT_TYPE_QBRICK: {
-		int hiddenItemType = atoi(tokens[5].c_str());
+			int hiddenItemType = atoi(tokens[5].c_str());
 		int	hiddenItemAni = atoi(tokens[6].c_str());
 
 		if (tokens.size() > 7) {
@@ -204,6 +204,10 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		int w = atoi(tokens[9].c_str());
 
 		obj = new RedKoopas(initMovingDirec, x, y, w, h);
+
+		if ((int)tokens.size() > 10) {
+			neaMusicBrickKoopas = (RedKoopas*)obj;
+		}
 
 		break;
 	}
@@ -324,7 +328,7 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 		int item;
 		int ani;
 
-		for (UINT i = 4; i < tokens.size(); i += 2) {
+		for (UINT i = 5; i < tokens.size(); i += 2) {
 			item = (int)atoi(tokens[i].c_str());
 			ani = (int)atoi(tokens[i + 1].c_str());
 
@@ -336,6 +340,14 @@ void CPlayScene::_ParseSection_OBJECTS(const string& line)
 	case OBJECT_TYPE_NOTE_BRICK: {
 		obj = new NoteBrick(x, y);
 
+		break;
+	}
+	case OBJECT_TYPE_MUSIC_TO_HEAVEN_BRICK: {
+		int heavenId = (int)atoi(tokens[5].c_str());
+
+		obj = new MusicBrickToHeaven(x, y);
+		((MusicBrickToHeaven*)obj)->heavenSceneId = heavenId;
+		
 		break;
 	}
 	case OBJECT_TYPE_ENDGAME_BRICK: {
@@ -713,6 +725,14 @@ void CPlayScene::_ParseSection_MAP(const string& line)
 		stoi(tokens[6]),
 		stoi(tokens[7]));
 
+	if (tokens.size() > 8) {
+		int tilesGap = stoi(tokens[8]);
+		Map::getInstance()->SetSpaceBetweenTiles(tilesGap);
+	}
+	else {
+		Map::getInstance()->SetSpaceBetweenTiles(1);
+	}
+
 	CGame* game = CGame::GetInstance();
 
 	if (Map::getInstance()->getHeight() < game->GetScreenHeight()) {
@@ -793,8 +813,8 @@ void CPlayScene::Load()
 	//ofstream w1, w2;
 
 	f.open(sceneFilePath);
-	/*w1.open(L"gen\\grid_extra_1_1.txt");
-	w2.open(L"gen\\extra_1_1_objs.txt");*/
+	/*w1.open(L"gen\\extra_1_3_grid.txt");
+	w2.open(L"gen\\extra_1_3.txt");*/
 
 	// current resource section flag
 	int section = SCENE_SECTION_UNKNOWN;
@@ -896,7 +916,7 @@ void CPlayScene::Update(DWORD dt)
 		return;
 	}
 
-	if (player->toExtraScene || player->gettingOutPipe) {
+	if (player->toExtraScene || player->gettingOutPipe || player->toHeavenScene) {
 		player->Update(dt);
 		Board::GetInstance()->Update(dt);
 
@@ -1028,7 +1048,7 @@ void CPlayScene::Render()
 
 	bool renderPause = ((player->GetUntouchable() && (int)((DWORD)GetTickCount64() - player->GetUntouchableStart()) < player->transform_duration_time) ||
 		(player->GetTransforming() && (int)((DWORD)GetTickCount64() - player->GetStartTransforming()) < player->transform_duration_time) ||
-		player->GetState() == MARIO_STATE_DIE || player->toExtraScene || player->gettingOutPipe);
+		player->GetState() == MARIO_STATE_DIE || player->toExtraScene || player->gettingOutPipe || player->toHeavenScene);
 
 	/*if (!renderPause) {
 		player->SetState(MARIO_STATE_IDLE);
@@ -1058,7 +1078,7 @@ void CPlayScene::Render()
 		}
 	}*/
 
-	if (renderPause && player->toExtraScene || player->gettingOutPipe) {
+	if (renderPause && player->toExtraScene || player->gettingOutPipe || player->toHeavenScene) {
 		player->Render();
 	}
 	else if (renderPause && player->GetState() != MARIO_STATE_DIE) {
@@ -1447,6 +1467,13 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_6:
 		mario->SetPosition(2256, 64);
 		CGame::GetInstance()->SetCamPos(2096, 32);
+		break;
+	case DIK_9:
+		mario->SetPosition(645, 301);
+		((CPlayScene*)scence)->neaMusicBrickKoopas->InShell();
+		break;
+	case DIK_0:
+		mario->SetPosition(2328, 371);
 		break;
 	default:
 		if (mario->GetIsFlying()) {

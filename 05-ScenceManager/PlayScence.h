@@ -46,6 +46,7 @@ protected:
 public:
 	unordered_map<int, LPGAMEOBJECT> objs_with_id;
 	vector<LPGAMEOBJECT> portalPipeImages;
+	RedKoopas* neaMusicBrickKoopas = NULL;
 
 	int timeLeft = 0;
 

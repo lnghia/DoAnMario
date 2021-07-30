@@ -29,6 +29,7 @@
 #include "PortalPipe.h"
 #include "GreenMushroom.h"
 #include "PSwitch.h"
+#include "MusicBrickToHeaven.h"
 
 #include "Map.h"
 #include "Board.h"
@@ -101,6 +102,32 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			scene->GetPlayer()->exitY = this->exitY;
 			scene->GetPlayer()->exitWidth = this->exitWidth;
 			scene->GetPlayer()->exitHeight = this->exitHeight;
+		}
+
+		return;
+	}
+	else if (toHeavenScene) {
+		CGameObject::Update(dt);
+		x += dx;
+		y += dy;
+
+		float ml, mt, mr, mb;
+
+		GetBoundingBox(ml, mt, mr, mb);
+
+		if ((int)((DWORD)GetTickCount64() - start_to_heaven) >= MARIO_TO_HEAVEN_TIME) {
+			SetSpeed(0, 0);
+			Board::GetInstance()->GetTime()->StopTicking();
+			//Board::GetInstance()->GetTime()->SetTime(0);
+			//Map::getInstance()->unLoad();
+			int timeLeft = Board::GetInstance()->GetTime()->GetCurrMoment();
+			DWORD start_time = Board::GetInstance()->GetTime()->GetStart();
+			CGame::GetInstance()->SwitchScene(heavenSceneId);
+			Board::GetInstance()->GetCardStack()->RefreshItemAni();
+			Board::GetInstance()->GetTime()->SetStart(start_time);
+			Board::GetInstance()->GetTime()->SetTime(timeLeft);
+			WorldMapScene* scene = (WorldMapScene*)CGame::GetInstance()->GetCurrentScene();
+			scene->SetMarioLevel(level);
 		}
 
 		return;
@@ -189,6 +216,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		float temp = vy;
 		bool standingOnPortalPipe = 0;
+		bool standingOnMusicToHeaven = 0;
 
 		//
 		// Collision logic with other objects
@@ -483,7 +511,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<PSwitch*>(e->obj)) {
 				PSwitch* psw = dynamic_cast<PSwitch*>(e->obj);
-				
+
 				if (e->nx) {
 					vx = 0;
 					isRunning = 0;
@@ -530,6 +558,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				Board::GetInstance()->GetCardStack()->RefreshItemAni();
 				WorldMapScene* scene = (WorldMapScene*)CGame::GetInstance()->GetCurrentScene();
 				scene->SetMarioLevel(level);
+				scene->GetPlayer()->madeItToNextScene = 0;
 			}
 			else if (dynamic_cast<FireBall*>(e->obj)) {
 				x -= min_tx * dx + nx * 0.4f;
@@ -648,6 +677,35 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				else if (e->ny) {
 					vy = 0;
+				}
+			}
+			else if (dynamic_cast<MusicBrickToHeaven*>(e->obj)) {
+				if (e->nx != 0) {
+					vx = 0;
+					isRunning = 0;
+					isSliding = 0;
+				}
+				else if (e->ny != 0) vy = 0;
+
+				if (e->ny > 0) {
+					MusicBrickToHeaven* qBrick = dynamic_cast<MusicBrickToHeaven*>(e->obj);
+
+					qBrick->HopUpABit();
+				}
+				else if (e->ny < 0) {
+					MusicBrickToHeaven* qBrick = dynamic_cast<MusicBrickToHeaven*>(e->obj);
+
+					qBrick->MoveDownABit();
+					vy = -MARIO_JUMP_SPEED_Y;
+					state = MARIO_STATE_JUMP;
+					isJumping = 1;
+					isStanding = 0;
+					beingBouncedUp = 1;
+					start_prepare_bouncing_up = (DWORD)GetTickCount64();
+					vx = (vx > 0) ? 0.05f : -0.05f;
+					standingOnMusicToHeaven = 1;
+					touchMusicToHeavenBrick = 1;
+					heavenSceneId = qBrick->heavenSceneId;
 				}
 			}
 			else if (dynamic_cast<NoteBrick*>(e->obj)) {
@@ -774,6 +832,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				madeItToNextScene = 1;
 			}
 			else if (dynamic_cast<Boomerang*>(e->obj)) {
+				if (e->ny) {
+					y -= min_ty * dy + ny * 0.4f;
+				}
+
 				if (untouchable == 0)
 				{
 					if (level == MARIO_LEVEL_BIG)
@@ -845,6 +907,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 
 			touchPortalPipe = standingOnPortalPipe;
+			touchMusicToHeavenBrick = standingOnMusicToHeaven;
 		}
 	}
 
@@ -890,11 +953,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-	if (y > Map::getInstance()->getHeight() && !madeItToNextScene) {
+	DebugOut(L"%d\n", (y >= Map::getInstance()->getHeight() - MAP_BELOW_SPARE_SPACE && !madeItToNextScene));
+	if (y >= Map::getInstance()->getHeight() - MAP_BELOW_SPARE_SPACE && !madeItToNextScene) {
 		//Reset();
-		Map::getInstance()->unLoad();
+		
 		//Grid::GetInstance()->unload();
 		SetSpeed(0, 0);
+		Map::getInstance()->unLoad();
 		Board::GetInstance()->GetTime()->StopTicking();
 		Board::GetInstance()->GetTime()->SetTime(0);
 		Board::GetInstance()->GetLives()->Sub(1);
@@ -1124,8 +1189,13 @@ void CMario::SetState(int state)
 		else {
 			vy = -MARIO_JUMP_SPEED_Y;
 		}*/
-		if (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 150) {
+		if (beingBouncedUp && (int)((DWORD)GetTickCount64() - start_prepare_bouncing_up) <= 150) {
 			vy = -0.35f;
+			if (touchMusicToHeavenBrick) {
+				toHeavenScene = 1;
+				vx = 0;
+				start_to_heaven = (DWORD)GetTickCount64();
+			}
 		}
 		else if (!beingBouncedUp) {
 			vy = -MARIO_JUMP_SPEED_Y;
@@ -1133,7 +1203,7 @@ void CMario::SetState(int state)
 
 		//vy = (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 180) ? -0.4f : -MARIO_JUMP_SPEED_Y;
 		isStanding = false;
-		isJumping = true;
+			isJumping = true;
 		break;
 	}
 	case MARIO_STATE_IDLE: {

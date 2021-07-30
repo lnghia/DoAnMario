@@ -155,6 +155,14 @@ void IntroScene::_ParseSection_MAP(const string& line)
 		stoi(tokens[6]),
 		stoi(tokens[7]));
 
+	if (tokens.size() > 8) {
+		int tilesGap = stoi(tokens[8]);
+		Map::getInstance()->SetSpaceBetweenTiles(tilesGap);
+	}
+	else {
+		Map::getInstance()->SetSpaceBetweenTiles(1);
+	}
+
 	CGame* game = CGame::GetInstance();
 
 	game->SetCamPos(0.0f, (float)(Map::getInstance()->getHeight() - game->GetScreenHeight() - 1));

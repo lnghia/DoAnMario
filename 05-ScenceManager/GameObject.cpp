@@ -80,7 +80,7 @@ void CGameObject::CalcPotentialCollisions(
 	vector<LPCOLLISIONEVENT>& coEvents)
 {
 	float l1, r1, t1, b1;
-	float l2, r2, t2, b2;
+	//float l2, r2, t2, b2;
 
 	GetBoundingBox(l1, t1, r1, b1);
 

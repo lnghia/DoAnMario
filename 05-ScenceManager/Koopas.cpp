@@ -192,6 +192,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else {
 						vy = 0;
+						if (state == KOOPAS_STATE_IN_SHELL) {
+							vx = 0;
+						}
 					}
 				}
 				else {
@@ -288,9 +291,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						if (state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT) {
 							if (vx > 0) {
 								SetState(KOOPAS_STATE_WALKING_LEFT);
+								x -= 0.05f;
 							}
 							else {
 								SetState(KOOPAS_STATE_WALKING_RIGHT);
+								x += 0.05f;
 							}
 						}
 						else if (state == KOOPAS_STATE_SPIN) {
@@ -304,6 +309,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (ny) {
 					vy = 0;
+					
 				}
 			}
 			else if (dynamic_cast<BoomerangGuy*>(e->obj)) {

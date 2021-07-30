@@ -30,3 +30,13 @@ void Ground::GetBoundingBox(float& l, float& t, float& r, float& b)
 	r = l + width;
 	b = t + height;
 }
+
+int Ground::GetWidth()
+{
+	return width;
+}
+
+int Ground::GetHeight()
+{
+	return height;
+}
