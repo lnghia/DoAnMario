@@ -461,6 +461,7 @@ public:
 	bool isAttackingFire = 0;
 	bool isDucking = 0;
 	bool touchMusicToHeavenBrick = 0;
+	bool fireAttacked = 0;
 
 	DWORD start_attacking_fire = NULL;
 	DWORD start_to_heaven = NULL;
