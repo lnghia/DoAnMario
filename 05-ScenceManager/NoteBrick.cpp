@@ -16,14 +16,19 @@ void NoteBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 void NoteBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
-	if (hopUp && (DWORD)GetTickCount64() - start_hopUp >= 150) {
+	if (hopUp && (int)((DWORD)GetTickCount64() - start_hopUp) >= NOTEBRICK_HOP_SINK_TIME) {
 		y = oldY;
 		hopUp = 0;
 		//interactivable = 1;
 	}
-	else if (moveDown && (DWORD)GetTickCount64() - start_moveDown >= 150) {
+	else if (moveDown && (int)((DWORD)GetTickCount64() - start_moveDown) >= NOTEBRICK_HOP_SINK_TIME) {
 		y = oldY;
 		moveDown = 0;
+	}
+	else if (moveHorizontally && (int)((DWORD)GetTickCount64() - start_moveHorizontally) >= NOTEBRICK_HOP_SINK_TIME) {
+		x = oldX;
+		moveHorizontally = 0;
+		moveDirect = 0;
 	}
 }
 
@@ -81,6 +86,17 @@ void NoteBrick::HopUpABit()
 		hopUp = 1;
 		start_hopUp = (DWORD)GetTickCount64();
 		y -= 3.0f;
+	}
+}
+
+void NoteBrick::MoveHorizontallyABit(int nx)
+{
+	if (!moveHorizontally) {
+		oldX = x;
+		moveHorizontally = 1;
+		moveDirect = nx;
+		start_moveHorizontally = (DWORD)GetTickCount64();
+		x += (nx > 0) ? 3.0f : -3.0f;
 	}
 }
 

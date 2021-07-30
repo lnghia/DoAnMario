@@ -9,7 +9,7 @@
 #define ItemType first
 #define ItemAni	second
 
-
+#define NOTEBRICK_HOP_SINK_TIME	150
 
 class NoteBrick : public CGameObject
 {
@@ -18,8 +18,11 @@ class NoteBrick : public CGameObject
 
 	DWORD start_hopUp = NULL;
 	DWORD start_moveDown = NULL;
+	DWORD start_moveHorizontally = NULL;
 	bool hopUp = 0;
 	bool moveDown = 0;
+	bool moveHorizontally = 0;
+	int moveDirect = 0;
 
 	stack<pair<int, int>> hiddenItemTypes;
 public:
@@ -69,6 +72,8 @@ public:
 	virtual void DropHiddenItem();
 
 	virtual void HopUpABit();
+
+	virtual void MoveHorizontallyABit(int nx);
 
 	virtual void MoveDownABit();
 };

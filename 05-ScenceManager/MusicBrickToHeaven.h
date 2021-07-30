@@ -16,6 +16,8 @@
 #define MUSICBRICKPORTAL_ANI_APPEAR			0
 #define MUSICBRICKPORTAL_ANI_SINK			1
 
+#define MUSICBRICKPORTAL_HOP_SINK_TIME		150
+
 class MusicBrickToHeaven : public CGameObject
 {
 	float oldX = 0;
@@ -23,8 +25,12 @@ class MusicBrickToHeaven : public CGameObject
 
 	DWORD start_hopUp = NULL;
 	DWORD start_moveDown = NULL;
+	DWORD start_moveHorizontally = NULL;
 	bool hopUp = 0;
 	bool moveDown = 0;
+	bool moveHorizontally = 0;
+	int moveDirect = 0;
+	
 
 public:
 	int heavenSceneId = 0;
@@ -73,6 +79,8 @@ public:
 	virtual void RenderCurrFrame();
 
 	virtual void HopUpABit();
+
+	virtual void MoveHorizontallyABit(int nx);
 
 	virtual void MoveDownABit();
 };

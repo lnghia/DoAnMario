@@ -685,9 +685,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<MusicBrickToHeaven*>(e->obj)) {
 				if (e->nx != 0) {
+					MusicBrickToHeaven* qBrick = dynamic_cast<MusicBrickToHeaven*>(e->obj);
+
 					vx = 0;
 					isRunning = 0;
 					isSliding = 0;
+					if (e->nx > 0) {
+						qBrick->MoveHorizontallyABit(-1);
+						vx = MARIO_VX_MUSIC_BRICK_DEFLECT;
+					}
+					else {
+						qBrick->MoveHorizontallyABit(1);
+						vx = -MARIO_VX_MUSIC_BRICK_DEFLECT;
+					}
 				}
 				else if (e->ny != 0) vy = 0;
 
@@ -695,6 +705,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					MusicBrickToHeaven* qBrick = dynamic_cast<MusicBrickToHeaven*>(e->obj);
 
 					qBrick->HopUpABit();
+
+					vy = MARIO_VX_MUSIC_BRICK_DEFLECT;
 				}
 				else if (e->ny < 0) {
 					MusicBrickToHeaven* qBrick = dynamic_cast<MusicBrickToHeaven*>(e->obj);
@@ -714,9 +726,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<NoteBrick*>(e->obj)) {
 				if (e->nx != 0) {
+					NoteBrick* qBrick = dynamic_cast<NoteBrick*>(e->obj);
+
 					vx = 0;
 					isRunning = 0;
 					isSliding = 0;
+					if (e->nx > 0) {
+						qBrick->MoveHorizontallyABit(-1);
+						vx = MARIO_VX_MUSIC_BRICK_DEFLECT;
+					}
+					else {
+						qBrick->MoveHorizontallyABit(1);
+						vx = -MARIO_VX_MUSIC_BRICK_DEFLECT;
+					}
 				}
 				else if (e->ny != 0) vy = 0;
 
@@ -724,6 +746,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					NoteBrick* qBrick = dynamic_cast<NoteBrick*>(e->obj);
 
 					qBrick->HopUpABit();
+
+					vy = MARIO_VX_MUSIC_BRICK_DEFLECT;
 				}
 				else if (e->ny < 0) {
 					NoteBrick* qBrick = dynamic_cast<NoteBrick*>(e->obj);

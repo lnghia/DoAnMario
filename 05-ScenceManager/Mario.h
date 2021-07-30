@@ -290,6 +290,8 @@
 
 #define MAP_BELOW_SPARE_SPACE	32
 
+#define MARIO_VX_MUSIC_BRICK_DEFLECT	0.08f
+#define MARIO_VY_MUSIC_BRICK_DEFLECT	0.08f
 
 class CMario : public CGameObject
 {
