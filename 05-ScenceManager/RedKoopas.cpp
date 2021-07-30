@@ -234,6 +234,26 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (ny) {
 					vy = 0;
+					beneathSurfaceX = e->obj->x;
+					beneathSurfaceY = e->obj->y;
+
+					if (dynamic_cast<CBrick*>(e->obj)) {
+						beneathSurfaceW = BRICK_BBOX_WIDTH;
+						beneathSurfaceH = BRICK_BBOX_HEIGHT;
+					}
+					else if (dynamic_cast<PipeHitBox*>(e->obj)) {
+						PipeHitBox* tmpObj = dynamic_cast<PipeHitBox*>(e->obj);
+
+						beneathSurfaceW = tmpObj->GetWidth();
+						beneathSurfaceH = tmpObj->GetHeight();
+					}
+					else if (dynamic_cast<Ground*>(e->obj)) {
+						Ground* tmpObj = dynamic_cast<Ground*>(e->obj);
+
+						beneathSurfaceW = tmpObj->GetWidth();
+						beneathSurfaceH = tmpObj->GetHeight();
+					}
+
 					if (state == KOOPAS_STATE_IN_SHELL) {
 						vx = 0;
 					}
@@ -247,11 +267,16 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			//	y += _dy;
 			//}
 			else if (dynamic_cast<ColorBrickHitBox*>(e->obj)) {
+				ColorBrickHitBox* tmpObj = dynamic_cast<ColorBrickHitBox*>(e->obj);
+
 				if (e->ny < 0) {
 					vy = 0;
 					if (state == KOOPAS_STATE_IN_SHELL) {
 						vx = 0;
 					}
+
+					beneathSurfaceW = tmpObj->GetWidth();
+					beneathSurfaceH = tmpObj->GetHeight();
 				}
 				else {
 					x -= min_tx * dx + nx * 0.4f;

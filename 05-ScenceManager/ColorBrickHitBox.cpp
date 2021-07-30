@@ -27,3 +27,13 @@ void ColorBrickHitBox::GetBoundingBox(float& l, float& t, float& r, float& b)
 	r = x + width;
 	b = y + height;
 }
+
+int ColorBrickHitBox::GetWidth()
+{
+	return width;
+}
+
+int ColorBrickHitBox::GetHeight()
+{
+	return height;
+}

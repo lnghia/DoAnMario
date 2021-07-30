@@ -162,6 +162,7 @@
     <ClCompile Include="MarioBullet.cpp" />
     <ClCompile Include="MoneyCounter.cpp" />
     <ClCompile Include="Mushroom.cpp" />
+    <ClCompile Include="MusicBrickToHeaven.cpp" />
     <ClCompile Include="Musroom.cpp" />
     <ClCompile Include="NoteBrick.cpp" />
     <ClCompile Include="PipeHitBox.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="MarioBullet.h" />
     <ClInclude Include="MoneyCounter.h" />
     <ClInclude Include="Mushroom.h" />
+    <ClInclude Include="MusicBrickToHeaven.h" />
     <ClInclude Include="Musroom.h" />
     <ClInclude Include="NoteBrick.h" />
     <ClInclude Include="ObjectCheatSheet.h" />

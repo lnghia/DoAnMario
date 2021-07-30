@@ -25,7 +25,7 @@
 #define MARIO_WALKING_ACCELERATION	0.002f
 
 //0.1f
-#define MARIO_JUMP_SPEED_Y		0.3f
+#define MARIO_JUMP_SPEED_Y		0.32f
 #define MARIO_JUMP_DEFLECT_SPEED 0.2f
 #define MARIO_GRAVITY			0.0008f
 #define MARIO_DIE_DEFLECT_SPEED	 0.3f
@@ -277,6 +277,10 @@
 
 #define MARIO_FIRE_HEAD_TO_HAND		7
 
+#define MARIO_TO_HEAVEN_TIME	500
+
+#define MAP_BELOW_SPARE_SPACE	32
+
 
 class CMario : public CGameObject
 {
@@ -443,9 +447,11 @@ public:
 	int exitWidth = 0, exitHeight = 0;
 	int exitDirect = -1;
 	bool toExtraScene = 0;
+	bool toHeavenScene = 0;
 
 	int climax = 0;
 	int extraSceneId = 0;
+	int heavenSceneId = 0;
 
 	bool flyUp = 0;
 	bool hasJustKicked = 0;
@@ -454,8 +460,10 @@ public:
 	bool gettingOutPipe = 0;
 	bool isAttackingFire = 0;
 	bool isDucking = 0;
+	bool touchMusicToHeavenBrick = 0;
 
 	DWORD start_attacking_fire = NULL;
+	DWORD start_to_heaven = NULL;
 
 	float xInWorldMap = 0;
 	float yInWorldMap = 0;

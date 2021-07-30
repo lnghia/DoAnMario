@@ -29,12 +29,12 @@ float PortalPipe::GetSpawnY()
 
 float PortalPipe::GetWidth()
 {
-	return width;
+	return (float)width;
 }
 
 float PortalPipe::GetHeight()
 {
-	return height;
+	return (float)height;
 }
 
 void PortalPipe::SetSceneId(int val)

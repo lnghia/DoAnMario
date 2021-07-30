@@ -7,6 +7,7 @@
 #include "Board.h"
 #include "BangEffect.h"
 #include "BrokenQuestionBrick.h"
+#include "QBrick.h"
 
 Tail::Tail(int nx, float maxX)
 {
@@ -98,6 +99,11 @@ void Tail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<BrokenQuestionBrick*>(e->obj)) {
 				BrokenQuestionBrick* tmpbr = dynamic_cast<BrokenQuestionBrick*>(e->obj);
+
+				tmpbr->PopUpHiddenItem();
+			}
+			else if (dynamic_cast<QBrick*>(e->obj)) {
+				QBrick* tmpbr = dynamic_cast<QBrick*>(e->obj);
 
 				tmpbr->PopUpHiddenItem();
 			}

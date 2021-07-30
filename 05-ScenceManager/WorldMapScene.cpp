@@ -173,6 +173,14 @@ void WorldMapScene::_ParseSection_MAP(const string& line)
 		stoi(tokens[6]),
 		stoi(tokens[7]));
 
+	if (tokens.size() > 8) {
+		int tilesGap = stoi(tokens[8]);
+		Map::getInstance()->SetSpaceBetweenTiles(tilesGap);
+	}
+	else {
+		Map::getInstance()->SetSpaceBetweenTiles(1);
+	}
+
 	CGame* game = CGame::GetInstance();
 
 	game->SetCamPos(0.0f, (float)(Map::getInstance()->getHeight() - game->GetScreenHeight() - 1));
@@ -309,6 +317,8 @@ void WorldMapScene::Load()
 
 	scene = -1;
 
+	CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
+
 	//CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(237, 28, 36));
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
@@ -331,10 +341,10 @@ void WorldMapScene::Update(DWORD dt)
 	currCellX = tmp.first;
 
 	if (path[tmp.second][tmp.first] != '-' && (tmp.first != startX || tmp.second != startY)) {
-		if (player->vy > 0) player->yInWorldMap = currCellY * 16;
-		else if (player->vy < 0) player->yInWorldMap = currCellY * 16;
-		else if (player->vx > 0) player->xInWorldMap = currCellX * 16;
-		else if (player->vx < 0) player->xInWorldMap = currCellX * 16;
+		if (player->vy > 0) player->yInWorldMap = (float)(currCellY * 16);
+		else if (player->vy < 0) player->yInWorldMap = (float)(currCellY * 16);
+		else if (player->vx > 0) player->xInWorldMap = (float)(currCellX * 16);
+		else if (player->vx < 0) player->xInWorldMap = (float)(currCellX * 16);
 
 		player->x = player->xInWorldMap;
 
@@ -530,7 +540,7 @@ void WorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 
 		int sceneId = ((WorldMapScene*)scence)->scene;
 
-		if (sceneId != 1 && sceneId != 3) {
+		if (sceneId != 1 && sceneId != 7) {
 			break;
 		}
 

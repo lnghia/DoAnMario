@@ -26,7 +26,7 @@ void Digit::Add(const int& val, int& reminder)
 }
 
 void Digit::Sub(const int& val, int& reminder) {
-	if (val > digit) {
+	if ((UINT)val > digit) {
 		digit = 10 + digit - val;
 		reminder = 1;
 	}

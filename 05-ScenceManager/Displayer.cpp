@@ -82,7 +82,7 @@ void Displayer::SetContent(int val)
 }
 
 void Displayer::SetContent(string& str) {
-	for (int i = 0; i < str.length(); ++i) {
+	for (int i = 0; i < (int)str.length(); ++i) {
 		characters[i]->SetDigit(str[i]);
 	}
 }

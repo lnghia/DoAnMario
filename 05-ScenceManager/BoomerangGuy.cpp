@@ -44,7 +44,7 @@ void BoomerangGuy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	camx = game->GetCamX();
 	camy = game->GetCamY();
 
-	if (y < camy || y > camy + scrh || x > camx + scrw || x + BROS_BBOX_WIDTH / 2 < camx) {
+	if (y < camy || y > camy + scrh) {
 		interactivable = 0;
 		isActive = 0;
 		Grid::GetInstance()->clearObjFromGrid(this);
