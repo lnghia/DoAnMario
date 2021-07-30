@@ -261,7 +261,7 @@ void CIntroSceneKeyHandler::OnKeyDown(int KeyCode)
 {
 	switch (KeyCode)
 	{
-	case DIK_S: {
+	case DIK_W: {
 		//Board* board = Board::GetInstance();
 
 		//board->GetTime()->SetTime(0);
