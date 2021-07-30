@@ -144,6 +144,17 @@ void GreenMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 					y += _dy;
 				}
 			}
+			else if (dynamic_cast<FloatingCoin*>(e->obj)) {
+				if (e->nx) {
+					x -= min_tx * dx + nx * 0.4f;
+				}
+				else if (e->ny) {
+					y -= min_ty * dy + ny * 0.4f;
+				}
+
+				x += _dx;
+				y += _dy;
+			}
 		}
 	}
 

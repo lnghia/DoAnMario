@@ -55,6 +55,8 @@
 #define KOOPAS_LEVEL_GREEN_WALKING	0
 #define KOOPAS_LEVEL_GREEN_FLYING	1
 
+#define KOOPAS_HOP_A_BIT	0.02f
+
 class CKoopas : public CGameObject
 {
 protected:

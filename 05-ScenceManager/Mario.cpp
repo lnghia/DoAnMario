@@ -933,6 +933,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				float tmpX = x + tmp;
 				float tmpY = y + 8;
 
+				//if (tmp == 10) tmpX += MARIO_RACOON_TAIL_LENGTH;
+
 				beingHoldedObj->SetPosition(tmpX, round(tmpY));
 			}
 			else {
@@ -953,7 +955,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-	DebugOut(L"%d\n", (y >= Map::getInstance()->getHeight() - MAP_BELOW_SPARE_SPACE && !madeItToNextScene));
+	//DebugOut(L"%d\n", (y >= Map::getInstance()->getHeight() - MAP_BELOW_SPARE_SPACE && !madeItToNextScene));
 	if (y >= Map::getInstance()->getHeight() - MAP_BELOW_SPARE_SPACE && !madeItToNextScene) {
 		//Reset();
 		
@@ -1203,7 +1205,7 @@ void CMario::SetState(int state)
 
 		//vy = (beingBouncedUp && (DWORD)GetTickCount64() - start_prepare_bouncing_up <= 180) ? -0.4f : -MARIO_JUMP_SPEED_Y;
 		isStanding = false;
-			isJumping = true;
+		isJumping = true;
 		break;
 	}
 	case MARIO_STATE_IDLE: {

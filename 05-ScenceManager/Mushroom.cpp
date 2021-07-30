@@ -1,6 +1,7 @@
 #include "Mushroom.h"
 #include "PlayScence.h"
 #include "Map.h"
+#include "FloatingCoin.h"
 
 
 void Mushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
@@ -110,7 +111,7 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 				if (mario->GetLevel() != MARIO_LEVEL_BIG) {
 					mario->SetBackupLevel(MARIO_LEVEL_BIG);
 					mario->SetBackupState(mario->GetState());
-					mario->SetStartTransforming(GetTickCount());
+					mario->SetStartTransforming((DWORD)GetTickCount64());
 					mario->turnIntoBig();
 				}
 			}
@@ -151,6 +152,17 @@ void Mushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
 
 				x += _dx;
 				//y += _dy;
+			}
+			else if (dynamic_cast<FloatingCoin*>(e->obj)) {
+				if (e->nx) {
+					x -= min_tx * dx + nx * 0.4f;
+				}
+				else if (e->ny) {
+					y -= min_ty * dy + ny * 0.4f;
+				}
+
+				x += _dx;
+				y += _dy;
 			}
 		}
 	}

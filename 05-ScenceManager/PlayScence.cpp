@@ -1461,12 +1461,20 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->BigToFire();
 
 		break;
+	case DIK_4:
+		mario->SetPosition(2000, 304);
+
+		break;
 	case DIK_5:
 		mario->SetPosition(2560, 352);
 		break;
 	case DIK_6:
 		mario->SetPosition(2256, 64);
 		CGame::GetInstance()->SetCamPos(2096, 32);
+		break;
+	case DIK_8:
+		mario->SetPosition(846, 302);
+
 		break;
 	case DIK_9:
 		mario->SetPosition(645, 301);

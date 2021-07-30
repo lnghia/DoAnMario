@@ -543,6 +543,7 @@ void CKoopas::GetKicked(int nx)
 	harmless = 1;
 	state = KOOPAS_STATE_SPIN;
 	vx = (nx > 0) ? KOOPAS_SPIN_SPEED : -KOOPAS_SPIN_SPEED;
+	y -= KOOPAS_HOP_A_BIT;
 	this->nx = nx;
 	just_got_kicked = (DWORD)GetTickCount64();
 }
