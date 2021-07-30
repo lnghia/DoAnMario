@@ -10,7 +10,7 @@ PiranhaFlower::PiranhaFlower(float pipeX, float pipeY, float pipeWidth, float pi
 	this->pipeHeight = pipeHeight;
 
 	SetState(PIRANHAPLAN_STATE_AWAKE);
-	climax = pipeY - ((level == PIRANHAPLANT_LEVEL_BIG) ? PIRANHAPLANT_BBOX_HEIGHT : PIRANHAPLANT_BBOX_HEIGHT_SMALL);
+	climax = (int)(pipeY - ((level == PIRANHAPLANT_LEVEL_BIG) ? PIRANHAPLANT_BBOX_HEIGHT : PIRANHAPLANT_BBOX_HEIGHT_SMALL));
 
 	y = pipeY;
 
@@ -90,7 +90,7 @@ void PiranhaFlower::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	y += dy;
 
 	if (this->y <= climax && !startAttacking) {
-		y = climax;
+		y = (float)climax;
 		vy = 0;
 		startAttacking = (DWORD)GetTickCount64();
 		startResting = 0;

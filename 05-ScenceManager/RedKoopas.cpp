@@ -234,8 +234,8 @@ void RedKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (ny) {
 					vy = 0;
-					beneathSurfaceX = e->obj->x;
-					beneathSurfaceY = e->obj->y;
+					beneathSurfaceX = (int)e->obj->x;
+					beneathSurfaceY = (int)e->obj->y;
 
 					if (dynamic_cast<CBrick*>(e->obj)) {
 						beneathSurfaceW = BRICK_BBOX_WIDTH;

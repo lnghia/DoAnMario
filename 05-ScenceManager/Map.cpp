@@ -35,11 +35,24 @@ Map* Map::getInstance()
 
 Map::Map()
 {
+	tileSetTexture = NULL;
+	width = 0;
+	height = 0;
+	tilesPerColumnInTileSet = 0;
+	tilesPerRowInTileSet = 0;
+	tileWidth = 0;
+	tileHeight = 0;
 }
 
 Map::Map(LPCWSTR _tileSetPath, string _matrixIdsPath, string _mapInfoPath, char _seperatorOfMatrixIds, D3DCOLOR _transcolor)
 {
+	tileSetTexture = NULL;
 	width = 0;
+	height = 0;
+	tilesPerColumnInTileSet = 0;
+	tilesPerRowInTileSet = 0;
+	tileWidth = 0;
+	tileHeight = 0;
 	//CTextures::GetInstance()->Add()
 }
 
@@ -97,7 +110,7 @@ void Map::RenderBoundingBox(int x, int y)
 
 	LPDIRECT3DTEXTURE9 bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
 
-	float l = (float)x, t = y, r = (float)(l + tileWidth), b = (float)(t + tileHeight);
+	float l = (float)x, t = (float)y, r = (float)(l + tileWidth), b = (float)(t + tileHeight);
 
 	//GetBoundingBox(l, t, r, b);
 	rect.left = 0;
