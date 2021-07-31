@@ -997,7 +997,11 @@ void CPlayScene::Update(DWORD dt)
 	_cx = game->GetCamX();
 	_cy = game->GetCamY();
 
-	if (!player->GetTransforming() && !player->GetIsAttackingTail()) {
+	if (autoCam) {
+		//_cx += CAMERA_VX;
+		cx = _cx + CAMERA_VX;
+	}
+	else if (!player->GetTransforming() && !player->GetIsAttackingTail()) {
 		cx -= game->GetScreenWidth() / 2;
 	}
 	else {
@@ -1016,7 +1020,6 @@ void CPlayScene::Update(DWORD dt)
 
 	cx = (cx < 0) ? 0.0f : cx;
 	cy = (cy < 0) ? 0.0f : cy;
-
 
 	if (cx + game->GetScreenWidth() > Map::getInstance()->getWidth()) {
 		cx = (float)(Map::getInstance()->getWidth() - game->GetScreenWidth() - 1);
@@ -1473,7 +1476,13 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		CGame::GetInstance()->SetCamPos(2096, 32);
 		break;
 	case DIK_8:
+		float cx, cy;
+
+		cy = CGame::GetInstance()->GetCamY();
+
 		mario->SetPosition(846, 302);
+		cx = (float)(Map::getInstance()->getWidth() - CGame::GetInstance()->GetScreenWidth() - 1);
+		CGame::GetInstance()->SetCamPos(round(cx), round(cy));
 
 		break;
 	case DIK_9:

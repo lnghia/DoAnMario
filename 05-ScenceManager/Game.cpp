@@ -372,7 +372,9 @@ void CGame::_ParseSection_SCENES(string line)
 	else {
 		scene = new CPlayScene(id, path);
 		scene->SetWorldNum((UINT)atoi(tokens[2].c_str()));
-
+		if ((int)tokens.size() > 3) {
+			((CPlayScene*)scene)->autoCam = 1;
+		}
 	}
 	scenes[id] = scene;
 }

@@ -20,6 +20,8 @@
 #include "RedKoopas.h"
 #include "CourseClearBoard.h"
 
+#define CAMERA_VX	0.5f
+
 
 class CPlayScene : public CScene
 {
@@ -49,6 +51,8 @@ public:
 	RedKoopas* neaMusicBrickKoopas = NULL;
 
 	int timeLeft = 0;
+
+	bool autoCam = 0;
 
 	CPlayScene(int id, LPCWSTR filePath);
 
